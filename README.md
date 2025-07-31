@@ -50,6 +50,62 @@ See [.devcontainer/README.md](.devcontainer/README.md) for detailed setup instru
 - `tsconfig.json` - TypeScript configuration
 - Copilot instructions for AI assistance
 
+## License Compliance
+
+**This project ONLY accepts dependencies with Apache 2.0 compatible licenses.** All dependencies must use licenses that are compatible with Apache 2.0 for government use.
+
+### License Checking Script
+
+Run the license compatibility check:
+```bash
+npm run check-licenses
+```
+
+This script will:
+- ✅ Scan all dependencies (production + development)
+- 📊 Identify Apache 2.0 compatible licenses
+- ❌ **Block** incompatible licenses (GPL, LGPL, etc.)
+- ❓ Flag unknown licenses for manual review
+
+### Accepted Compatible Licenses
+
+**Only these licenses are permitted** (✅ Apache 2.0 compatible):
+- **Apache-2.0** - Same license
+- **MIT** - Permissive, fully compatible
+- **BSD-2-Clause, BSD-3-Clause** - Permissive, compatible
+- **ISC** - Permissive, compatible
+- **CC0-1.0, Unlicense, 0BSD** - Public domain equivalent
+
+### Prohibited Licenses
+
+**These licenses are NOT allowed** (❌ Incompatible):
+- **GPL-2.0/3.0** - Copyleft, incompatible
+- **LGPL-2.1/3.0** - Weak copyleft, problematic
+- **AGPL-3.0** - Strong copyleft, incompatible
+- **MPL-2.0** - Weak copyleft, requires review
+- **EPL-1.0/2.0, CDDL-1.0/1.1** - Incompatible
+
+### Required Actions for License Issues
+
+**If incompatible licenses are detected:**
+1. **STOP** - Do not merge or deploy
+2. **Replace** the dependency with an Apache 2.0 compatible alternative
+3. **Remove** the dependency if not essential
+4. **Contact legal team** only for critical dependencies with no alternatives
+
+**For unknown/custom licenses:**
+1. **Research** the license terms manually
+2. **Replace** if terms are unclear or potentially incompatible
+3. **Document** any legal team approvals
+
+### Mandatory License Checks
+
+Run license checks:
+- 📦 **Before adding any new dependency**
+- 🔄 **Before every release**
+- 📅 **Weekly during development**
+- 🚫 **Dependencies with incompatible licenses will be rejected**
+
 ## Cross-Platform Development
 This project is configured for seamless development across Mac and PC:
 - **Line endings**: Normalized to LF (Unix-style) for all text files
