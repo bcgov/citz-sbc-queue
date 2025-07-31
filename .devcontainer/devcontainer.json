@@ -1,0 +1,83 @@
+{
+  "name": "CITZ SBC Queue Management",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {
+      "ppa": true,
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "installDirectlyFromGitHubRelease": true,
+      "version": "latest"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.vscode-typescript-next",
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode",
+        "biomejs.biome",
+        "ms-vscode.vscode-json",
+        "formulahendry.auto-rename-tag",
+        "christian-kohler.path-intellisense",
+        "ms-vscode.vscode-eslint",
+        "vitest.explorer",
+        "ms-playwright.playwright",
+        "GitHub.copilot",
+        "GitHub.copilot-chat"
+      ],
+      "settings": {
+        "typescript.preferences.includePackageJsonAutoImports": "on",
+        "typescript.suggest.autoImports": true,
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "biomejs.biome",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.biome": "explicit",
+          "source.organizeImports.biome": "explicit"
+        },
+        "files.eol": "\n",
+        "files.insertFinalNewline": true,
+        "files.trimTrailingWhitespace": true,
+        "files.trimFinalNewlines": true,
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.detectIndentation": false,
+        "files.associations": {
+          "*.css": "tailwindcss"
+        },
+        "tailwindCSS.includeLanguages": {
+          "typescript": "typescript",
+          "typescriptreact": "typescriptreact"
+        },
+        "vitest.enable": true,
+        "playwright.showTrace": true
+      }
+    }
+  },
+  "postCreateCommand": "npm install",
+  "postStartCommand": "git config --global --add safe.directory /workspace",
+  "remoteUser": "node",
+  "forwardPorts": [
+    3000,
+    3001,
+    51204
+  ],
+  "portsAttributes": {
+    "3000": {
+      "label": "Next.js App",
+      "onAutoForward": "notify"
+    },
+    "3001": {
+      "label": "Dev Server",
+      "onAutoForward": "silent"
+    },
+    "51204": {
+      "label": "Vitest UI",
+      "onAutoForward": "silent"
+    }
+  }
+}
