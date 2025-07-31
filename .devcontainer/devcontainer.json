@@ -59,7 +59,7 @@
     }
   },
   "postCreateCommand": "npm install",
-  "postStartCommand": "git config --global --add safe.directory /workspace",
+  "postStartCommand": "git config --global --add safe.directory /workspace && git config --global user.name 'STOEWS' && git config --global user.email 'scott.toews@gov.bc.ca'",
   "remoteUser": "node",
   "forwardPorts": [
     3000,

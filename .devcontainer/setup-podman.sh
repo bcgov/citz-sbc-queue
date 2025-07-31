@@ -67,6 +67,13 @@ else
     echo "⚠️  VS Code not found in PATH. Please install VS Code and the Dev Containers extension."
 fi
 
+# Configure Git settings
+echo "🔧 Configuring Git settings..."
+git config --global user.name "STOEWS"
+git config --global user.email "scott.toews@gov.bc.ca"
+git config --global --add safe.directory /workspace
+echo "✅ Git configured with username: STOEWS and email: scott.toews@gov.bc.ca"
+
 echo ""
 echo "🎉 Setup complete! You can now:"
 echo "   1. Open this project in VS Code"

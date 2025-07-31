@@ -68,7 +68,7 @@ The devcontainer includes:
 - **Automatic dependency installation** via `postCreateCommand`
 - **Port forwarding** for Next.js development server (3000, 3001, 51204)
 - **Format on save** enabled with Biome
-- **Git integration** with proper permissions
+- **Git integration** with proper permissions and pre-configured user settings
 - **Consistent settings** across all team members
 
 ## Ports
@@ -76,6 +76,15 @@ The devcontainer includes:
 - **3000**: Next.js application
 - **3001**: Additional development server (if needed)
 - **51204**: Vitest UI for interactive testing
+
+## Git Configuration
+
+The DevContainer automatically configures Git with the following settings:
+- **Username**: STOEWS
+- **Email**: scott.toews@gov.bc.ca
+- **Safe directory**: Workspace is added to Git's safe directory list
+
+These settings are applied during container startup, ensuring consistent Git configuration across all development environments.
 
 ## Commands
 

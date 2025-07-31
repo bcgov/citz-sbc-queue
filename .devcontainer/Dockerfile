@@ -24,8 +24,10 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
         lsb-release \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
-# Configure git to trust the workspace directory
-RUN git config --global --add safe.directory /workspace
+# Configure git to trust the workspace directory and set default user
+RUN git config --global --add safe.directory /workspace \
+    && git config --global user.name "STOEWS" \
+    && git config --global user.email "scott.toews@gov.bc.ca"
 
 # Set user permissions
 RUN chown -R node:node /workspace
