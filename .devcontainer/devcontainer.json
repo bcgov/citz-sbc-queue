@@ -19,7 +19,6 @@
       "extensions": [
         "ms-vscode.vscode-typescript-next",
         "bradlc.vscode-tailwindcss",
-        "esbenp.prettier-vscode",
         "biomejs.biome",
         "ms-vscode.vscode-json",
         "formulahendry.auto-rename-tag",

@@ -19,3 +19,9 @@ I guess this is what we are going with Podman
 ## Installing NextJS
 
 - Hopefully get to this today
+
+## Ideas to Prep for Maintinence
+
+Veenu will be supporting this app by himself in the future. How can we best prep for this?
+
+- Veenu does all the
