@@ -17,15 +17,18 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "ms-vscode.vscode-typescript-next",
-        "bradlc.vscode-tailwindcss",
-        "biomejs.biome",
+        // Built in VS Code extentions
         "ms-vscode.vscode-json",
+        "ms-vscode.vscode-eslint",
+        // Additional extensions
+        "biomejs.biome",
+        // Non Required extensions
+        "ms-vscode.vscode-typescript-next",
+        "ms-playwright.playwright",
         "formulahendry.auto-rename-tag",
         "christian-kohler.path-intellisense",
-        "ms-vscode.vscode-eslint",
+        "bradlc.vscode-tailwindcss",
         "vitest.explorer",
-        "ms-playwright.playwright",
         "GitHub.copilot",
         "GitHub.copilot-chat"
       ],
