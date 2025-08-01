@@ -1,89 +1,108 @@
-# citz-sbc-queue
-Service BC Queue Management
+# Service B.C. Queue Management citz-sbc-queue
 
-## Development Team
-- Scott
-- Veenu
-- Taylor
-- Brady
+## Overview
+
+> **Note:** This is a complete rebuild of the Service B.C. [Queue Management System](https://github.com/bcgov/queue-management), designed for modern accessibility, performance, and maintainability.
+
+The Queue Managment System is used to manage citizen flow and provide analtyics for our Service BC locations. This system is designed to be used for government offices with a large number of services.
 
 ## Tech Stack
-- **Next.js** with TypeScript, App Router, and Turbopack bundler
-- **Biome** for formatting and linting
-- **Headless UI** + **TailwindCSS** for components and styling
-- **Zod** for server action + form action validation
-- **Zustand** for global state
-- **Vitest** and **Playwright** for testing
+| Item | Description |
+|------|-------------|
+| **Next.js** | TypeScript, App Router, and Webpack bundler |
+| **Biome** | Formatting and linting |
+| **Headless UI** | Components |
+| **TailwindCSS** | Styling |
+| **Zod** | Server and form action validation |
+| **Zustand** | Global state management |
+| **Vitest** & **Playwright** | Testing |
 
 ## Development Environment
 
-### DevContainer (Recommended)
-This project includes a complete DevContainer configuration for consistent development environments:
-
-- Pre-configured Node.js 20 LTS environment
-- All necessary VS Code extensions
-- Automatic dependency installation
-- Port forwarding for development servers
-- Biome formatting on save
-
-**Quick Start with DevContainer:**
-1. Install [Podman](https://podman.io/getting-started/installation) and [VS Code Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
-2. Configure VS Code to use Podman (see setup instructions below)
-3. Open project in VS Code
-4. Click "Reopen in Container" when prompted
-5. Start developing!
-
-**Automated Setup:**
-Run the setup script to configure Podman automatically:
-```bash
-bash .devcontainer/setup-podman.sh
-```
+## DevContainers
 
 See [.devcontainer/README.md](.devcontainer/README.md) for detailed setup instructions.
 
-## Project Configuration
-- `.gitattributes` - Line ending specifications (LF for all text files)
-- `.editorconfig` - Cross-platform editor configuration
-- `.vscode/settings.json` - Editor and linter configuration
-- `.npmrc` - Strict npm install versions
-- `biome.json` - Biome formatter/linter settings
-- `tsconfig.json` - TypeScript configuration
-- Copilot instructions for AI assistance
+## Alternative
+
+To run the applicaiton without DevContainers please follow these steps:
+
+TODO: Add steps to run locally without DevContainers
+
+## Directory Information
+
+| Type | File Path | Description |
+| ---- | --------- | ----------- |
+| Directory | `.devcontainer` | Settings, information, and configuration of DevContainer. See `.devcontainer/README.md` for detailed information |
+| Directory | `.github` | Holds Github related files. See .github/README.md for more information |
+| Configuration | `.vscode/settings.json` | Editor and linter configuration |
+| Directory | `public` | Globally accessable static files |
+| Directory | `scripts` | Holds useful scripts to run on the project |
+| Directory | `src` | Application code. |
+| Configuration | `.editorconfig` | Cross-platform editor configuration |
+| Configuration | `.gitattributes` | Line ending specifications (LF for all text files) |
+| Configuration | `.gitignore` | List of file types to not be tracked by Github  |
+| Configuration | `.npmrc` | Strict npm install versions |
+| Configuration | `biome.json` | Biome formatter/linter settings |
+| Legal | `LICENSE` | The Apache 2.0 license documentation |
+| Configuration | `next.config.ts` | Allows for Next.js configuration. See documentation [here](https://nextjs.org/docs/app/api-reference/config/next-config-js#typescript) |
+| Configuration | `package.json` | Contains run commands, dependencies, and project informaiton |
+| Configuration | `playwright.config.ts` | Configuration for Playwright |
+| Configuration | `postcss.config.mjs` | Used to add Tailwind to project |
+| Configuration | `README.md` | This document |
+| Configuration | `tailwind.config.ts` | Defines styling configuration and theme for Tailwind |
+| Configuration | `tsconfig.json` | TypeScript configuration |
+| Configuration | `vitest.config.ts` | Configuration for ViTest |
+
+
+## Common Podman Commands
+
+```bash
+# Check Podman status
+podman info
+
+# Start/stop Podman machine (Windows/macOS)
+podman machine start
+podman machine stop
+
+# List running containers
+podman ps
+
+# Clean up resources
+podman system prune -a
+```
 
 ## License Compliance
 
 **This project ONLY accepts dependencies with Apache 2.0 compatible licenses.** All dependencies must use licenses that are compatible with Apache 2.0 for government use.
 
-### License Checking Script
+### License Checking Script `scripts/check-licenses.js`
 
-Run the license compatibility check:
+This script will be run:
+- 📦 **Before adding any new dependency**
+- 🔄 **Before every release**
+- 📅 **Weekly during development**
+- 🚫 **Dependencies with incompatible licenses will be rejected**
+
+To run the license compatibility check:
 ```bash
 npm run check-licenses
 ```
 
-This script will:
-- ✅ Scan all dependencies (production + development)
+This script scans all dependencies (production + development) and:
 - 📊 Identify Apache 2.0 compatible licenses
-- ❌ **Block** incompatible licenses (GPL, LGPL, etc.)
+  - **Apache-2.0** - Same license
+  - **MIT** - Permissive, fully compatible
+  - **BSD-2-Clause, BSD-3-Clause** - Permissive, compatible
+  - **ISC** - Permissive, compatible
+  - **CC0-1.0, Unlicense, 0BSD** - Public domain equivalent
+- ❌ **Block** incompatible licenses:
+  - **GPL-2.0/3.0** - Copyleft, incompatible
+  - **LGPL-2.1/3.0** - Weak copyleft, problematic
+  - **AGPL-3.0** - Strong copyleft, incompatible
+  - **MPL-2.0** - Weak copyleft, requires review
+  - **EPL-1.0/2.0, CDDL-1.0/1.1** - Incompatible
 - ❓ Flag unknown licenses for manual review
-
-### Accepted Compatible Licenses
-
-**Only these licenses are permitted** (✅ Apache 2.0 compatible):
-- **Apache-2.0** - Same license
-- **MIT** - Permissive, fully compatible
-- **BSD-2-Clause, BSD-3-Clause** - Permissive, compatible
-- **ISC** - Permissive, compatible
-- **CC0-1.0, Unlicense, 0BSD** - Public domain equivalent
-
-### Prohibited Licenses
-
-**These licenses are NOT allowed** (❌ Incompatible):
-- **GPL-2.0/3.0** - Copyleft, incompatible
-- **LGPL-2.1/3.0** - Weak copyleft, problematic
-- **AGPL-3.0** - Strong copyleft, incompatible
-- **MPL-2.0** - Weak copyleft, requires review
-- **EPL-1.0/2.0, CDDL-1.0/1.1** - Incompatible
 
 ### Required Actions for License Issues
 
@@ -97,24 +116,3 @@ This script will:
 1. **Research** the license terms manually
 2. **Replace** if terms are unclear or potentially incompatible
 3. **Document** any legal team approvals
-
-### Mandatory License Checks
-
-Run license checks:
-- 📦 **Before adding any new dependency**
-- 🔄 **Before every release**
-- 📅 **Weekly during development**
-- 🚫 **Dependencies with incompatible licenses will be rejected**
-
-## Cross-Platform Development
-This project is configured for seamless development across Mac and PC:
-- **Line endings**: Normalized to LF (Unix-style) for all text files
-- **Editor settings**: Consistent indentation and formatting via EditorConfig
-- **Git normalization**: Automatic line ending conversion via `.gitattributes`
-- **DevContainer**: Consistent environment regardless of host OS
-
-## Development Considerations
-- Biome linting enforced on pull requests
-- SOLID and DRY principles
-- Functional components with hooks
-- Comprehensive testing with Vitest and Playwright
