@@ -7,19 +7,17 @@ This project is configured to work with Visual Studio Code DevContainers using P
 - [Podman](https://podman.io/getting-started/installation)
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+- Repository cloned locally
 
-## Podman Setup for VS Code
+### Podman Configuration
 
-### Windows Setup
-
-1. Install Podman Desktop or Podman CLI
+1. [Install Podman](https://podman.io/getting-started/installation) Desktop or CLI
 2. Start Podman machine:
    ```bash
    podman machine init
    podman machine start
    ```
-
-3. Configure VS Code to use Podman by adding to your VS Code settings.json:
+3. Configure VS Code to use [Podman with DevContainers](https://code.visualstudio.com/remote/advancedcontainers/docker-options#_podman) by updating your VS Code `settings.json`:
    ```json
    {
      "dev.containers.dockerPath": "podman",
@@ -27,7 +25,7 @@ This project is configured to work with Visual Studio Code DevContainers using P
    }
    ```
 
-### Alternative: Using Docker Socket Compatibility
+#### Alternative: Using Docker Socket Compatibility
 
 If you prefer, you can enable Docker socket compatibility:
 ```bash
@@ -40,28 +38,35 @@ export DOCKER_HOST=unix:///tmp/podman.sock
 
 ## Getting Started
 
-1. Clone the repository
-2. Ensure Podman is running (`podman machine start` on Windows/macOS)
-3. Open the project in VS Code
-4. When prompted, click "Reopen in Container" or use the Command Palette (`Ctrl+Shift+P`) and run "Dev Containers: Reopen in Container"
-5. Wait for the container to build and start
-6. The development environment will be ready with all dependencies installed
+1. Install and follow all steps as listed in [Prerequisites](#prerequisites) listed above
+2. Open the project in VS Code
+3. If prompted, click "Reopen in Container"
+   - If no prompt appears use the Command Palette (`<Ctrl|Cmd>+Shift+P`) and run "Dev Containers: Reopen in Container"
+4. Wait for the container to build and start
 
 ## What's Included
 
-The devcontainer includes:
+The DevContainer includes:
 
 - **Node.js 20 LTS** - Latest stable Node.js version
 - **TypeScript** - For type-safe development
-- **Biome** - Fast formatter and linter
-- **Essential VS Code Extensions**:
-  - TypeScript support
-  - Biome integration
-  - ESLint support
-  - Vitest testing support
-  - Playwright testing support
+- **VS Code Extensions**:
+  - VS Code built-in extensions:
+    - JSON formatting: `ms-vscode.vscode-json`
+    - ESLint extension: `ms-vscode.vscode-eslint`
+  - Biome integration: [`biomejs.biome`](https://marketplace.visualstudio.com/items?itemName=biomejs.biome)
+- **Optional VS Code Extensions**:
+  > **Note:** that the following are not required for the DevContainer to run but they may be seen as 'nice to have features'.
+  > These have been left in `devcontainer.json:"customizations":"vscode":"extensions"` but can be commented out if they are not desired
+  - Additional TypeScript support with [`ms-vscode.vscode-typescript-next`](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-typescript-next)
+  - Additional features for Playwright in VS Code: [`ms-playwright.playwright`](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright)
+  - Auto rename paired HTML/XML tags: [`formulahendry.auto-rename-tag`](https://marketplace.visualstudio.com/items?itemName=formulahendry.auto-rename-tag)
+  - Autocomplete file names: [`christian-kohler.path-intellisense`](https://marketplace.visualstudio.com/items?itemName=christian-kohler.path-intellisense)
+  - Intelligent Tailwind CSS tooling: [`bradlc.vscode-tailwindcss`](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
+  - Vitest testing support: [`vitest.explorer`](https://marketplace.visualstudio.com/items?itemName=vitest.explorer)
   - GitHub Copilot (if available)
-  - And more development tools
+    - [`GitHub.copilot`](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)
+    - [`GitHub.copilot-chat`](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat)
 
 ## Development Features
 
@@ -77,28 +82,9 @@ The devcontainer includes:
 - **3001**: Additional development server (if needed)
 - **51204**: Vitest UI for interactive testing
 
-## Git Configuration
-
-The DevContainer automatically configures Git with the following settings:
-- **Username**: STOEWS
-- **Email**: scott.toews@gov.bc.ca
-- **Safe directory**: Workspace is added to Git's safe directory list
-
-These settings are applied during container startup, ensuring consistent Git configuration across all development environments.
-
 ## Commands
 
-Once the container is running, you can use standard npm commands:
-
-```bash
-npm install          # Install dependencies
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run test         # Run Vitest tests
-npm run test:ui      # Run Vitest with UI
-npm run test:e2e     # Run Playwright end-to-end tests
-npm run lint         # Run linting
-```
+Once the container is running, you can use commands as referenced in `/README.md`
 
 ## Troubleshooting
 
@@ -112,6 +98,7 @@ If you encounter issues:
    - Clear Podman cache: `podman system prune -a`
 3. **VS Code can't find Podman**:
    - Verify Podman path in VS Code settings
+     - See [Podman Configuration](#podman-configuration)
    - Restart VS Code after installing Podman
 4. **Permission issues**:
    - Ensure Podman machine has sufficient resources
