@@ -1,0 +1,42 @@
+# GitHub Actions workflow for building and tagging image on PR
+name: Image Build, Tag, and Push
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - ready_for_review
+    branches:
+      - main
+    paths:
+      - 'src/app/**'
+  workflow_dispatch:
+
+jobs:
+  Build-Tag-Push:
+    environment: dev
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.draft == false }}
+    steps:
+
+      # Check out the repo
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Login to BCGov OCP Silver
+      - name: Login to BCGov
+        run: |
+          docker login image-registry.apps.silver.devops.gov.bc.ca -u default -p ${{ secrets.OPENSHIFT_SA_TOOLS_TOKEN }}
+
+      # Build the image
+      - name: Build image
+        run: |
+         cd src/app && docker build -t image-registry.apps.silver.devops.gov.bc.ca/df1ee0-tools/sbc-queue-app:${{github.event.pull_request.number}} -f docker/Dockerfile.prod .
+
+      # Push the image to OCP ImageStream
+      - name: Push the image to OCP ImageStream
+        run: |
+          docker push image-registry.apps.silver.devops.gov.bc.ca/df1ee0-tools/sbc-queue-app:${{github.event.pull_request.number}}
