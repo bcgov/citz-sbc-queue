@@ -1,122 +1,166 @@
-# DevContainer Configuration
+# Development Container Setup
 
-This project is configured to work with Visual Studio Code DevContainers using Podman, providing a consistent development environment across different machines.
+This project includes a development container configuration that provides a complete development environment with:
+- Next.js development server
+- PostgreSQL database
+- RabbitMQ message broker
 
 ## Prerequisites
 
-- [Podman](https://podman.io/getting-started/installation)
-- [Visual Studio Code](https://code.visualstudio.com/)
-- [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
-- Repository cloned locally
+### For Docker Users
+- Docker Desktop or Docker Engine
+- VS Code with the Dev Containers extension
 
-### Podman Configuration
+### For Podman Users (Recommended for Linux/macOS)
+- Podman with podman-compose
+- VS Code with the Dev Containers extension
 
-1. [Install Podman](https://podman.io/getting-started/installation) Desktop or CLI
-2. Start Podman machine:
+### For Windows Users with Podman
+- Podman Desktop or Podman CLI installed on Windows (not in WSL)
+- VS Code with the Dev Containers extension
+- **Important**: If using WSL, ensure Podman is installed on Windows host, not inside WSL
+- You may need to disable WSL integration in VS Code if Podman is not available in your WSL distribution
+
+## Podman Setup
+
+### Windows-Specific Setup
+
+For Windows users, Podman should be installed on the Windows host system, not inside WSL:
+
+1. **Install Podman Desktop** or **Podman CLI** on Windows
+2. **If using WSL**: Ensure VS Code is using the Windows installation of Podman, not a WSL distribution
+3. **Disable WSL integration** in VS Code if Podman is not installed in your WSL environment:
+   - Open VS Code settings (`Ctrl+,`)
+   - Search for "dev.containers.executeInWSL"
+   - Set `Dev Containers: Execute In WSL` to **false** (unchecked)
+   - Search for "dev.containers.mountWaylandSocket"
+   - Set `Dev Containers: Mount Wayland Socket` to **false** (unchecked)
+   - Optionally, also change "terminal.integrated.defaultProfile" to use PowerShell or Command Prompt instead of WSL
+   - Alternatively, install Podman in your WSL distribution
+
+### Configure Podman for Dev Containers
+
+1. **Start Podman machine** (macOS/Windows):
    ```bash
    podman machine init
    podman machine start
    ```
-3. Configure VS Code to use [Podman with DevContainers](https://code.visualstudio.com/remote/advancedcontainers/docker-options#_podman) by updating your VS Code `settings.json`:
+
+2. **Enable Podman socket** (Linux):
+   ```bash
+   systemctl --user enable --now podman.socket
+   ```
+
+3. **Configure VS Code to use Podman**:
+   Add this to your VS Code settings.json:
    ```json
    {
      "dev.containers.dockerPath": "podman",
      "dev.containers.dockerComposePath": "podman-compose"
    }
    ```
-
-#### Alternative: Using Docker Socket Compatibility
-
-If you prefer, you can enable Docker socket compatibility:
-```bash
-# On Windows with Podman Desktop
-podman system service --time=0 tcp://localhost:2375
-
-# Or use the Docker-compatible socket
-export DOCKER_HOST=unix:///tmp/podman.sock
-```
+   **Note**: This can only be set in user settings, not in project level scope.
 
 ## Getting Started
 
-1. Install and follow all steps as listed in [Prerequisites](#prerequisites) listed above
-2. Open the project in VS Code
-3. If prompted, click "Reopen in Container"
-   - If no prompt appears use the Command Palette (`<Ctrl|Cmd>+Shift+P`) and run "Dev Containers: Reopen in Container"
-4. Wait for the container to build and start
+**Reopen in Container**:
+   - Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on macOS)
+   - Type "Dev Containers: Reopen in Container"
+   - Select the command and wait for the container to build
 
-## What's Included
+## Services
 
-The DevContainer includes:
+The development environment includes:
 
-- **Node.js 20 LTS** - Latest stable Node.js version
-- **TypeScript** - For type-safe development
-- **VS Code Extensions**:
-  - VS Code built-in extensions:
-    - JSON formatting: `ms-vscode.vscode-json`
-    - ESLint extension: `ms-vscode.vscode-eslint`
-  - Biome integration: [`biomejs.biome`](https://marketplace.visualstudio.com/items?itemName=biomejs.biome)
-- **Optional VS Code Extensions**:
-  > **Note:** that the following are not required for the DevContainer to run but they may be seen as 'nice to have features'.
-  > These have been left in `devcontainer.json:"customizations":"vscode":"extensions"` but can be commented out if they are not desired
-  - Additional TypeScript support with [`ms-vscode.vscode-typescript-next`](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-typescript-next)
-  - Additional features for Playwright in VS Code: [`ms-playwright.playwright`](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright)
-  - Auto rename paired HTML/XML tags: [`formulahendry.auto-rename-tag`](https://marketplace.visualstudio.com/items?itemName=formulahendry.auto-rename-tag)
-  - Autocomplete file names: [`christian-kohler.path-intellisense`](https://marketplace.visualstudio.com/items?itemName=christian-kohler.path-intellisense)
-  - Intelligent Tailwind CSS tooling: [`bradlc.vscode-tailwindcss`](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
-  - Vitest testing support: [`vitest.explorer`](https://marketplace.visualstudio.com/items?itemName=vitest.explorer)
-  - GitHub Copilot (if available)
-    - [`GitHub.copilot`](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)
-    - [`GitHub.copilot-chat`](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat)
+### Next.js Application
+- **Port**: 3000
+- **URL**: http://localhost:3000
+- Automatically starts in development mode with hot reload
 
-## Development Features
+### PostgreSQL Database
+- **Port**: 5432
+- **Database**: sbc_queue
+- **Username**: postgres
+- **Password**: postgres
+- **Connection String**: `postgresql://postgres:postgres@localhost:5432/sbc_queue`
 
-- **Automatic dependency installation** via `postCreateCommand`
-- **Port forwarding** for Next.js development server (3000, 3001, 51204)
-- **Format on save** enabled with Biome
-- **Git integration** with proper permissions and pre-configured user settings
-- **Consistent settings** across all team members
+### RabbitMQ Message Broker
+- **AMQP Port**: 5672
+- **Management UI Port**: 15672
+- **Management URL**: http://localhost:15672
+- **Username**: guest
+- **Password**: guest
 
-## Ports
+## Development Commands
 
-- **3000**: Next.js application
-- **3001**: Additional development server (if needed)
-- **51204**: Vitest UI for interactive testing
+Once inside the container, you can run:
 
-## Commands
+```bash
+# Start the development server
+npm run dev
 
-Once the container is running, you can use commands as referenced in `/README.md`
+# Run tests
+npm test
+
+# Run end-to-end tests
+npm run test:e2e
+```
+
+## Environment Variables
+
+The following environment variables are automatically configured:
+
+- `NODE_ENV=development`
+- `DATABASE_URL=postgresql://postgres:postgres@postgres:5432/sbc_queue`
+- `RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672`
 
 ## Troubleshooting
 
-If you encounter issues:
+### Podman Issues
 
-1. **Container won't start**:
-   - Ensure Podman is running: `podman machine start`
-   - Check Podman status: `podman info`
-2. **Build failures**:
-   - Rebuild the container: Command Palette → "Dev Containers: Rebuild Container"
-   - Clear Podman cache: `podman system prune -a`
-3. **VS Code can't find Podman**:
-   - Verify Podman path in VS Code settings
-     - See [Podman Configuration](#podman-configuration)
-   - Restart VS Code after installing Podman
-4. **Permission issues**:
-   - Ensure Podman machine has sufficient resources
-   - Check rootless Podman configuration
+1. **Permission errors**: Make sure Podman is running with proper permissions
+2. **Port conflicts**: Ensure ports 3000, 5432, 5672, and 15672 are not in use
+3. **Volume mounting issues**: On SELinux systems, you may need to configure volume mounting with `:Z` suffix
 
-### Common Podman Commands
+### Windows/WSL Issues
 
-```bash
-# Check Podman status
-podman info
+1. **Podman not found in WSL**: Install Podman on Windows host or install Podman in your WSL distribution
+2. **Dev Containers trying to use WSL**: Disable `Dev Containers: Execute In WSL` setting in VS Code (`dev.containers.executeInWSL: false`)
 
-# Start/stop Podman machine (Windows/macOS)
-podman machine start
-podman machine stop
+### Container Build Issues
 
-# List running containers
-podman ps
+1. **Clear Podman cache**:
+   ```bash
+   podman system prune -a
+   ```
 
-# Clean up resources
-podman system prune -a
-```
+2. **Rebuild containers**:
+   ```bash
+   podman-compose down -v
+   podman-compose build --no-cache
+   ```
+
+### VS Code Issues
+
+1. **Install Dev Containers extension**: Make sure you have the official Dev Containers extension installed
+2. **Restart VS Code**: Sometimes a restart resolves connection issues
+3. **Check logs**: Use `View > Output > Dev Containers` to see detailed logs
+
+## Accessing Services
+
+- **Next.js App**: http://localhost:3000
+- **RabbitMQ Management**: http://localhost:15672 (guest/guest)
+- **PostgreSQL**: localhost:5432 (postgres/postgres)
+
+## Data Persistence
+
+- PostgreSQL data is persisted in a named volume `postgres_data`
+- RabbitMQ data is persisted in a named volume `rabbitmq_data`
+- Node modules are cached in a named volume `node_modules` for faster rebuilds
+
+## Development Tips
+
+1. **Code changes** are automatically reflected due to volume mounting
+2. **Database schema changes** may require manual migration commands
+3. **Package changes** require container rebuild or manual npm install
+4. **Use the integrated terminal** in VS Code for the best experience
