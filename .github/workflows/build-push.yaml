@@ -17,6 +17,8 @@ jobs:
   Build-Tag-Push:
     environment: dev
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
     if: ${{ github.event.pull_request.draft == false }}
     steps:
 
