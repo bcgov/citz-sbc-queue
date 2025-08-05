@@ -10,7 +10,7 @@ on:
     branches:
       - main
     paths:
-      - 'src/app/**'
+      - 'src/**'
   workflow_dispatch:
 
 jobs:
@@ -36,7 +36,7 @@ jobs:
       # Build the image
       - name: Build image
         run: |
-         cd src/app && docker build -t image-registry.apps.silver.devops.gov.bc.ca/df1ee0-tools/sbc-queue-app:${{github.event.pull_request.number}} -f docker/Dockerfile.prod .
+          docker build -t image-registry.apps.silver.devops.gov.bc.ca/df1ee0-tools/sbc-queue-app:${{github.event.pull_request.number}} -f Dockerfile.prod .
 
       # Push the image to OCP ImageStream
       - name: Push the image to OCP ImageStream

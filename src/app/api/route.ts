@@ -1,4 +1,4 @@
-import { type NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 
 /**
  * Health check endpoint for monitoring and load balancer health checks
@@ -22,7 +22,7 @@ interface HealthCheckResponse {
  * GET /api/health
  * Returns the health status of the application
  */
-export async function GET(request: NextRequest): Promise<NextResponse<HealthCheckResponse>> {
+export async function GET(): Promise<NextResponse<HealthCheckResponse>> {
   try {
     const startTime = Date.now()
 
