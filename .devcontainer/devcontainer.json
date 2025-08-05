@@ -45,7 +45,7 @@
   "shutdownAction": "none",
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally
-  "forwardPorts": [3001, 3000, 5432, 5672, 15672],
+  "forwardPorts": [3000, 5432, 5672, 15672],
   "portsAttributes": {
     "3000": {
       "label": "Next.js App",
@@ -67,7 +67,7 @@
   "remoteUser": "node",
 
   // Use 'postCreateCommand' to run commands after the container is created
-  "postCreateCommand": "",
+  "postCreateCommand": "npm install",
 
   // Use 'postStartCommand' to run commands after the container starts
   "postStartCommand": "echo 'Dev container is ready! 🚀'"

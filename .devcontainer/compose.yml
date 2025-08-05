@@ -12,7 +12,6 @@ services:
       - node_modules:/workspace/node_modules
     working_dir: /workspace
     environment:
-      - NODE_ENV=development
       - PORT=3001
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/sbc_queue
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672

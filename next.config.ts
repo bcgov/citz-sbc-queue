@@ -7,9 +7,6 @@ const nextConfig: NextConfig = {
   // Production optimizations
   compress: true,
 
-  // Performance optimizations
-  swcMinify: true,
-
   // Security headers
   async headers() {
     return [
