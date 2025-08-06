@@ -126,6 +126,10 @@ The following environment variables are automatically configured:
 
 1. **Podman not found in WSL**: Install Podman on Windows host or install Podman in your WSL distribution
 2. **Dev Containers trying to use WSL**: Disable `Dev Containers: Execute In WSL` setting in VS Code (`dev.containers.executeInWSL: false`)
+3. **podman-compose not found**: If you get "Executable 'podman-compose' not found on PATH" error, install podman-compose:
+   - Install pip via Chocolatey: `choco install python` (includes pip)
+   - Install podman-compose: `pip install podman-compose`
+   - Alternative: Install via conda, scoop, or download directly from GitHub releases
 
 ### Container Build Issues
 
