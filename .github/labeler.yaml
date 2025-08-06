@@ -1,0 +1,16 @@
+Action:
+  - changed-files:
+    - any-glob-to-any-file: '.github/workflows/*'
+
+Config:
+  - changed-files:
+    - any-glob-to-any-file: '.github/workflows/*'
+
+App:
+  - changed-files:
+    - any-glob-to-any-file: 'src/**/*'
+
+Util:
+  - changed-files:
+    - any-glob-to-any-file: 'src/utils/**/*'
+
