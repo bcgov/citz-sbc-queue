@@ -1,125 +1,123 @@
 # Copilot Instructions for CITZ SBC Queue Management
 
 ## Project Overview
-This is a Service BC Queue Management System built with modern web technologies focusing on accessibility, performance, and maintainability.
 
-## Tech Stack Guidelines
+This is a modern Service BC Queue Management System using Next.js App Router and React 19+. Focus areas:
+- Accessibility (WCAG 2.1 AA)
+- Performance (lazy loading, optimized images)
+- Maintainability (modular, typed code)
 
-### Core Technologies
-- **Next.js 15** with App Router and Turbopack bundler
-- **TypeScript** for type safety
-- **React 19** with functional components and hooks
-- **Biome** for formatting and linting (primary)
-- **ESLint** for additional linting rules
+---
 
-### Styling & Components
-- **TailwindCSS** for utility-first styling
-- **Headless UI** for accessible, unstyled components
-- **Heroicons** for consistent iconography
-- Follow BC Government design patterns and accessibility guidelines
+## Tech Stack Summary
 
-### State Management & Validation
-- **Zustand** for global state management
-- **Zod** for schema validation (server actions, forms, API responses)
-- Use server actions for form submissions and data mutations
+| Area           | Stack                                     |
+|----------------|-------------------------------------------|
+| Framework      | Next.js (App Router, Server Components)   |
+| Styling        | TailwindCSS, BC Design Tokens, Headless UI |
+| State          | Zustand (global), useState/hooks (local)  |
+| Validation     | Zod (schemas for forms, server actions)   |
+| Language       | TypeScript (strict mode, no `any`)        |
+| Testing        | Vitest (unit/integration), Playwright (E2E) |
 
-### Testing
-- **Vitest** for unit and integration tests
-- **Testing Library** for React component testing
-- **Playwright** for end-to-end testing
-- Aim for high test coverage on critical business logic
+---
 
-## Development Principles
+## Architecture & Code Structure
 
-### Code Quality
-- Follow SOLID and DRY principles
-- Use functional components with hooks exclusively
-- Implement proper error boundaries and error handling
-- Write self-documenting code with meaningful names
+### Folder Structure
 
-### TypeScript Guidelines
-- Enable strict mode settings
-- Use proper typing for all functions, components, and state
-- Leverage union types, discriminated unions, and generics appropriately
-- Avoid `any` type; use `unknown` or proper typing instead
-
-### React Patterns
-- Use custom hooks for reusable logic
-- Implement proper component composition
-- Follow React best practices for performance (useMemo, useCallback when needed)
-- Use React 19 features like `use()` hook appropriately
-
-### Accessibility
-- Follow WCAG 2.1 AA standards
-- Use semantic HTML elements
-- Implement proper ARIA attributes
-- Ensure keyboard navigation works correctly
-- Test with screen readers
-
-### Performance
-- Implement code splitting and lazy loading
-- Optimize images and assets
-- Use React Server Components when appropriate
-- Monitor and optimize Core Web Vitals
-
-## File Structure
 ```
 src/
 ├── app/                 # Next.js App Router pages
 ├── components/          # Reusable UI components
-├── hooks/              # Custom React hooks
-├── lib/                # Utility functions and configurations
-├── stores/             # Zustand store definitions
-├── types/              # TypeScript type definitions
-├── utils/              # Helper functions
-└── test/               # Test utilities and setup
+├── hooks/               # Custom React hooks
+├── lib/                 # External service integration (e.g., lib/prisma/)
+├── stores/              # Zustand store definitions
+├── utils/               # Utility functions
+└── test/                # Test utilities and setup
 ```
 
-## Naming Conventions
-- Use PascalCase for components and types
-- Use camelCase for functions, variables, and hooks
-- Use kebab-case for file names
-- Use SCREAMING_SNAKE_CASE for constants
-- Prefix custom hooks with "use"
-- Suffix store files with ".store.ts"
+> `lib/` wraps third-party libraries like Prisma to keep integrations centralized. Not required for every library, but useful for complex integrations.
+
+---
+
+## React + Next.js
+
+- Use **React Server Components** and `use()` in client components for async data.
+- Use **Server Actions** for all mutations and form submissions.
+- Keep UI components purely presentational; move logic to `hooks/` and `utils/`.
+- Await route parameters in server components:
+  ```ts
+  const { id } = await params;
+  ```
+- Use Image and Link from Next.js instead of native tags.
+
+## TypeScript Practices
+
+- Use `type` (not `interface`) for consistency.
+- Avoid `any`; use `unknown`, `Record<string, unknown>`, etc.
+- Prefer `Partial`, `Pick`, `Omit`, and discriminated unions.
+- Always type props as `Props`, and all functions and stores explicitly.
+
+---
 
 ## Component Guidelines
-- Keep components small and focused
-- Use TypeScript interfaces for props
-- Export components as default exports
-- Include JSDoc comments for complex components
-- Implement proper loading and error states
+
+- Small, focused components.
+- Separate all logic from JSX.
+- Include proper loading and error states.
+- Export:
+  - Components: default export
+  - Types, hooks, utils: named exports
+
+---
+
+## Styling & Accessibility
+
+- Use **TailwindCSS** for utility-first styles.
+- Use **Headless UI** for accessible unstyled components.
+- Follow **WCAG 2.1 AA**:
+  - Semantic HTML
+  - Keyboard navigation
+  - ARIA roles and screen reader support
+
+---
+
+## Testing Strategy
+
+- **Vitest** for business logic (hooks, utils, stores).
+- **Playwright** for user flows and accessibility testing.
+- Skip unit testing of UI markup; ensure components are type-safe and logic lives in hooks.
+- Organize tests with `describe()` blocks and use clear naming.
+
+---
 
 ## State Management
-- Use Zustand for global state that needs to be shared across components
-- Keep local state with useState for component-specific data
-- Use server state management for API data
-- Implement proper error handling in stores
 
-## API & Data Handling
-- Use server actions for mutations
-- Implement proper validation with Zod schemas
-- Handle loading and error states consistently
-- Use proper TypeScript types for API responses
+- Global state → Zustand
+- Local/component state → `useState` or custom hooks
+- Add error handling directly in stores
 
-## Testing Guidelines
-- Write tests for all business logic
-- Test user interactions and accessibility
-- Mock external dependencies appropriately
-- Use descriptive test names and organize with describe blocks
-- Maintain test coverage above 80%
+---
 
-## Git & Development Workflow
-- Use conventional commit messages
+## Naming Conventions
+
+| Element         | Convention            |
+|----------------|------------------------|
+| Components      | `PascalCase`          |
+| Functions/hooks | `camelCase`, `useXyz` |
+| Props types     | `Props`               |
+| Constants       | `SCREAMING_SNAKE_CASE`|
+| Files           | `kebab-case`          |
+| Store files     | `*.store.ts`          |
+
+---
+
+## Git & Dev Workflow
+
+- Use **conventional commits**
 - Create feature branches for new work
-- Write meaningful pull request descriptions
-- Ensure all tests pass before merging
-- Follow the established review process
-
-## Browser Support
-- Support modern browsers (Chrome, Firefox, Safari, Edge)
-- Ensure mobile responsiveness
-- Test across different screen sizes and devices
-- Implement progressive enhancement where appropriate
-
-Remember to always prioritize accessibility, performance, and maintainability in your code suggestions and implementations.
+- PRs should:
+  - Have meaningful descriptions
+  - Include tests for new logic
+  - Pass CI and follow the review process
