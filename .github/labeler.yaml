@@ -1,16 +1,12 @@
-# Auto Label Git Action Config
-# 'label_name'
-#   - path_of_diff/where/code_lives/to_base_label_upon
+Action:
+  - '.github/workflows/*'
 
-"Action":
-  - .github/workflows/*
+Config:
+  - '.github/config/*'
 
-"Config":
-  - .github/config/*
+App:
+  - 'src/**/*'
 
-"App":
-  - src/app/**/*
-
-"Util":
-  - src/utils/**/*
+Util:
+  - 'src/utils/**/*'
 
