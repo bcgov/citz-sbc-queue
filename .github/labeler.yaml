@@ -2,15 +2,15 @@
 # 'label_name'
 #   - path_of_diff/where/code_lives/to_base_label_upon
 
-Action:
+"Action":
   - .github/workflows/*
 
-Config:
+"Config":
   - .github/config/*
 
-App:
+"App":
   - src/app/**/*
 
-Util:
+"Util":
   - src/utils/**/*
 
