@@ -9,7 +9,6 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/labeler@v4
-        with:
-          repo-token: '${{ secrets.GITHUB_TOKEN }}'
-          configuration-path: .github/config/labeler.yaml
+    - uses: actions/labeler@v5
+      with:
+        configuration-path: /.github/config/labeler.yaml
