@@ -84,6 +84,14 @@ This script will be run:
 - 📅 **Weekly during development**
 - 🚫 **Dependencies with incompatible licenses will be rejected**
 
+### Known Exceptions
+
+**Approved transitive dependencies with legal review:**
+- **`lightningcss` (MPL-2.0)** - Transitive dependency from Next.js/Turbopack
+  - Cannot be removed without breaking core framework functionality
+  - Overridden by TailwindCSS/PostCSS in our build pipeline
+  - Not used in final application output
+
 To run the license compatibility check:
 ```bash
 npm run check-licenses
