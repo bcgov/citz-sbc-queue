@@ -208,15 +208,15 @@ import type { Role } from '@/hooks/usePermissions';
 export async function updateAppointment(appointmentId: string, userId: string, role: Role) {
   const appointment = await getAppointment(appointmentId);
 
-  const permissions = evaluatePermissions({
+  const context = {
     userId,
     role,
-    resource: 'appointment',
     data: { assignedTo: appointment.assignedTo, userId: appointment.userId }
-  });
+  };
 
-  if (!permissions.includes('update')) {
-    throw new Error('Insufficient permissions');
+  const canUpdate = evaluatePermissions(context, 'update', 'appointment');
+  if (!canUpdate) {
+    throw new Error('Insufficient permissions to update appointment');
   }
 
   // Proceed with update...

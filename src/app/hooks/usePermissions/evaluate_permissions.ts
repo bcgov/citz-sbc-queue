@@ -5,33 +5,34 @@ import type { Action, PermissionContext, Resource, Role } from "./types"
  * Core permission evaluation logic
  *
  * This function can be shared between client-side hooks and server-side API routes.
- * It evaluates user context against permission rules to determine allowed actions.
+ * It evaluates user context against permission rules to determine if a specific action is allowed.
  *
- * @param context - Permission context including userId, role, resource, and optional data
- * @returns Array of allowed actions for the given context
+ * @param context - Permission context including userId, role, and optional data
+ * @param action - The specific action to check permission for
+ * @param resource - The resource to check permission against
+ * @returns boolean indicating if the permission is granted
  *
  * @example
  * ```typescript
  * // Client-side usage
- * const permissions = evaluatePermissions({
- *   userId: 'user-123',
- *   role: 'staff',
- *   resource: 'appointment',
- *   data: { assignedTo: 'user-123' }
- * });
+ * const canUpdate = evaluatePermissions(
+ *   { userId: 'user-123', role: 'staff', data: { assignedTo: 'user-123' } },
+ *   'update',
+ *   'appointment'
+ * );
  *
  * // Server-side usage in API route
  * export async function updateAppointment(appointmentId: string, userId: string, role: Role) {
  *   const appointment = await getAppointment(appointmentId);
- *   const permissions = evaluatePermissions({
+ *   const context = {
  *     userId,
  *     role,
- *     resource: 'appointment',
- *     data: { assignedTo: appointment.assignedTo }
- *   });
+ *     data: { assignedTo: appointment.assignedTo, userId: appointment.userId }
+ *   };
  *
- *   if (!permissions.includes('update')) {
- *     throw new Error('Insufficient permissions');
+ *   const canUpdate = evaluatePermissions(context, 'update', 'appointment');
+ *   if (!canUpdate) {
+ *     throw new Error('Insufficient permissions to update appointment');
  *   }
  *   // Proceed with update...
  * }
