@@ -237,17 +237,17 @@ export const ServerActionExample = () => {
       const appointmentId = formData.get('appointmentId') as string;
       const appointment = await getAppointment(appointmentId);
 
-      const permissions = evaluatePermissions({
+      const context = {
         userId: user.id,
         role: user.role,
-        resource: 'appointment',
         data: {
           assignedTo: appointment.assignedTo,
           userId: appointment.userId
         }
-      });
+      };
 
-      if (!permissions.includes('update')) {
+      const canUpdate = evaluatePermissions(context, 'update', 'appointment');
+      if (!canUpdate) {
         throw new Error('Insufficient permissions to update appointment');
       }
 
