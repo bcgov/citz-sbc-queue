@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@bcgov/bc-sans": "2.1.0",
-    "@bcgov/citz-imb-sso-js-core": "1.0.0",
+    "@bcgov/citz-imb-sso-js-core": "1.0.1-beta",
     "@headlessui/react": "2.2.7",
     "@tailwindcss/postcss": "4.1.11",
     "next": "15.4.5",
