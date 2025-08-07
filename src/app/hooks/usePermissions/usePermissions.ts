@@ -2,6 +2,9 @@ import { useMemo } from "react"
 import { evaluatePermissions } from "./evaluate_permissions"
 import type { Action, UsePermissionsProps, UsePermissionsReturn } from "./types"
 
+// All possible actions to check against
+const ALL_ACTIONS: Action[] = ["view", "create", "update", "delete", "approve", "assign", "cancel"]
+
 /**
  * usePermissions - A custom ABAC (Attribute-Based Access Control) hook
  *
@@ -29,7 +32,17 @@ export const usePermissions = (props: UsePermissionsProps): UsePermissionsReturn
   const { userId, role, resource, data } = props
 
   const permissions = useMemo(() => {
-    return evaluatePermissions({ userId, role, resource, data })
+    const context = { userId, role, data }
+
+    // Check each possible action against the resource to build permissions array
+    return ALL_ACTIONS.filter((action) => {
+      try {
+        return evaluatePermissions(context, action, resource)
+      } catch {
+        // If there's an error (e.g., invalid action), don't include this permission
+        return false
+      }
+    })
   }, [userId, role, resource, data])
 
   const hasPermission = useMemo(() => {
