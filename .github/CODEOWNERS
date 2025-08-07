@@ -2,7 +2,7 @@
 # the repo. Unless a later match takes precedence,
 # @global-owner1 and @global-owner2 will be requested for
 # review when someone opens a pull request.
-* @BradyMitch @TaylorFries @SDToews @bottle7
+* @veenupunyani @BradyMitch @TaylorFries @SDToews @bottle7
 
 # Order is important; the last matching pattern takes the most
 # precedence. When someone opens a pull request that only
@@ -32,4 +32,3 @@
 # In this example, @doctocat owns any file in the `/docs`
 # directory in the root of your repository.
 # /docs/ @doctocat
-

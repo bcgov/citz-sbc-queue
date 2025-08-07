@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "biomejs.biome",
+    "GitHub.copilot",
+    "GitHub.copilot-chat",
+    "github.vscode-github-actions",
+    "github.vscode-pull-request-github",
+    "ms-vsliveshare.vsliveshare",
+    "irongeek.vscode-env"
+  ]
+}

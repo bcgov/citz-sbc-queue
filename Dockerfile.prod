@@ -1,0 +1,69 @@
+# Production Dockerfile for CITZ SBC Queue Management
+# Multi-stage build for optimal production image size
+
+# Build stage
+ARG NODE_TAG=22-bullseye-slim
+FROM node:${NODE_TAG} AS builder
+
+# Set working directory
+WORKDIR /workspace
+
+# Set environment for build
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Copy package files for dependency installation
+COPY package.json ./
+
+# Install only production dependencies needed for build
+RUN npm i && npm cache clean --force
+
+# Copy source code
+COPY . .
+
+# Build the application
+RUN npm run build
+
+# Production stage
+FROM node:${NODE_TAG} AS production
+
+# Install security updates and dumb-init for proper signal handling
+RUN apt-get update && apt-get install -y \
+    dumb-init \
+    && apt-get upgrade -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Create non-root user for security
+RUN groupadd --gid 1001 nodejs \
+    && useradd --uid 1001 --gid nodejs --shell /bin/bash --create-home nextjs
+
+# Set working directory
+WORKDIR /workspace
+
+# Set production environment
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+
+# Copy built application and dependencies from builder stage
+COPY --from=builder --chown=nextjs:nodejs /workspace/.next ./.next
+COPY --from=builder --chown=nextjs:nodejs /workspace/public ./public
+COPY --from=builder --chown=nextjs:nodejs /workspace/node_modules ./node_modules
+
+# Copy necessary configuration files
+COPY --chown=nextjs:nodejs package.json ./
+COPY --chown=nextjs:nodejs next.config.ts ./
+COPY --from=builder --chown=nextjs:nodejs /workspace/postcss.config.mjs ./postcss.config.mjs
+
+# Switch to non-root user
+USER nextjs
+
+# Expose port
+EXPOSE 3000
+
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["dumb-init", "--"]
+
+# Start the application
+CMD ["npm", "start"]
