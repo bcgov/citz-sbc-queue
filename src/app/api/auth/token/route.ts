@@ -68,7 +68,7 @@ export async function POST(_request: NextRequest) {
       response.cookies.set("refresh_token", tokens.refresh_token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        sameSite: "none",
         path: "/",
       })
     }
