@@ -58,7 +58,7 @@ describe("/api/auth/login", () => {
       expect(response.headers.get("location")).toBe(mockLoginURL)
 
       expect(getLoginURLModule.getLoginURL).toHaveBeenCalledWith({
-        idpHint: "idir",
+        idpHint: "azureidir",
         clientID: "test-client-id",
         redirectURI: "https://example.com/api/auth/login/callback",
         ssoEnvironment: "dev",
