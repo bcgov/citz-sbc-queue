@@ -90,6 +90,14 @@ src/
 - Skip unit testing of UI markup; ensure components are type-safe and logic lives in hooks.
 - Organize tests with `describe()` blocks and use clear naming.
 
+### Testing Issues & Troubleshooting
+
+⚠️ **Important**: If you encounter issues writing tests (especially for API routes with environment variables), refer to `.github/copilot/TESTING.md` for detailed guidance on:
+- Environment variable mocking with Vitest
+- Dynamic import patterns for Next.js API routes
+- Common testing pitfalls and their solutions
+- Best practices for test isolation and cleanup
+
 ---
 
 ## State Management
