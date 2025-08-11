@@ -21,7 +21,7 @@ export async function GET(_request: NextRequest) {
     }
 
     const redirectURL = getLoginURL({
-      idpHint: "idir",
+      idpHint: "azureidir",
       clientID: SSO_CLIENT_ID,
       redirectURI: `${APP_URL}/api/auth/login/callback`,
       ssoEnvironment: SSO_ENVIRONMENT as "dev" | "test" | "prod",
