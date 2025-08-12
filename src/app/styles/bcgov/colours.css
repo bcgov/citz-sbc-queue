@@ -3,6 +3,20 @@
 
 /* Setting B.C. Government standard styles */
 @theme {
+  /* Adding font standard formatting */
+  /* Only including non-default values */
+  --text-xs--line-height: 1.125rem;
+  --text-sm--line-height: 1.313rem;
+  --text-base--line-height: 1.688rem;
+  --text-lg--line-height: 1.913rem;
+  --text-xl--line-height: 2.125rem;
+  --text-2xl--line-height: 2.25rem;
+  --text-3xl--line-height: 3rem;
+  --text-4xl--line-height: 3.375rem;
+
+  /**
+
+  **/
   /* COLOURS */
   /* Disable default blue and redefine as B.C. Gov blue */
   --color-blue-\*: initial;
@@ -13,7 +27,7 @@
   --color-blue-400: #91c4fa;
   --color-blue-500: #7ab8f9;
   --color-blue-600: #5595d9;
-  --color-blue-700: #1d4ed8;
+  --color-blue-700: #3470b1;
   --color-blue-800: #1e40af;
   --color-blue-900: #1e3a8a;
   --color-blue-950: #172554;
