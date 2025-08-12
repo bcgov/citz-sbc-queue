@@ -260,46 +260,36 @@ describe("evaluatePermissions", () => {
   })
 
   describe("Error handling and validation", () => {
-    it("should throw ValidationError for invalid role", () => {
+    it("should accept any valid string for role", () => {
       const context = {
         userId: "test-user",
-        role: "invalid-role",
+        role: "custom-role", // Now valid since roles are generic strings
       }
 
+      // Should not throw for any valid string role
       expect(() =>
         evaluatePermissions(context as PermissionContext, "view", "appointment")
-      ).toThrow(ValidationError)
-      expect(() =>
-        evaluatePermissions(context as PermissionContext, "view", "appointment")
-      ).toThrow("Invalid role")
+      ).not.toThrow()
     })
 
-    it("should throw ValidationError for invalid action", () => {
+    it("should accept any valid string for action", () => {
       const context: PermissionContext = {
         userId: "test-user",
         role: "admin",
       }
 
-      expect(() => evaluatePermissions(context, "invalid-action" as never, "appointment")).toThrow(
-        ValidationError
-      )
-      expect(() => evaluatePermissions(context, "invalid-action" as never, "appointment")).toThrow(
-        "Invalid action"
-      )
+      // Should not throw for any valid string action
+      expect(() => evaluatePermissions(context, "custom-action", "appointment")).not.toThrow()
     })
 
-    it("should throw ValidationError for invalid resource", () => {
+    it("should accept any valid string for resource", () => {
       const context: PermissionContext = {
         userId: "test-user",
         role: "admin",
       }
 
-      expect(() => evaluatePermissions(context, "view", "invalid-resource" as never)).toThrow(
-        ValidationError
-      )
-      expect(() => evaluatePermissions(context, "view", "invalid-resource" as never)).toThrow(
-        "Invalid resource"
-      )
+      // Should not throw for any valid string resource
+      expect(() => evaluatePermissions(context, "view", "custom-resource")).not.toThrow()
     })
 
     it("should throw ValidationError for invalid context", () => {

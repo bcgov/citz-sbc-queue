@@ -20,13 +20,18 @@ usePermissions/
 
 ## Overview
 
-The `usePermissions` hook provides fine-grained, context-aware permission management that goes beyond traditional Role-Based Access Control (RBAC). It evaluates user context, roles, resources, and additional data to determine what actions are permitted.
+The `usePermissions` hook provides a **configurable, fine-grained, context-aware permission management system** that goes beyond traditional Role-Based Access Control (RBAC). It evaluates user context, roles, resources, and additional data to determine what actions are permitted.
 
-**Flexible Context Support**: The permission system supports various context field naming conventions, making it adaptable to different authentication systems (Keycloak, custom auth, etc.).
+**Key Features:**
+- **Configurable Rules**: Projects can provide their own permission rules
+- **Flexible Context Support**: Supports various field naming conventions
+- **Framework Agnostic**: Core logic works on both client and server
+- **Type Safe**: Full TypeScript support with generic types
 
-## Why ABAC over RBAC?
+## Why This Approach?
 
-- **Context-aware**: Permissions can depend on data relationships (e.g., users can only modify their own resources)
+- **Reusable**: Can be configured for any project's permission needs
+- **Context-aware**: Permissions can depend on data relationships
 - **Fine-grained**: Avoids role explosion by allowing conditions on permissions
 - **Centralized**: All permission logic is managed in one place
 - **Scalable**: Easy to maintain as system complexity grows
@@ -89,10 +94,11 @@ usePermissions(props: UsePermissionsProps): UsePermissionsReturn
 
 ```typescript
 type UsePermissionsProps = {
-  userId: string;        // Keycloak GUID or generated UUID
-  role: Role;           // User's role from Keycloak client roles
-  resource: Resource;   // The resource being accessed
+  userId: string;              // User identifier (flexible naming supported)
+  role: string;               // User's role (any string)
+  resource: string;           // The resource being accessed (any string)
   data?: Record<string, unknown>; // Additional context data
+  rules?: PermissionRule[];   // Optional custom permission rules
 };
 ```
 
@@ -100,20 +106,52 @@ type UsePermissionsProps = {
 
 ```typescript
 type UsePermissionsReturn = {
-  permissions: Action[];                           // Array of allowed actions
-  hasPermission: (action: Action) => boolean;      // Check single permission
-  hasAnyPermission: (actions: Action[]) => boolean; // Check any of multiple permissions
-  hasAllPermissions: (actions: Action[]) => boolean; // Check all permissions
+  permissions: string[];                    // Array of allowed actions
+  hasPermission: (action: string) => boolean;      // Check single permission
+  hasAnyPermission: (actions: string[]) => boolean; // Check any of multiple permissions
+  hasAllPermissions: (actions: string[]) => boolean; // Check all permissions
 };
+```
+
+### Core Function
+
+```typescript
+evaluatePermissions(
+  context: PermissionContext,
+  action: string,
+  resource: string,
+  rules?: PermissionRule[]
+): boolean
+```
+
+### Permission Rule Structure
+
+```typescript
+type PermissionRule = {
+  role: string;                                    // Role that this rule applies to
+  resource: string;                               // Resource that this rule governs
+  actions: string[];                              // Actions allowed by this rule
+  condition?: (context: PermissionContext) => boolean; // Optional condition function
+};
+```
+
+### Helper Functions
+
+```typescript
+createPermissionRule(
+  role: string,
+  resource: string,
+  actions: string[],
+  condition?: (context: Record<string, unknown>) => boolean
+): PermissionRule
 ```
 
 ## Usage Examples
 
-### Basic Permission Check
+### Using Default Queue Management Rules
 
 ```tsx
-import { usePermissions } from '@/hooks/usePermissions';
-import type { Role } from '@/hooks/usePermissions';
+import { usePermissions } from '@/app/hooks/usePermissions';
 
 function AppointmentCard({ appointment, currentUser }) {
   const { hasPermission } = usePermissions({
@@ -138,6 +176,75 @@ function AppointmentCard({ appointment, currentUser }) {
     </div>
   );
 }
+```
+
+### Using Custom Project Rules
+
+```tsx
+import { usePermissions, createPermissionRule } from '@/app/hooks/usePermissions';
+
+// Define custom rules for your project
+const documentRules = [
+  createPermissionRule('editor', 'document', ['read', 'write'],
+    (ctx) => ctx.data?.owner === ctx.userId || ctx.data?.editors?.includes(ctx.userId)
+  ),
+  createPermissionRule('viewer', 'document', ['read']),
+  createPermissionRule('admin', 'document', ['read', 'write', 'delete', 'share']),
+];
+
+function DocumentEditor({ document, currentUser }) {
+  const { permissions } = usePermissions({
+    userId: currentUser.id,
+    role: currentUser.role,
+    resource: 'document',
+    data: {
+      owner: document.owner,
+      editors: document.editors
+    },
+    rules: documentRules // Use custom rules
+  });
+
+  return (
+    <div>
+      <h3>{document.title}</h3>
+      {permissions.includes('write') && <button>Edit</button>}
+      {permissions.includes('share') && <button>Share</button>}
+      {permissions.includes('delete') && <button>Delete</button>}
+    </div>
+  );
+}
+```
+
+### Server-Side Usage with Custom Rules
+
+```typescript
+import { evaluatePermissions, createPermissionRule } from '@/app/hooks/usePermissions';
+
+const blogRules = [
+  createPermissionRule('author', 'post', ['create', 'read', 'update', 'delete'],
+    (ctx) => ctx.data?.authorId === ctx.userId
+  ),
+  createPermissionRule('moderator', 'post', ['read', 'update', 'delete']),
+  createPermissionRule('reader', 'post', ['read']),
+];
+
+export async function updatePost(postId: string, userId: string, role: string) {
+  const post = await getPost(postId);
+
+  const canUpdate = evaluatePermissions(
+    { userId, role, data: { authorId: post.authorId } },
+    'update',
+    'post',
+    blogRules
+  );
+
+  if (!canUpdate) {
+    throw new Error('Insufficient permissions to update post');
+  }
+
+  // Proceed with update...
+}
+```
 ```
 
 ### Multiple Permission Checks
@@ -201,7 +308,96 @@ function ActionButtons({ currentUser, appointment }) {
 }
 ```
 
-## Permission Rules
+## Queue Management System Example
+
+The hook includes default rules for queue management as an example:
+
+### Default Queue Roles & Actions
+
+```typescript
+// Default roles (can be extended)
+type QueueRole = "admin" | "manager" | "staff" | "citizen" | "guest"
+
+// Default actions (can be extended)
+type QueueAction = "view" | "create" | "update" | "delete" | "approve" | "assign" | "cancel"
+
+// Default resources (can be extended)
+type QueueResource = "appointment" | "queue" | "service" | "user" | "report" | "settings"
+```
+
+### Permission Matrix
+
+| Role | Resource | Actions | Conditions |
+|------|----------|---------|------------|
+| **admin** | all | all | none |
+| **manager** | appointment | view, create, update, approve, assign, cancel | none |
+| **manager** | user | view, update | only staff and citizens |
+| **staff** | appointment | view, create, update, assign | only assigned or unassigned |
+| **citizen** | appointment | view, create, update, cancel | only own appointments |
+| **guest** | service, queue | view | none |
+
+## Creating Custom Rules for Your Project
+
+### 1. Define Your Domain Types
+
+```typescript
+// Example: Blog system
+type BlogRole = 'admin' | 'moderator' | 'author' | 'reader';
+type BlogAction = 'read' | 'write' | 'publish' | 'delete' | 'moderate';
+type BlogResource = 'post' | 'comment' | 'user' | 'category';
+```
+
+### 2. Create Your Permission Rules
+
+```typescript
+import { createPermissionRule } from '@/app/hooks/usePermissions';
+
+const blogRules = [
+  // Authors can manage their own posts
+  createPermissionRule('author', 'post', ['read', 'write', 'publish'],
+    (ctx) => ctx.data?.authorId === ctx.userId
+  ),
+
+  // Moderators can moderate all content
+  createPermissionRule('moderator', 'post', ['read', 'write', 'moderate', 'delete']),
+
+  // Readers can only read published posts
+  createPermissionRule('reader', 'post', ['read'],
+    (ctx) => ctx.data?.status === 'published'
+  ),
+
+  // Admins have full access
+  createPermissionRule('admin', 'post', ['read', 'write', 'publish', 'delete', 'moderate']),
+];
+```
+
+### 3. Use in Your Components
+
+```tsx
+function BlogPost({ post, currentUser }) {
+  const { permissions } = usePermissions({
+    userId: currentUser.id,
+    role: currentUser.role,
+    resource: 'post',
+    data: {
+      authorId: post.authorId,
+      status: post.status
+    },
+    rules: blogRules
+  });
+
+  return (
+    <article>
+      <h1>{post.title}</h1>
+      <div>{post.content}</div>
+
+      {permissions.includes('write') && <EditButton />}
+      {permissions.includes('delete') && <DeleteButton />}
+      {permissions.includes('moderate') && <ModerateButton />}
+    </article>
+  );
+}
+```
 
 ### Admin
 - **Full access** to all resources and actions

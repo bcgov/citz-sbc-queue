@@ -1,21 +1,31 @@
 import { useMemo } from "react"
 import { evaluatePermissions } from "./evaluate_permissions"
-import type { Action, UsePermissionsProps, UsePermissionsReturn } from "./types"
-
-// All possible actions to check against
-const ALL_ACTIONS: Action[] = ["view", "create", "update", "delete", "approve", "assign", "cancel"]
+import { DEFAULT_QUEUE_RULES } from "./permission_rules"
+import type { Action, PermissionRule, UsePermissionsProps, UsePermissionsReturn } from "./types"
 
 /**
- * usePermissions - A custom ABAC (Attribute-Based Access Control) hook
+ * Get all possible actions from a set of permission rules
+ */
+const getAllActionsFromRules = (rules: PermissionRule[]): Action[] => {
+  const actionSet = new Set<Action>()
+  rules.forEach((rule) => {
+    rule.actions.forEach((action) => actionSet.add(action))
+  })
+  return Array.from(actionSet)
+}
+
+/**
+ * usePermissions - A configurable ABAC (Attribute-Based Access Control) hook
  *
  * Evaluates userId, role, resource, and data to determine what actions are allowed.
  * Returns an array of allowed actions and utility functions for permission checking.
  *
- * @param props - Permission context including userId, role, resource, and optional data
+ * @param props - Permission context including userId, role, resource, optional data, and optional custom rules
  * @returns Object with permissions array and utility functions
  *
  * @example
  * ```tsx
+ * // Using default queue management rules
  * const { permissions, hasPermission } = usePermissions({
  *   userId: 'user-123',
  *   role: 'staff',
@@ -23,27 +33,35 @@ const ALL_ACTIONS: Action[] = ["view", "create", "update", "delete", "approve", 
  *   data: { assignedTo: 'user-123' }
  * });
  *
- * if (hasPermission('update')) {
- *   // Show edit button
- * }
+ * // Using custom project-specific rules
+ * const customRules = [
+ *   { role: 'editor', resource: 'document', actions: ['read', 'write'], condition: (ctx) => ctx.data?.owner === ctx.userId }
+ * ];
+ * const { permissions } = usePermissions({
+ *   userId: 'user-456',
+ *   role: 'editor',
+ *   resource: 'document',
+ *   rules: customRules
+ * });
  * ```
  */
 export const usePermissions = (props: UsePermissionsProps): UsePermissionsReturn => {
-  const { userId, role, resource, data } = props
+  const { userId, role, resource, data, rules = DEFAULT_QUEUE_RULES } = props
 
   const permissions = useMemo(() => {
     const context = { userId, role, data }
+    const allActions = getAllActionsFromRules(rules)
 
     // Check each possible action against the resource to build permissions array
-    return ALL_ACTIONS.filter((action) => {
+    return allActions.filter((action) => {
       try {
-        return evaluatePermissions(context, action, resource)
+        return evaluatePermissions(context, action, resource, rules)
       } catch {
         // If there's an error (e.g., invalid action), don't include this permission
         return false
       }
     })
-  }, [userId, role, resource, data])
+  }, [userId, role, resource, data, rules])
 
   const hasPermission = useMemo(() => {
     return (action: Action): boolean => permissions.includes(action)

@@ -1,8 +1,8 @@
-import { PERMISSION_RULES } from "./permission_rules"
-import type { Action, PermissionContext, Resource, Role } from "./types"
+import { DEFAULT_QUEUE_RULES } from "./permission_rules"
+import type { Action, PermissionContext, PermissionRule, Resource, Role } from "./types"
 
 /**
- * Core permission evaluation logic
+ * Core permission evaluation logic with configurable rules
  *
  * This function can be shared between client-side hooks and server-side API routes.
  * It evaluates user context against permission rules to determine if a specific action is allowed.
@@ -10,32 +10,23 @@ import type { Action, PermissionContext, Resource, Role } from "./types"
  * @param context - Permission context including userId, role, and optional data
  * @param action - The specific action to check permission for
  * @param resource - The resource to check permission against
+ * @param rules - Optional custom permission rules (defaults to queue management rules)
  * @returns boolean indicating if the permission is granted
  *
  * @example
  * ```typescript
- * // Client-side usage
+ * // Using default queue management rules
  * const canUpdate = evaluatePermissions(
  *   { userId: 'user-123', role: 'staff', data: { assignedTo: 'user-123' } },
  *   'update',
  *   'appointment'
  * );
  *
- * // Server-side usage in API route
- * export async function updateAppointment(appointmentId: string, userId: string, role: Role) {
- *   const appointment = await getAppointment(appointmentId);
- *   const context = {
- *     userId,
- *     role,
- *     data: { assignedTo: appointment.assignedTo, userId: appointment.userId }
- *   };
- *
- *   const canUpdate = evaluatePermissions(context, 'update', 'appointment');
- *   if (!canUpdate) {
- *     throw new Error('Insufficient permissions to update appointment');
- *   }
- *   // Proceed with update...
- * }
+ * // Using custom project-specific rules
+ * const customRules = [
+ *   { role: 'editor', resource: 'document', actions: ['view', 'edit'], condition: (ctx) => ctx.data?.owner === ctx.userId }
+ * ];
+ * const canEdit = evaluatePermissions(context, 'edit', 'document', customRules);
  * ```
  */
 
@@ -70,39 +61,24 @@ export class EvaluationError extends PermissionError {
 const validateRole: (role: unknown) => asserts role is Role = (
   role: unknown
 ): asserts role is Role => {
-  if (
-    typeof role !== "string" ||
-    !["admin", "manager", "staff", "citizen", "guest"].includes(role)
-  ) {
-    throw new ValidationError(
-      `Invalid role: ${role}. Must be one of: admin, manager, staff, citizen, guest`
-    )
+  if (typeof role !== "string" || role.trim() === "") {
+    throw new ValidationError(`Invalid role: ${role}. Must be a non-empty string`)
   }
 }
 
 const validateAction: (action: unknown) => asserts action is Action = (
   action: unknown
 ): asserts action is Action => {
-  if (
-    typeof action !== "string" ||
-    !["view", "create", "update", "delete", "approve", "assign", "cancel"].includes(action)
-  ) {
-    throw new ValidationError(
-      `Invalid action: ${action}. Must be one of: view, create, update, delete, approve, assign, cancel`
-    )
+  if (typeof action !== "string" || action.trim() === "") {
+    throw new ValidationError(`Invalid action: ${action}. Must be a non-empty string`)
   }
 }
 
 const validateResource: (resource: unknown) => asserts resource is Resource = (
   resource: unknown
 ): asserts resource is Resource => {
-  if (
-    typeof resource !== "string" ||
-    !["appointment", "queue", "service", "user", "report", "settings"].includes(resource)
-  ) {
-    throw new ValidationError(
-      `Invalid resource: ${resource}. Must be one of: appointment, queue, service, user, report, settings`
-    )
+  if (typeof resource !== "string" || resource.trim() === "") {
+    throw new ValidationError(`Invalid resource: ${resource}. Must be a non-empty string`)
   }
 }
 
@@ -131,13 +107,17 @@ const validateContext: (context: unknown) => asserts context is PermissionContex
   // Extract userId using flexible field access
   const userId = getUserId(ctx)
   if (typeof userId !== "string" || userId.trim() === "") {
-    throw new ValidationError("Permission context must have a valid userId (supports: userId, user_id, id, sub)")
+    throw new ValidationError(
+      "Permission context must have a valid userId (supports: userId, user_id, id, sub)"
+    )
   }
 
   // Extract role using flexible field access
   const role = getRole(ctx)
   if (!role) {
-    throw new ValidationError("Permission context must have a valid role (supports: role, userRole, user_role)")
+    throw new ValidationError(
+      "Permission context must have a valid role (supports: role, userRole, user_role)"
+    )
   }
 
   validateRole(role)
@@ -157,7 +137,8 @@ const validateContext: (context: unknown) => asserts context is PermissionContex
 export function evaluatePermissions(
   context: PermissionContext,
   action: Action,
-  resource: Resource
+  resource: Resource,
+  rules: PermissionRule[] = DEFAULT_QUEUE_RULES
 ): boolean {
   try {
     // Validate all inputs
@@ -169,8 +150,8 @@ export function evaluatePermissions(
     const role = getRole(context) as Role
 
     // Find matching rules for the user's role and the requested resource
-    const matchingRules = PERMISSION_RULES.filter(
-      (rule) => rule.role === role && rule.resource === resource
+    const matchingRules = rules.filter(
+      (rule: PermissionRule) => rule.role === role && rule.resource === resource
     )
 
     // If no rules found, permission is denied

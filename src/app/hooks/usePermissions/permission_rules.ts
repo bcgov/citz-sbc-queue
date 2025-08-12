@@ -1,9 +1,23 @@
 import type { Action, PermissionContext, PermissionRule, Role } from "./types"
 
 /**
- * Permission Sets - Common action combinations to reduce duplication
+ * Queue Management System - Default Permission Rules
+ *
+ * These are example rules for the queue management system.
+ * Other projects can provide their own rules by passing them to usePermissions.
  */
-const PERMISSION_SETS = {
+
+/**
+ * Queue Management System - Default Permission Rules
+ *
+ * These are example rules for the queue management system.
+ * Other projects can provide their own rules by passing them to usePermissions.
+ */
+
+/**
+ * Queue-Specific Permission Sets - Common action combinations
+ */
+const QUEUE_PERMISSION_SETS = {
   READ_ONLY: ["view"] as Action[],
   BASIC_CRUD: ["view", "create", "update", "delete"] as Action[],
   MANAGEMENT: ["view", "create", "update", "approve", "assign", "cancel"] as Action[],
@@ -78,7 +92,7 @@ const createRule = (
 
 const createAdminRule = (
   resource: PermissionRule["resource"],
-  actions: Action[] = PERMISSION_SETS.BASIC_CRUD
+  actions: Action[] = QUEUE_PERMISSION_SETS.BASIC_CRUD
 ) => createRule("admin", resource, actions)
 
 const createManagerRule = (
@@ -100,46 +114,56 @@ const createCitizenRule = (
 ) => createRule("citizen", resource, actions, condition)
 
 const createGuestRule = (resource: PermissionRule["resource"]) =>
-  createRule("guest", resource, PERMISSION_SETS.READ_ONLY)
+  createRule("guest", resource, QUEUE_PERMISSION_SETS.READ_ONLY)
 
 /**
- * Permission Rules Configuration
+ * Queue Management System - Default Permission Rules Configuration
  *
- * This file contains all ABAC permission rules organized by role.
- * Each rule defines what actions a role can perform on a resource,
- * with optional conditions for context-aware permissions.
+ * This file contains default ABAC permission rules for the queue management system.
+ * Other projects can provide their own rules by passing them to usePermissions.
  */
-export const PERMISSION_RULES: PermissionRule[] = [
+export const DEFAULT_QUEUE_RULES: PermissionRule[] = [
   // Admin permissions - full access to everything
-  createAdminRule("appointment", PERMISSION_SETS.FULL_ADMIN),
+  createAdminRule("appointment", QUEUE_PERMISSION_SETS.FULL_ADMIN),
   createAdminRule("queue"),
   createAdminRule("service"),
   createAdminRule("user"),
-  createAdminRule("report", PERMISSION_SETS.CREATE_READ),
-  createAdminRule("settings", PERMISSION_SETS.READ_UPDATE),
+  createAdminRule("report", QUEUE_PERMISSION_SETS.CREATE_READ),
+  createAdminRule("settings", QUEUE_PERMISSION_SETS.READ_UPDATE),
 
   // Manager permissions - manage staff and operations
-  createManagerRule("appointment", PERMISSION_SETS.MANAGEMENT),
-  createManagerRule("queue", PERMISSION_SETS.MANAGER_CRUD),
-  createManagerRule("service", PERMISSION_SETS.MANAGER_CRUD),
-  createManagerRule("user", PERMISSION_SETS.READ_UPDATE, CONDITIONS.canManageStaffAndCitizens),
-  createManagerRule("report", PERMISSION_SETS.CREATE_READ),
-  createManagerRule("settings", PERMISSION_SETS.READ_ONLY),
+  createManagerRule("appointment", QUEUE_PERMISSION_SETS.MANAGEMENT),
+  createManagerRule("queue", QUEUE_PERMISSION_SETS.MANAGER_CRUD),
+  createManagerRule("service", QUEUE_PERMISSION_SETS.MANAGER_CRUD),
+  createManagerRule(
+    "user",
+    QUEUE_PERMISSION_SETS.READ_UPDATE,
+    CONDITIONS.canManageStaffAndCitizens
+  ),
+  createManagerRule("report", QUEUE_PERMISSION_SETS.CREATE_READ),
+  createManagerRule("settings", QUEUE_PERMISSION_SETS.READ_ONLY),
 
   // Staff permissions - handle appointments and basic operations
-  createStaffRule("appointment", PERMISSION_SETS.STAFF_ACTIONS, CONDITIONS.isAssignedOrUnassigned),
-  createStaffRule("queue", PERMISSION_SETS.READ_ONLY),
-  createStaffRule("service", PERMISSION_SETS.READ_ONLY),
-  createStaffRule("user", PERMISSION_SETS.READ_ONLY, CONDITIONS.isCitizen),
-  createStaffRule("report", PERMISSION_SETS.READ_ONLY),
+  createStaffRule(
+    "appointment",
+    QUEUE_PERMISSION_SETS.STAFF_ACTIONS,
+    CONDITIONS.isAssignedOrUnassigned
+  ),
+  createStaffRule("queue", QUEUE_PERMISSION_SETS.READ_ONLY),
+  createStaffRule("service", QUEUE_PERMISSION_SETS.READ_ONLY),
+  createStaffRule("user", QUEUE_PERMISSION_SETS.READ_ONLY, CONDITIONS.isCitizen),
+  createStaffRule("report", QUEUE_PERMISSION_SETS.READ_ONLY),
 
   // Citizen permissions - manage own appointments
-  createCitizenRule("appointment", PERMISSION_SETS.USER_ACTIONS, CONDITIONS.isOwnResource),
-  createCitizenRule("queue", PERMISSION_SETS.READ_ONLY),
-  createCitizenRule("service", PERMISSION_SETS.READ_ONLY),
-  createCitizenRule("user", PERMISSION_SETS.READ_UPDATE, CONDITIONS.isOwnResource),
+  createCitizenRule("appointment", QUEUE_PERMISSION_SETS.USER_ACTIONS, CONDITIONS.isOwnResource),
+  createCitizenRule("queue", QUEUE_PERMISSION_SETS.READ_ONLY),
+  createCitizenRule("service", QUEUE_PERMISSION_SETS.READ_ONLY),
+  createCitizenRule("user", QUEUE_PERMISSION_SETS.READ_UPDATE, CONDITIONS.isOwnResource),
 
   // Guest permissions - very limited read access
   createGuestRule("service"),
   createGuestRule("queue"),
 ]
+
+// Legacy export for backward compatibility
+export const PERMISSION_RULES = DEFAULT_QUEUE_RULES
