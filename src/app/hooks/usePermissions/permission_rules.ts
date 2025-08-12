@@ -1,10 +1,4 @@
-import type {
-  Action,
-  AppointmentPermissionContext,
-  PermissionRule,
-  Role,
-  UserPermissionContext,
-} from "./types"
+import type { Action, PermissionContext, PermissionRule, Role } from "./types"
 
 /**
  * Permission Sets - Common action combinations to reduce duplication
@@ -22,26 +16,47 @@ const PERMISSION_SETS = {
 } as const
 
 /**
- * Condition Functions - Reusable permission conditions with proper typing
+ * Context Helper Functions - Extract values from flexible context structures
+ */
+const getUserId = (ctx: PermissionContext): string | undefined => {
+  // Support various field naming conventions
+  return (ctx.userId || ctx.user_id || ctx.id || ctx.sub) as string | undefined
+}
+
+const getData = (ctx: PermissionContext): Record<string, unknown> | undefined => {
+  // Support various data field conventions
+  return (ctx.data || ctx.context || ctx.metadata || ctx.attributes) as
+    | Record<string, unknown>
+    | undefined
+}
+
+/**
+ * Condition Functions - Reusable permission conditions with flexible context access
  */
 const CONDITIONS = {
-  isOwnResource: (ctx: AppointmentPermissionContext | UserPermissionContext) => {
-    const ownerId = ctx.data?.userId
-    return ownerId === ctx.userId
+  isOwnResource: (ctx: PermissionContext): boolean => {
+    const userId = getUserId(ctx)
+    const data = getData(ctx)
+    const ownerId = data?.userId || data?.user_id || data?.id
+    return Boolean(userId && ownerId && userId === ownerId)
   },
 
-  isAssignedOrUnassigned: (ctx: AppointmentPermissionContext) => {
-    const assignedTo = ctx.data?.assignedTo
-    return !assignedTo || assignedTo === ctx.userId
+  isAssignedOrUnassigned: (ctx: PermissionContext): boolean => {
+    const userId = getUserId(ctx)
+    const data = getData(ctx)
+    const assignedTo = data?.assignedTo || data?.assigned_to || data?.assignee
+    return Boolean(!assignedTo || (userId && assignedTo === userId))
   },
 
-  canManageStaffAndCitizens: (ctx: UserPermissionContext) => {
-    const targetRole = ctx.data?.role
+  canManageStaffAndCitizens: (ctx: PermissionContext): boolean => {
+    const data = getData(ctx)
+    const targetRole = data?.role || data?.userRole || data?.user_role
     return targetRole === "staff" || targetRole === "citizen"
   },
 
-  isCitizen: (ctx: UserPermissionContext) => {
-    const targetRole = ctx.data?.role
+  isCitizen: (ctx: PermissionContext): boolean => {
+    const data = getData(ctx)
+    const targetRole = data?.role || data?.userRole || data?.user_role
     return targetRole === "citizen"
   },
 }

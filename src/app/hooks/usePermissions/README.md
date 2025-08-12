@@ -22,16 +22,47 @@ usePermissions/
 
 The `usePermissions` hook provides fine-grained, context-aware permission management that goes beyond traditional Role-Based Access Control (RBAC). It evaluates user context, roles, resources, and additional data to determine what actions are permitted.
 
+**Flexible Context Support**: The permission system supports various context field naming conventions, making it adaptable to different authentication systems (Keycloak, custom auth, etc.).
+
 ## Why ABAC over RBAC?
 
 - **Context-aware**: Permissions can depend on data relationships (e.g., users can only modify their own resources)
 - **Fine-grained**: Avoids role explosion by allowing conditions on permissions
 - **Centralized**: All permission logic is managed in one place
 - **Scalable**: Easy to maintain as system complexity grows
+- **Flexible**: Supports different context structures and field naming conventions
+
+## Flexible Context Support
+
+The permission system supports various context field naming conventions to accommodate different authentication systems:
+
+### Supported Field Names
+
+| Purpose | Supported Fields |
+|---------|-----------------|
+| **User ID** | `userId`, `user_id`, `id`, `sub` |
+| **Role** | `role`, `userRole`, `user_role` |
+| **Data** | `data`, `context`, `metadata`, `attributes` |
+
+### Context Examples
+
+```typescript
+// Standard structure
+{ userId: 'user-123', role: 'staff', data: { assignedTo: 'user-123' } }
+
+// Snake case (database style)
+{ user_id: 'user-123', role: 'staff', data: { assigned_to: 'user-123' } }
+
+// Keycloak JWT style
+{ sub: 'user-123', role: 'staff', metadata: { assignedTo: 'user-123' } }
+
+// Custom naming
+{ id: 'user-123', userRole: 'staff', context: { assignedTo: 'user-123' } }
+```
+
+All these structures work seamlessly with the same permission evaluation logic!
 
 ## Core Types
-
-### Roles
 ```typescript
 type Role = 'admin' | 'manager' | 'staff' | 'citizen' | 'guest';
 ```
@@ -198,13 +229,13 @@ function ActionButtons({ currentUser, appointment }) {
 
 ## Shared Logic for API
 
-The core permission evaluation logic is separated into its own module, making it reusable on the server side:
+The core permission evaluation logic is separated into its own module, making it reusable on the server side with flexible context support:
 
 ```typescript
 import { evaluatePermissions } from '@/hooks/usePermissions';
 import type { Role } from '@/hooks/usePermissions';
 
-// In your API route or server action
+// Example 1: Standard context structure
 export async function updateAppointment(appointmentId: string, userId: string, role: Role) {
   const appointment = await getAppointment(appointmentId);
 
@@ -218,7 +249,41 @@ export async function updateAppointment(appointmentId: string, userId: string, r
   if (!canUpdate) {
     throw new Error('Insufficient permissions to update appointment');
   }
+  // Proceed with update...
+}
 
+// Example 2: Working with Keycloak JWT tokens
+export async function updateAppointmentFromJWT(appointmentId: string, jwtPayload: any) {
+  const appointment = await getAppointment(appointmentId);
+
+  // Works with JWT field names
+  const context = {
+    sub: jwtPayload.sub,           // User ID from JWT
+    role: jwtPayload.realm_access?.roles[0], // Role from Keycloak
+    metadata: { assignedTo: appointment.assignedTo }
+  };
+
+  const canUpdate = evaluatePermissions(context, 'update', 'appointment');
+  if (!canUpdate) {
+    throw new Error('Insufficient permissions to update appointment');
+  }
+  // Proceed with update...
+}
+
+// Example 3: Database-style naming
+export async function updateAppointmentFromDB(appointmentId: string, user: any) {
+  const appointment = await getAppointment(appointmentId);
+
+  const context = {
+    user_id: user.id,
+    user_role: user.role,
+    context: { assigned_to: appointment.assigned_to }
+  };
+
+  const canUpdate = evaluatePermissions(context, 'update', 'appointment');
+  if (!canUpdate) {
+    throw new Error('Insufficient permissions to update appointment');
+  }
   // Proceed with update...
 }
 ```

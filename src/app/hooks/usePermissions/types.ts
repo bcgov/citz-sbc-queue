@@ -6,7 +6,14 @@ export type Role = "admin" | "manager" | "staff" | "citizen" | "guest"
 
 export type Resource = "appointment" | "queue" | "service" | "user" | "report" | "settings"
 
-// Specific data interfaces for type safety
+// Flexible permission context - supports various field naming conventions
+// Examples of supported structures:
+// { userId: "123", role: "staff", data: {...} }
+// { user_id: "123", userRole: "staff", context: {...} }
+// { id: "123", role: "staff", metadata: {...} }
+export type PermissionContext = Record<string, unknown>
+
+// Specific data interfaces for common use cases
 export type AppointmentData = {
   userId?: string
   assignedTo?: string
@@ -19,30 +26,19 @@ export type UserData = {
   department?: string
 }
 
-// Generic permission context with typed data (resource removed as it's now a parameter)
-export type PermissionContext<T = Record<string, unknown>> = {
-  userId: string
-  role: Role
-  data?: T
-}
-
-// Specific contexts for type safety
-export type AppointmentPermissionContext = PermissionContext<AppointmentData>
-export type UserPermissionContext = PermissionContext<UserData>
-
-export type PermissionRule<T = Record<string, unknown>> = {
+export type PermissionRule = {
   role: Role
   resource: Resource
   actions: Action[]
-  condition?: (context: PermissionContext<T>) => boolean
+  condition?: (context: PermissionContext) => boolean
 }
 
-// Hook Props with optional generic for data typing (keeping resource for hook interface)
-export type UsePermissionsProps<T = Record<string, unknown>> = {
+// Hook Props - maintains structured interface for ease of use
+export type UsePermissionsProps = {
   userId: string
   role: Role
   resource: Resource
-  data?: T
+  data?: Record<string, unknown>
 }
 
 // Hook return type

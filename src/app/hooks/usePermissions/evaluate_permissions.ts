@@ -106,6 +106,19 @@ const validateResource: (resource: unknown) => asserts resource is Resource = (
   }
 }
 
+/**
+ * Context Helper Functions - Extract values from flexible context structures
+ */
+const getUserId = (ctx: PermissionContext): string | undefined => {
+  // Support various field naming conventions
+  return (ctx.userId || ctx.user_id || ctx.id || ctx.sub) as string | undefined
+}
+
+const getRole = (ctx: PermissionContext): Role | undefined => {
+  // Support various role field conventions
+  return (ctx.role || ctx.userRole || ctx.user_role) as Role | undefined
+}
+
 const validateContext: (context: unknown) => asserts context is PermissionContext = (
   context: unknown
 ): asserts context is PermissionContext => {
@@ -113,13 +126,21 @@ const validateContext: (context: unknown) => asserts context is PermissionContex
     throw new ValidationError("Permission context must be a non-null object")
   }
 
-  const ctx = context as Record<string, unknown>
+  const ctx = context as PermissionContext
 
-  if (typeof ctx.userId !== "string" || ctx.userId.trim() === "") {
-    throw new ValidationError("Permission context must have a valid userId string")
+  // Extract userId using flexible field access
+  const userId = getUserId(ctx)
+  if (typeof userId !== "string" || userId.trim() === "") {
+    throw new ValidationError("Permission context must have a valid userId (supports: userId, user_id, id, sub)")
   }
 
-  validateRole(ctx.role)
+  // Extract role using flexible field access
+  const role = getRole(ctx)
+  if (!role) {
+    throw new ValidationError("Permission context must have a valid role (supports: role, userRole, user_role)")
+  }
+
+  validateRole(role)
 }
 
 /**
@@ -144,7 +165,8 @@ export function evaluatePermissions(
     validateAction(action)
     validateResource(resource)
 
-    const { role } = context
+    // Extract role using flexible context access (guaranteed to exist after validation)
+    const role = getRole(context) as Role
 
     // Find matching rules for the user's role and the requested resource
     const matchingRules = PERMISSION_RULES.filter(
