@@ -3,32 +3,42 @@
 
 /* Setting B.C. Government standard styles */
 @theme {
+  /* COLOURS */
   /* Disable default blue and redefine as B.C. Gov blue */
   --color-blue-\*: initial;
-  --color-blue-50: #eff6ff;
-  --color-blue-100: #dbeafe;
-  --color-blue-200: #bfdbfe;
-  --color-blue-300: #93c5fd;
-  --color-blue-400: #60a5fa;
-  --color-blue-500: #3b82f6;
-  --color-blue-600: #2563eb;
+  --color-blue-50: #f1f8fe;
+  --color-blue-100: #d8eafd;
+  --color-blue-200: #c1ddfc;
+  --color-blue-300: #a8d0fb;
+  --color-blue-400: #91c4fa;
+  --color-blue-500: #7ab8f9;
+  --color-blue-600: #5595d9;
   --color-blue-700: #1d4ed8;
   --color-blue-800: #1e40af;
   --color-blue-900: #1e3a8a;
   --color-blue-950: #172554;
   /* Disable default gold and redefine as B.C. Gov gold */
   --color-gold-\*: initial;
-  --color-gold-50: #fffbeb;
-  --color-gold-100: #fef3c7;
-  --color-gold-200: #fde68a;
-  --color-gold-300: #fcd34d;
-  --color-gold-400: #fbbf24;
-  --color-gold-500: #f59e0b;
-  --color-gold-600: #d97706;
-  --color-gold-700: #b45309;
-  --color-gold-800: #92400e;
-  --color-gold-900: #78350f;
-  --color-gold-950: #451a03;
+  --color-gold-50: #fef8e8;
+  --color-gold-100: #fef0d8;
+  --color-gold-200: #fde9c4;
+  --color-gold-300: #fce2b0;
+  --color-gold-400: #fbda9d;
+  --color-gold-500: #fbd389;
+  --color-gold-600: #facc75;
+  --color-gold-700: #f9c462;
+  --color-gold-800: #f8ba47;
+  --color-gold-900: #fcba19;
+  --color-gold-950: #fcba19;
+  /* Define other B.C. Gov token values */
+  /* BUTTONS */
+  --color-button-primary: #013366;
+  --color-button-primary-hover: #1e5189;
+  --color-button-secondary: #ffffff;
+  --color-button-danger: #ce3e39;
+  --color-button-danger-hover: #a2312d;
+  --color-disabled: #edebe9; /* Also used for secondary button hover */
+  --color-placeholder: #9f9d9c;
   /* Define B.C. Gov status colours */
   /* Success */
   --color-success-50: #f0fdf4;
