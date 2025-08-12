@@ -1,83 +1,84 @@
-import Image from "next/image"
-
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="font-sans grid grid-rows-[20px_1fr_20px] min-h-screen p-8 pb-20 gap-16 sm:p-20">
+      <main className="flex flex-1 items-center gap-[32px] row-start-2 sm:items-start">
+        <div>
+          {/* We can specify the font */}
+          <div className="font-BCSans text-black p-8 p-8 bg-blue-50"> bg-blue-50 </div>
+          {/* But because it is set as the default for the project we don't have to */}
+          <div className="text-black italic p-8 p-8 bg-blue-100"> bg-blue-100 </div>
+          <div className="text-black font-bold p-8 p-8 bg-blue-200"> bg-blue-200 </div>
+          <div className="text-black font-italic p-8 p-8 bg-blue-300"> bg-blue-300 </div>
+          <div className="text-black p-8 p-8 bg-blue-400"> bg-gold-400 </div>
+          <div className="text-black p-8 bg-blue-500"> bg-blue-500 </div>
+          <div className="text-black p-8 bg-blue-600"> bg-blue-600 </div>
+          <div className=" p-8 bg-blue-700"> bg-blue-700 </div>
+          <div className=" p-8 bg-blue-800"> bg-blue-800 </div>
+          <div className=" p-8 bg-blue-900"> bg-blue-900 </div>
+          <div className=" p-8 bg-blue-950"> bg-blue-950 </div>
+        </div>
+        <div>
+          <div className="text-black p-8 bg-gold-50"> bg-gold-50 </div>
+          <div className="text-black p-8 bg-gold-100"> bg-gold-100</div>
+          <div className="text-black p-8 bg-gold-200"> bg-gold-200</div>
+          <div className="text-black p-8 bg-gold-300"> bg-gold-300</div>
+          <div className="text-black p-8 bg-gold-400"> bg-gold-400</div>
+          <div className="text-black p-8 bg-gold-500"> bg-gold-500</div>
+          <div className="text-black p-8 bg-gold-600"> bg-gold-600</div>
+          <div className="text-black p-8 bg-gold-700"> bg-gold-700</div>
+          <div className="text-black p-8 bg-gold-800"> bg-gold-800</div>
+          <div className="text-black p-8 bg-gold-900"> bg-gold-900</div>
+          <div className="text-black p-8 bg-gold-950"> bg-gold-950</div>
+        </div>
+        <div>
+          <div className="text-black p-8 bg-success-50"> bg-success-50</div>
+          <div className="text-black p-8 bg-success-100"> bg-success-100</div>
+          <div className="text-black p-8 bg-success-200"> bg-success-200</div>
+          <div className="text-black p-8 bg-success-300"> bg-success-300</div>
+          <div className="text-black p-8 bg-success-400"> bg-success-400</div>
+          <div className="text-black p-8 bg-success-500"> bg-success-500</div>
+          <div className="text-black p-8 bg-success-600"> bg-success-600</div>
+          <div className=" p-8 bg-success-700"> bg-success-700</div>
+          <div className=" p-8 bg-success-800"> bg-success-800</div>
+          <div className=" p-8 bg-success-900"> bg-success-900</div>
+          <div className=" p-8 bg-success-950"> bg-success-950</div>
+        </div>
+        <div>
+          <div className="text-black p-8 bg-warning-50"> bg-warning-50</div>
+          <div className="text-black p-8 bg-warning-100"> bg-warning-100</div>
+          <div className="text-black p-8 bg-warning-200"> bg-warning-200</div>
+          <div className="text-black p-8 bg-warning-300"> bg-warning-300</div>
+          <div className="text-black p-8 bg-warning-400"> bg-warning-400</div>
+          <div className="text-black p-8 bg-warning-500"> bg-warning-500</div>
+          <div className="text-black p-8 bg-warning-600"> bg-warning-600</div>
+          <div className=" p-8 bg-warning-700"> bg-warning-700</div>
+          <div className=" p-8 bg-warning-800"> bg-warning-800</div>
+          <div className=" p-8 bg-warning-900"> bg-warning-900</div>
+          <div className=" p-8 bg-warning-950"> bg-warning-950</div>
+        </div>
+        <div>
+          <div className="text-black p-8 bg-error-50"> bg-error-50</div>
+          <div className="text-black p-8 bg-error-100"> bg-error-100</div>
+          <div className="text-black p-8 bg-error-200"> bg-error-200</div>
+          <div className="text-black p-8 bg-error-300"> bg-error-300</div>
+          <div className="text-black p-8 bg-error-400"> bg-error-400</div>
+          <div className="text-black p-8 bg-error-500"> bg-error-500</div>
+          <div className="text-black p-8 bg-error-600"> bg-error-600</div>
+          <div className=" p-8 bg-error-700"> bg-error-700</div>
+          <div className=" p-8 bg-error-800"> bg-error-800</div>
+          <div className=" p-8 bg-error-900"> bg-error-900</div>
+          <div className=" p-8 bg-error-950"> bg-error-950</div>
+        </div>
+        <div>
+          <div className=" p-8 bg-button-primary"> button-primary</div>
+          <div className=" p-8 bg-button-primary-hover"> button-primary-hover</div>
+          <div className="text-black p-8 bg-button-secondary"> button-secondary</div>
+          <div className=" p-8 bg-button-danger"> button-danger</div>
+          <div className=" p-8 bg-button-danger-hover"> button-danger-hover</div>
+          <div className="text-black p-8 bg-disabled"> disabled</div>
+          <div className="text-black p-8 bg-placeholder"> placeholder</div>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image aria-hidden src="/file.svg" alt="File icon" width={16} height={16} />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image aria-hidden src="/window.svg" alt="Window icon" width={16} height={16} />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image aria-hidden src="/globe.svg" alt="Globe icon" width={16} height={16} />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   )
 }
