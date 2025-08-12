@@ -14,9 +14,33 @@
  * limitations under the License.
  */
 
-const fs = require("fs")
-const path = require("path")
-const { execSync } = require("child_process")
+// @ts-ignore - license-checker doesn't have type definitions
+import licenseChecker from "license-checker"
+
+type LicenseInfo = {
+  licenses: string | string[]
+  repository?: string
+  publisher?: string
+  url?: string
+  licenseFile?: string
+  noticeFile?: string
+}
+
+type PackageInfo = {
+  name: string
+  licenses: string[]
+  repository?: string
+  publisher?: string
+  url?: string
+}
+
+type LicenseResults = {
+  compatible: PackageInfo[]
+  problematic: PackageInfo[]
+  unknown: PackageInfo[]
+  exceptions: PackageInfo[]
+  total: number
+}
 
 /**
  * Script to check all dependencies for Apache 2.0 license compatibility
@@ -27,29 +51,32 @@ const { execSync } = require("child_process")
  * @author Veenu Punyani
  * @version 1.0.1
  */
-async function checkLicenses() {
+async function checkLicenses(): Promise<LicenseResults> {
   console.log("🔍 Checking license compatibility for all dependencies...\n")
 
   try {
-    // Check if license-checker is available
-    let licenseChecker
-    try {
-      licenseChecker = require("license-checker")
-    } catch (e) {
-      console.error("❌ license-checker not found. Please install it first:")
-      console.error("   npm install --save-dev license-checker")
-      process.exit(1)
-    }
+    return new Promise<LicenseResults>((resolve, reject) => {
+      // Type assertion for the untyped license-checker module
+      const typedLicenseChecker = licenseChecker as {
+        init: (
+          options: {
+            start: string
+            production?: boolean
+            json?: boolean
+            excludePrivatePackages?: boolean
+          },
+          callback: (err: Error | null, packages: Record<string, LicenseInfo>) => void
+        ) => void
+      }
 
-    return new Promise((resolve, reject) => {
-      licenseChecker.init(
+      typedLicenseChecker.init(
         {
           start: process.cwd(),
           production: false, // Check all dependencies including dev
           json: true,
           excludePrivatePackages: true,
         },
-        (err, packages) => {
+        (err: Error | null, packages: Record<string, LicenseInfo>) => {
           if (err) {
             reject(err)
             return
@@ -96,7 +123,7 @@ async function checkLicenses() {
             "lightningcss-win32-x64-msvc",
           ])
 
-          const results = {
+          const results: LicenseResults = {
             compatible: [],
             problematic: [],
             unknown: [],
@@ -128,7 +155,7 @@ async function checkLicenses() {
               }
             }
 
-            const packageInfo = {
+            const packageInfo: PackageInfo = {
               name: packageName,
               licenses: licenses,
               repository: info.repository,
@@ -201,14 +228,17 @@ async function checkLicenses() {
       )
     })
   } catch (error) {
-    console.error("❌ Error checking licenses:", error.message)
+    console.error(
+      "❌ Error checking licenses:",
+      error instanceof Error ? error.message : String(error)
+    )
     throw error
   }
 }
 
-// Run the check
-if (require.main === module) {
+// Run the check if this module is executed directly
+if (import.meta.url === `file://${process.argv[1]}`) {
   checkLicenses().catch(console.error)
 }
 
-module.exports = { checkLicenses }
+export { checkLicenses, type LicenseResults, type PackageInfo, type LicenseInfo }
