@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// @ts-ignore - license-checker doesn't have type definitions
+// @ts-ignore - license-checker doesn't have type definitions.
 import licenseChecker from "license-checker"
 
 type LicenseInfo = {
