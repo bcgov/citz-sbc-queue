@@ -3,114 +3,114 @@
  * This file shows practical examples of the multi-resource permission system
  */
 
-import { usePermissions } from "./usePermissions"
 import type { PermissionContext } from "./types"
+import { usePermissions } from "./usePermissions"
 
 // Example permission rules with type inference
 const BLOG_RULES = [
   {
-    role: 'admin',
-    resource: 'post',
-    actions: ['read', 'write', 'delete', 'publish'],
+    role: "admin",
+    resource: "post",
+    actions: ["read", "write", "delete", "publish"],
   },
   {
-    role: 'author',
-    resource: 'post', 
-    actions: ['read', 'write', 'publish'],
-    condition: (ctx: PermissionContext) => 
-      (ctx.data as Record<string, unknown>)?.authorId === ctx.userId
+    role: "author",
+    resource: "post",
+    actions: ["read", "write", "publish"],
+    condition: (ctx: PermissionContext) =>
+      (ctx.data as Record<string, unknown>)?.authorId === ctx.userId,
   },
   {
-    role: 'editor',
-    resource: 'post',
-    actions: ['read', 'write'],
+    role: "editor",
+    resource: "post",
+    actions: ["read", "write"],
     condition: (ctx: PermissionContext) => {
       const data = ctx.data as Record<string, unknown>
       const editorIds = data?.editorIds as string[]
       return Array.isArray(editorIds) && editorIds.includes(ctx.userId as string)
-    }
+    },
   },
   {
-    role: 'reader',
-    resource: 'post',
-    actions: ['read'],
-    condition: (ctx: PermissionContext) => 
-      (ctx.data as Record<string, unknown>)?.status === 'published'
+    role: "reader",
+    resource: "post",
+    actions: ["read"],
+    condition: (ctx: PermissionContext) =>
+      (ctx.data as Record<string, unknown>)?.status === "published",
   },
 ] as const
 
 const QUEUE_RULES = [
   {
-    role: 'admin',
-    resource: 'appointment',
-    actions: ['view', 'create', 'update', 'delete', 'approve', 'assign', 'cancel'],
+    role: "admin",
+    resource: "appointment",
+    actions: ["view", "create", "update", "delete", "approve", "assign", "cancel"],
   },
   {
-    role: 'manager',
-    resource: 'appointment',
-    actions: ['view', 'create', 'update', 'approve', 'assign', 'cancel'],
+    role: "manager",
+    resource: "appointment",
+    actions: ["view", "create", "update", "approve", "assign", "cancel"],
   },
   {
-    role: 'staff',
-    resource: 'appointment',
-    actions: ['view', 'create', 'update', 'assign'],
+    role: "staff",
+    resource: "appointment",
+    actions: ["view", "create", "update", "assign"],
     condition: (ctx: PermissionContext) => {
       const data = ctx.data as Record<string, unknown>
       return !data?.assignedTo || data?.assignedTo === ctx.userId
-    }
+    },
   },
   {
-    role: 'citizen',
-    resource: 'appointment',
-    actions: ['view', 'create', 'update', 'cancel'],
-    condition: (ctx: PermissionContext) => 
-      (ctx.data as Record<string, unknown>)?.userId === ctx.userId
+    role: "citizen",
+    resource: "appointment",
+    actions: ["view", "create", "update", "cancel"],
+    condition: (ctx: PermissionContext) =>
+      (ctx.data as Record<string, unknown>)?.userId === ctx.userId,
   },
   {
-    role: 'admin',
-    resource: 'user',
-    actions: ['view', 'create', 'update', 'delete'],
+    role: "admin",
+    resource: "user",
+    actions: ["view", "create", "update", "delete"],
   },
   {
-    role: 'manager',
-    resource: 'user',
-    actions: ['view', 'update'],
+    role: "manager",
+    resource: "user",
+    actions: ["view", "update"],
     condition: (ctx: PermissionContext) => {
       const data = ctx.data as Record<string, unknown>
-      return ['staff', 'citizen'].includes(data?.role as string)
-    }
+      return ["staff", "citizen"].includes(data?.role as string)
+    },
   },
   {
-    role: 'staff',
-    resource: 'user',
-    actions: ['view'],
-    condition: (ctx: PermissionContext) => 
-      (ctx.data as Record<string, unknown>)?.role === 'citizen'
+    role: "staff",
+    resource: "user",
+    actions: ["view"],
+    condition: (ctx: PermissionContext) =>
+      (ctx.data as Record<string, unknown>)?.role === "citizen",
   },
   {
-    role: 'admin',
-    resource: 'report',
-    actions: ['view', 'create'],
+    role: "admin",
+    resource: "report",
+    actions: ["view", "create"],
   },
   {
-    role: 'manager',
-    resource: 'report',
-    actions: ['view', 'create'],
+    role: "manager",
+    resource: "report",
+    actions: ["view", "create"],
   },
   {
-    role: 'staff',
-    resource: 'report',
-    actions: ['view'],
+    role: "staff",
+    resource: "report",
+    actions: ["view"],
   },
   {
-    role: 'admin',
-    resource: 'settings',
-    actions: ['view', 'update'],
+    role: "admin",
+    resource: "settings",
+    actions: ["view", "update"],
   },
   {
-    role: 'manager',
-    resource: 'settings',
-    actions: ['view'],
+    role: "manager",
+    resource: "settings",
+    actions: ["view"],
   },
 ] as const
 
@@ -127,7 +127,7 @@ type BlogPost = {
   content: string
   authorId: string
   editorIds: string[]
-  status: 'draft' | 'published' | 'archived'
+  status: "draft" | "published" | "archived"
 }
 
 type BlogPostCardProps = {
@@ -145,47 +145,45 @@ export const BlogPostCard = ({
   post,
   currentUser,
   onEdit,
-  onDelete, 
+  onDelete,
   onPublish,
 }: BlogPostCardProps) => {
   const { hasPermission, getResourcePermissions } = usePermissions({
-    userRole: currentUser.role as 'admin' | 'author' | 'editor' | 'reader',
+    userRole: currentUser.role as "admin" | "author" | "editor" | "reader",
     context: { userId: currentUser.id },
     rules: BLOG_RULES,
     checks: [
-      { 
-        resource: 'post', 
-        action: 'read',
-        data: { authorId: post.authorId, editorIds: post.editorIds, status: post.status }
+      {
+        resource: "post",
+        action: "read",
+        data: { authorId: post.authorId, editorIds: post.editorIds, status: post.status },
       },
-      { 
-        resource: 'post', 
-        action: 'write',
-        data: { authorId: post.authorId, editorIds: post.editorIds, status: post.status }
+      {
+        resource: "post",
+        action: "write",
+        data: { authorId: post.authorId, editorIds: post.editorIds, status: post.status },
       },
-      { 
-        resource: 'post', 
-        action: 'delete',
-        data: { authorId: post.authorId, editorIds: post.editorIds, status: post.status }
+      {
+        resource: "post",
+        action: "delete",
+        data: { authorId: post.authorId, editorIds: post.editorIds, status: post.status },
       },
-      { 
-        resource: 'post', 
-        action: 'publish',
-        data: { authorId: post.authorId, editorIds: post.editorIds, status: post.status }
+      {
+        resource: "post",
+        action: "publish",
+        data: { authorId: post.authorId, editorIds: post.editorIds, status: post.status },
       },
-    ]
+    ],
   })
 
   // Get all permissions for this post
-  const postPermissions = getResourcePermissions('post')
-  const allowedActions = postPermissions
-    .filter(p => p.hasPermission)
-    .map(p => p.action)
+  const postPermissions = getResourcePermissions("post")
+  const allowedActions = postPermissions.filter((p) => p.hasPermission).map((p) => p.action)
 
   // Type-safe permission checking
-  const canEdit = hasPermission('post', 'write')
-  const canDelete = hasPermission('post', 'delete')
-  const canPublish = hasPermission('post', 'publish')
+  const canEdit = hasPermission("post", "write")
+  const canDelete = hasPermission("post", "delete")
+  const canPublish = hasPermission("post", "publish")
 
   return (
     <div className="border rounded-lg p-4 space-y-3">
@@ -193,9 +191,9 @@ export const BlogPostCard = ({
         <h3 className="text-lg font-semibold">{post.title}</h3>
         <span
           className={`px-2 py-1 rounded text-sm ${
-            post.status === 'published'
+            post.status === "published"
               ? "bg-green-100 text-green-800"
-              : post.status === 'draft'
+              : post.status === "draft"
                 ? "bg-yellow-100 text-yellow-800"
                 : "bg-gray-100 text-gray-800"
           }`}
@@ -207,7 +205,7 @@ export const BlogPostCard = ({
       <div className="text-sm text-gray-600">
         <p>ID: {post.id}</p>
         <p>Author: {post.authorId}</p>
-        {post.editorIds.length > 0 && <p>Editors: {post.editorIds.join(', ')}</p>}
+        {post.editorIds.length > 0 && <p>Editors: {post.editorIds.join(", ")}</p>}
       </div>
 
       {/* Show action buttons based on permissions */}
@@ -265,67 +263,65 @@ export const BlogPostCard = ({
 export const NavigationExample = ({ currentUser }: { currentUser: User }) => {
   // Check permissions for different navigation items using queue rules
   const appointmentPerms = usePermissions({
-    userRole: currentUser.role as 'admin' | 'manager' | 'staff' | 'citizen',
+    userRole: currentUser.role as "admin" | "manager" | "staff" | "citizen",
     context: { userId: currentUser.id },
     rules: QUEUE_RULES,
     checks: [
-      { resource: 'appointment', action: 'view' },
-      { resource: 'appointment', action: 'create' },
-    ]
+      { resource: "appointment", action: "view" },
+      { resource: "appointment", action: "create" },
+    ],
   })
 
   const userPerms = usePermissions({
-    userRole: currentUser.role as 'admin' | 'manager' | 'staff' | 'citizen',
+    userRole: currentUser.role as "admin" | "manager" | "staff" | "citizen",
     context: { userId: currentUser.id },
     rules: QUEUE_RULES,
     checks: [
-      { resource: 'user', action: 'view' },
-      { resource: 'user', action: 'create' },
-    ]
+      { resource: "user", action: "view" },
+      { resource: "user", action: "create" },
+    ],
   })
 
   const reportPerms = usePermissions({
-    userRole: currentUser.role as 'admin' | 'manager' | 'staff' | 'citizen',
+    userRole: currentUser.role as "admin" | "manager" | "staff" | "citizen",
     context: { userId: currentUser.id },
     rules: QUEUE_RULES,
     checks: [
-      { resource: 'report', action: 'view' },
-      { resource: 'report', action: 'create' },
-    ]
+      { resource: "report", action: "view" },
+      { resource: "report", action: "create" },
+    ],
   })
 
   const settingsPerms = usePermissions({
-    userRole: currentUser.role as 'admin' | 'manager' | 'staff' | 'citizen',
+    userRole: currentUser.role as "admin" | "manager" | "staff" | "citizen",
     context: { userId: currentUser.id },
     rules: QUEUE_RULES,
-    checks: [
-      { resource: 'settings', action: 'view' },
-    ]
+    checks: [{ resource: "settings", action: "view" }],
   })
 
   const navItems = [
     {
       label: "Appointments",
       href: "/appointments",
-      show: appointmentPerms.hasPermission('appointment', 'view'),
-      canCreate: appointmentPerms.hasPermission('appointment', 'create'),
+      show: appointmentPerms.hasPermission("appointment", "view"),
+      canCreate: appointmentPerms.hasPermission("appointment", "create"),
     },
     {
       label: "Users",
       href: "/users",
-      show: userPerms.hasPermission('user', 'view'),
-      canCreate: userPerms.hasPermission('user', 'create'),
+      show: userPerms.hasPermission("user", "view"),
+      canCreate: userPerms.hasPermission("user", "create"),
     },
     {
       label: "Reports",
       href: "/reports",
-      show: reportPerms.hasPermission('report', 'view'),
-      canCreate: reportPerms.hasPermission('report', 'create'),
+      show: reportPerms.hasPermission("report", "view"),
+      canCreate: reportPerms.hasPermission("report", "create"),
     },
     {
       label: "Settings",
       href: "/settings",
-      show: settingsPerms.hasPermission('settings', 'view'),
+      show: settingsPerms.hasPermission("settings", "view"),
       canCreate: false, // Settings don't have create action
     },
   ]
@@ -358,32 +354,35 @@ export const NavigationExample = ({ currentUser }: { currentUser: User }) => {
  */
 export const PermissionsDashboard = ({ currentUser }: { currentUser: User }) => {
   const { results } = usePermissions({
-    userRole: currentUser.role as 'admin' | 'manager' | 'staff' | 'citizen',
+    userRole: currentUser.role as "admin" | "manager" | "staff" | "citizen",
     context: { userId: currentUser.id },
     rules: QUEUE_RULES,
     checks: [
-      { resource: 'appointment', action: 'view' },
-      { resource: 'appointment', action: 'create' },
-      { resource: 'appointment', action: 'update' },
-      { resource: 'appointment', action: 'delete' },
-      { resource: 'user', action: 'view' },
-      { resource: 'user', action: 'create' },
-      { resource: 'user', action: 'update' },
-      { resource: 'report', action: 'view' },
-      { resource: 'report', action: 'create' },
-      { resource: 'settings', action: 'view' },
-      { resource: 'settings', action: 'update' },
-    ]
+      { resource: "appointment", action: "view" },
+      { resource: "appointment", action: "create" },
+      { resource: "appointment", action: "update" },
+      { resource: "appointment", action: "delete" },
+      { resource: "user", action: "view" },
+      { resource: "user", action: "create" },
+      { resource: "user", action: "update" },
+      { resource: "report", action: "view" },
+      { resource: "report", action: "create" },
+      { resource: "settings", action: "view" },
+      { resource: "settings", action: "update" },
+    ],
   })
 
   // Group results by resource for organized display
-  const permissionsByResource = results.reduce((acc, result) => {
-    if (!acc[result.resource]) {
-      acc[result.resource] = []
-    }
-    acc[result.resource].push(result)
-    return acc
-  }, {} as Record<string, typeof results>)
+  const permissionsByResource = results.reduce(
+    (acc, result) => {
+      if (!acc[result.resource]) {
+        acc[result.resource] = []
+      }
+      acc[result.resource].push(result)
+      return acc
+    },
+    {} as Record<string, typeof results>
+  )
 
   return (
     <div className="p-6 bg-white rounded-lg shadow">
@@ -391,22 +390,20 @@ export const PermissionsDashboard = ({ currentUser }: { currentUser: User }) => 
       <p className="text-gray-600 mb-6">
         Role: <span className="font-semibold">{currentUser.role}</span>
       </p>
-      
+
       {Object.entries(permissionsByResource).map(([resource, perms]) => (
         <div key={resource} className="mb-6">
           <h2 className="text-lg font-semibold mb-2 capitalize">{resource}</h2>
           <div className="grid grid-cols-2 gap-2">
-            {perms.map(perm => (
-              <div 
-                key={perm.action} 
+            {perms.map((perm) => (
+              <div
+                key={perm.action}
                 className={`p-2 rounded text-sm ${
-                  perm.hasPermission 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-red-100 text-red-800'
+                  perm.hasPermission ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
                 }`}
               >
                 <span className="font-medium">{perm.action}</span>
-                <span className="ml-2">{perm.hasPermission ? '✓' : '✗'}</span>
+                <span className="ml-2">{perm.hasPermission ? "✓" : "✗"}</span>
               </div>
             ))}
           </div>

@@ -52,21 +52,21 @@ const MY_PROJECT_RULES = [
     actions: ['read', 'write', 'delete', 'share'],
   },
   {
-    role: 'editor', 
+    role: 'editor',
     resource: 'document',
     actions: ['read', 'write'],
     condition: (ctx) => ctx.data?.owner === ctx.userId
   },
   {
     role: 'viewer',
-    resource: 'document', 
+    resource: 'document',
     actions: ['read'],
   },
 ] as const
 
 // TypeScript automatically infers:
 // Roles: 'admin' | 'editor' | 'viewer'
-// Actions: 'read' | 'write' | 'delete' | 'share'  
+// Actions: 'read' | 'write' | 'delete' | 'share'
 // Resources: 'document'
 ```
 
@@ -137,7 +137,7 @@ type UsePermissionsProps<T extends readonly PermissionRule[]> = {
 
 type ResourceCheck<T> = {
   resource: InferResources<T>  // Inferred from your rules
-  action: InferActions<T>      // Inferred from your rules  
+  action: InferActions<T>      // Inferred from your rules
   data?: Record<string, unknown>  // Optional additional context
 }
 ```
@@ -168,7 +168,7 @@ evaluatePermissions(props: EvaluatePermissionsProps): boolean
 
 type EvaluatePermissionsProps = {
   userRole: string
-  resource: string  
+  resource: string
   action: string
   context: PermissionContext
   rules: readonly PermissionRule[]
@@ -180,7 +180,7 @@ type EvaluatePermissionsProps = {
 ```typescript
 type PermissionRule = {
   role: string                                     // Role that this rule applies to
-  resource: string                                // Resource that this rule governs  
+  resource: string                                // Resource that this rule governs
   actions: readonly string[]                      // Actions allowed (readonly for type inference)
   condition?: (context: PermissionContext) => boolean // Optional condition function
 }
@@ -191,7 +191,7 @@ type PermissionRule = {
 ```typescript
 // Type inference utilities (automatically available)
 type InferRoles<T extends readonly PermissionRule[]> = T[number]['role']
-type InferActions<T extends readonly PermissionRule[]> = T[number]['actions'][number] 
+type InferActions<T extends readonly PermissionRule[]> = T[number]['actions'][number]
 type InferResources<T extends readonly PermissionRule[]> = T[number]['resource']
 ```
 
@@ -210,7 +210,7 @@ const BLOG_RULES = [
     actions: ['read', 'write', 'delete', 'publish'],
   },
   {
-    role: 'author', 
+    role: 'author',
     resource: 'post',
     actions: ['read', 'write', 'publish'],
     condition: (ctx) => ctx.data?.authorId === ctx.userId
@@ -239,15 +239,15 @@ function BlogDashboard({ currentUser, posts }) {
   // Type-safe permission checking
   const canWritePosts = hasPermission('post', 'write')
   const canPublishPosts = hasPermission('post', 'publish')
-  
+
   return (
     <div>
       <h1>Blog Dashboard</h1>
       {canWritePosts && <CreatePostButton />}
       {canPublishPosts && <PublishQueuePanel />}
-      
+
       {posts.map(post => (
-        <PostCard 
+        <PostCard
           key={post.id}
           post={post}
           canEdit={hasPermission('post', 'write')}
@@ -268,18 +268,18 @@ function DocumentList({ documents, currentUser }) {
     context: { userId: currentUser.id },
     rules: DOCUMENT_RULES,
     checks: documents.flatMap(doc => [
-      { 
-        resource: 'document', 
+      {
+        resource: 'document',
         action: 'read',
         data: { documentId: doc.id, ownerId: doc.ownerId }
       },
-      { 
-        resource: 'document', 
+      {
+        resource: 'document',
         action: 'edit',
         data: { documentId: doc.id, ownerId: doc.ownerId }
       },
-      { 
-        resource: 'document', 
+      {
+        resource: 'document',
         action: 'delete',
         data: { documentId: doc.id, ownerId: doc.ownerId }
       },
@@ -329,7 +329,7 @@ function ProjectManagementDashboard({ currentUser, projects }) {
   // Get all permissions for specific resource
   const projectPermissions = getResourcePermissions('project')
   const taskPermissions = getResourcePermissions('task')
-  
+
   // Check if user can perform any management actions
   const canManageProjects = hasAnyPermission('project', ['create', 'edit', 'delete'])
   const canManageTasks = hasAnyPermission('task', ['create', 'assign'])
@@ -337,7 +337,7 @@ function ProjectManagementDashboard({ currentUser, projects }) {
   return (
     <div>
       <h1>Project Dashboard</h1>
-      
+
       {canManageProjects && (
         <div>
           <h2>Project Management</h2>
@@ -345,7 +345,7 @@ function ProjectManagementDashboard({ currentUser, projects }) {
           {/* Show project management tools */}
         </div>
       )}
-      
+
       {canManageTasks && (
         <div>
           <h2>Task Management</h2>
@@ -366,7 +366,7 @@ import { evaluatePermissions } from '@/app/hooks/usePermissions'
 const BLOG_RULES = [
   {
     role: 'author',
-    resource: 'post', 
+    resource: 'post',
     actions: ['create', 'read', 'update', 'delete'],
     condition: (ctx) => ctx.data?.authorId === ctx.userId
   },
@@ -376,7 +376,7 @@ const BLOG_RULES = [
     actions: ['read', 'update', 'delete'],
   },
   {
-    role: 'reader', 
+    role: 'reader',
     resource: 'post',
     actions: ['read'],
     condition: (ctx) => ctx.data?.status === 'published'
@@ -389,8 +389,8 @@ export async function updatePost(postId: string, userId: string, userRole: strin
   const canUpdate = evaluatePermissions({
     userRole,
     resource: 'post',
-    action: 'update', 
-    context: { 
+    action: 'update',
+    context: {
       userId,
       data: { authorId: post.authorId, status: post.status }
     },
@@ -410,7 +410,7 @@ export async function updatePostFromJWT(postId: string, jwtPayload: any) {
 
   const canUpdate = evaluatePermissions({
     userRole: jwtPayload.realm_access?.roles[0],
-    resource: 'post', 
+    resource: 'post',
     action: 'update',
     context: {
       sub: jwtPayload.sub,  // JWT user ID field
@@ -437,7 +437,7 @@ function PermissionsDashboard({ currentUser }) {
     rules: SYSTEM_RULES,
     checks: [
       { resource: 'user', action: 'view' },
-      { resource: 'user', action: 'create' }, 
+      { resource: 'user', action: 'create' },
       { resource: 'user', action: 'edit' },
       { resource: 'report', action: 'view' },
       { resource: 'report', action: 'generate' },
@@ -551,7 +551,7 @@ const MY_PROJECT_RULES = [
     role: 'owner',
     resource: 'document',
     actions: ['read', 'write', 'delete', 'share'],
-    condition: (ctx: PermissionContext) => 
+    condition: (ctx: PermissionContext) =>
       (ctx.data as Record<string, unknown>)?.ownerId === ctx.userId
   },
   {
@@ -586,18 +586,18 @@ function DocumentWorkspace({ documents, currentUser }) {
     context: { userId: currentUser.id },
     rules: MY_PROJECT_RULES,
     checks: documents.flatMap(doc => [
-      { 
-        resource: 'document', 
+      {
+        resource: 'document',
         action: 'read',
         data: { ownerId: doc.ownerId, collaboratorIds: doc.collaboratorIds }
       },
-      { 
-        resource: 'document', 
+      {
+        resource: 'document',
         action: 'write',
         data: { ownerId: doc.ownerId, collaboratorIds: doc.collaboratorIds }
       },
-      { 
-        resource: 'document', 
+      {
+        resource: 'document',
         action: 'delete',
         data: { ownerId: doc.ownerId, collaboratorIds: doc.collaboratorIds }
       },
@@ -611,9 +611,9 @@ function DocumentWorkspace({ documents, currentUser }) {
         const canRead = hasPermission('document', 'read')
         const canEdit = hasPermission('document', 'write')
         const canDelete = hasPermission('document', 'delete')
-        
+
         return (
-          <DocumentCard 
+          <DocumentCard
             key={doc.id}
             document={doc}
             canRead={canRead}
@@ -808,8 +808,8 @@ const { results, hasPermission } = usePermissions({
   context: { userId: user.id },
   rules: YOUR_RULES,
   checks: [
-    { 
-      resource: 'appointment', 
+    {
+      resource: 'appointment',
       action: 'view',
       data: { assignedTo: appointment.assignedTo }
     },
@@ -820,7 +820,7 @@ const { results, hasPermission } = usePermissions({
 
 ### Benefits of Migration
 - **Type Safety**: Full TypeScript inference from your actual rules
-- **Performance**: Batch multiple permission checks efficiently  
+- **Performance**: Batch multiple permission checks efficiently
 - **Flexibility**: Support for various context field naming conventions
 - **Scalability**: Easily add new resources, roles, and actions
 - **Maintainability**: Centralized rule configuration with type checking
