@@ -77,7 +77,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
     scheduleAuthTimers({
       getSession: () => get().session,
-      onRefresh: get().refresh,
+      onRefresh: () => get().refresh(),
       onShowWarning: () => get().setShowExpiryWarning(true),
       onHardLogout: () => get().logout("expired"),
     })
@@ -85,6 +85,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   // Background access-token refresh (5m cadence) – does NOT move session window
   refresh: async () => {
+    if (get().isRefreshing) return true // Already refreshing
+
     const s = get().session
     const now = Date.now()
 
@@ -99,7 +101,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       get().loginFromTokens(data, { resetSessionWindow: false })
       // Note: loginFromTokens recomputes endsAt using current startAt (unchanged)
       return true
-    } catch {
+    } catch (error) {
+      console.error("Failed to refresh tokens:", error)
       return false
     } finally {
       set({ isRefreshing: false })
