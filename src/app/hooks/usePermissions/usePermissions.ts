@@ -1,83 +1,86 @@
 import { useMemo } from "react"
 import { evaluatePermissions } from "./evaluate_permissions"
-import { DEFAULT_QUEUE_RULES } from "./permission_rules"
-import type { Action, PermissionRule, UsePermissionsProps, UsePermissionsReturn } from "./types"
+import type {
+  PermissionContext,
+  PermissionResult,
+  PermissionRule,
+  UsePermissionsProps,
+  UsePermissionsReturn,
+} from "./types"
 
 /**
- * Get all possible actions from a set of permission rules
+ * Multi-Resource Permission Hook
+ *
+ * This hook provides type-safe permission checking for multiple resources.
+ * Types are automatically inferred from the permission rules configuration.
  */
-const getAllActionsFromRules = (rules: PermissionRule[]): Action[] => {
-  const actionSet = new Set<Action>()
-  rules.forEach((rule) => {
-    rule.actions.forEach((action) => actionSet.add(action))
-  })
-  return Array.from(actionSet)
-}
+export function usePermissions<T extends readonly PermissionRule[]>(
+  props: UsePermissionsProps<T>
+): UsePermissionsReturn<T> {
+  const { userRole, context, rules, checks } = props
 
-/**
- * usePermissions - A configurable ABAC (Attribute-Based Access Control) hook
- *
- * Evaluates userId, role, resource, and data to determine what actions are allowed.
- * Returns an array of allowed actions and utility functions for permission checking.
- *
- * @param props - Permission context including userId, role, resource, optional data, and optional custom rules
- * @returns Object with permissions array and utility functions
- *
- * @example
- * ```tsx
- * // Using default queue management rules
- * const { permissions, hasPermission } = usePermissions({
- *   userId: 'user-123',
- *   role: 'staff',
- *   resource: 'appointment',
- *   data: { assignedTo: 'user-123' }
- * });
- *
- * // Using custom project-specific rules
- * const customRules = [
- *   { role: 'editor', resource: 'document', actions: ['read', 'write'], condition: (ctx) => ctx.data?.owner === ctx.userId }
- * ];
- * const { permissions } = usePermissions({
- *   userId: 'user-456',
- *   role: 'editor',
- *   resource: 'document',
- *   rules: customRules
- * });
- * ```
- */
-export const usePermissions = (props: UsePermissionsProps): UsePermissionsReturn => {
-  const { userId, role, resource, data, rules = DEFAULT_QUEUE_RULES } = props
+  // Memoize permission evaluation results
+  const results = useMemo<PermissionResult<T>[]>(() => {
+    return checks.map((check) => {
+      const { resource, action, data } = check
 
-  const permissions = useMemo(() => {
-    const context = { userId, role, data }
-    const allActions = getAllActionsFromRules(rules)
-
-    // Check each possible action against the resource to build permissions array
-    return allActions.filter((action) => {
-      try {
-        return evaluatePermissions(context, action, resource, rules)
-      } catch {
-        // If there's an error (e.g., invalid action), don't include this permission
-        return false
+      // Build context for this specific check
+      const checkContext: PermissionContext = {
+        ...context,
+        ...(data && { data }),
       }
+
+      // Evaluate permission for this resource/action
+      const hasPermission = evaluatePermissions({
+        userRole,
+        resource,
+        action,
+        context: checkContext,
+        rules,
+      })
+
+      return {
+        resource,
+        action,
+        hasPermission,
+        ...(data && { data }),
+      } as PermissionResult<T>
     })
-  }, [userId, role, resource, data, rules])
+  }, [userRole, context, rules, checks])
 
+  // Helper function to check a specific permission from results
   const hasPermission = useMemo(() => {
-    return (action: Action): boolean => permissions.includes(action)
-  }, [permissions])
+    return (resource: string, action: string): boolean => {
+      const result = results.find((r) => r.resource === resource && r.action === action)
+      return result?.hasPermission ?? false
+    }
+  }, [results])
 
+  // Helper function to get all permissions for a specific resource
+  const getResourcePermissions = useMemo(() => {
+    return (resource: string) => {
+      return results.filter((r) => r.resource === resource)
+    }
+  }, [results])
+
+  // Helper function to check if user has any of the specified actions for a resource
   const hasAnyPermission = useMemo(() => {
-    return (actions: Action[]): boolean => actions.some((action) => permissions.includes(action))
-  }, [permissions])
+    return (resource: string, actions: string[]): boolean => {
+      return actions.some((action) => hasPermission(resource, action))
+    }
+  }, [hasPermission])
 
+  // Helper function to check if user has all of the specified actions for a resource
   const hasAllPermissions = useMemo(() => {
-    return (actions: Action[]): boolean => actions.every((action) => permissions.includes(action))
-  }, [permissions])
+    return (resource: string, actions: string[]): boolean => {
+      return actions.every((action) => hasPermission(resource, action))
+    }
+  }, [hasPermission])
 
   return {
-    permissions,
+    results,
     hasPermission,
+    getResourcePermissions,
     hasAnyPermission,
     hasAllPermissions,
   }

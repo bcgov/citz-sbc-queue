@@ -1,33 +1,13 @@
-import type { Action, PermissionContext, PermissionRule, Role } from "./types"
+import type {
+  PermissionContext,
+} from "./types"
 
 /**
  * Queue Management System - Default Permission Rules
  *
  * These are example rules for the queue management system.
- * Other projects can provide their own rules by passing them to usePermissions.
+ * Other projects can provide their own rules to get proper type inference.
  */
-
-/**
- * Queue Management System - Default Permission Rules
- *
- * These are example rules for the queue management system.
- * Other projects can provide their own rules by passing them to usePermissions.
- */
-
-/**
- * Queue-Specific Permission Sets - Common action combinations
- */
-const QUEUE_PERMISSION_SETS = {
-  READ_ONLY: ["view"] as Action[],
-  BASIC_CRUD: ["view", "create", "update", "delete"] as Action[],
-  MANAGEMENT: ["view", "create", "update", "approve", "assign", "cancel"] as Action[],
-  FULL_ADMIN: ["view", "create", "update", "delete", "approve", "assign", "cancel"] as Action[],
-  CREATE_READ: ["view", "create"] as Action[],
-  READ_UPDATE: ["view", "update"] as Action[],
-  USER_ACTIONS: ["view", "create", "update", "cancel"] as Action[],
-  STAFF_ACTIONS: ["view", "create", "update", "assign"] as Action[],
-  MANAGER_CRUD: ["view", "create", "update"] as Action[],
-} as const
 
 /**
  * Context Helper Functions - Extract values from flexible context structures
@@ -39,13 +19,11 @@ const getUserId = (ctx: PermissionContext): string | undefined => {
 
 const getData = (ctx: PermissionContext): Record<string, unknown> | undefined => {
   // Support various data field conventions
-  return (ctx.data || ctx.context || ctx.metadata || ctx.attributes) as
-    | Record<string, unknown>
-    | undefined
+  return (ctx.data || ctx.context || ctx.metadata || ctx.attributes) as Record<string, unknown> | undefined
 }
 
 /**
- * Condition Functions - Reusable permission conditions with flexible context access
+ * Queue-Specific Condition Functions
  */
 const CONDITIONS = {
   isOwnResource: (ctx: PermissionContext): boolean => {
@@ -76,94 +54,45 @@ const CONDITIONS = {
 }
 
 /**
- * Permission Rule Builders - Factory functions to create common rule patterns
- */
-const createRule = (
-  role: Role,
-  resource: PermissionRule["resource"],
-  actions: Action[],
-  condition?: PermissionRule["condition"]
-): PermissionRule => ({
-  role,
-  resource,
-  actions,
-  ...(condition && { condition }),
-})
-
-const createAdminRule = (
-  resource: PermissionRule["resource"],
-  actions: Action[] = QUEUE_PERMISSION_SETS.BASIC_CRUD
-) => createRule("admin", resource, actions)
-
-const createManagerRule = (
-  resource: PermissionRule["resource"],
-  actions: Action[],
-  condition?: PermissionRule["condition"]
-) => createRule("manager", resource, actions, condition)
-
-const createStaffRule = (
-  resource: PermissionRule["resource"],
-  actions: Action[],
-  condition?: PermissionRule["condition"]
-) => createRule("staff", resource, actions, condition)
-
-const createCitizenRule = (
-  resource: PermissionRule["resource"],
-  actions: Action[],
-  condition?: PermissionRule["condition"]
-) => createRule("citizen", resource, actions, condition)
-
-const createGuestRule = (resource: PermissionRule["resource"]) =>
-  createRule("guest", resource, QUEUE_PERMISSION_SETS.READ_ONLY)
-
-/**
  * Queue Management System - Default Permission Rules Configuration
  *
- * This file contains default ABAC permission rules for the queue management system.
- * Other projects can provide their own rules by passing them to usePermissions.
+ * These rules demonstrate the new type-safe permission system.
+ * Types are automatically inferred from this configuration.
  */
-export const DEFAULT_QUEUE_RULES: PermissionRule[] = [
+export const DEFAULT_QUEUE_RULES = [
   // Admin permissions - full access to everything
-  createAdminRule("appointment", QUEUE_PERMISSION_SETS.FULL_ADMIN),
-  createAdminRule("queue"),
-  createAdminRule("service"),
-  createAdminRule("user"),
-  createAdminRule("report", QUEUE_PERMISSION_SETS.CREATE_READ),
-  createAdminRule("settings", QUEUE_PERMISSION_SETS.READ_UPDATE),
+  { role: "admin", resource: "appointment", actions: ["view", "create", "update", "delete", "approve", "assign", "cancel"] },
+  { role: "admin", resource: "queue", actions: ["view", "create", "update", "delete"] },
+  { role: "admin", resource: "service", actions: ["view", "create", "update", "delete"] },
+  { role: "admin", resource: "user", actions: ["view", "create", "update", "delete"] },
+  { role: "admin", resource: "report", actions: ["view", "create"] },
+  { role: "admin", resource: "settings", actions: ["view", "update"] },
 
   // Manager permissions - manage staff and operations
-  createManagerRule("appointment", QUEUE_PERMISSION_SETS.MANAGEMENT),
-  createManagerRule("queue", QUEUE_PERMISSION_SETS.MANAGER_CRUD),
-  createManagerRule("service", QUEUE_PERMISSION_SETS.MANAGER_CRUD),
-  createManagerRule(
-    "user",
-    QUEUE_PERMISSION_SETS.READ_UPDATE,
-    CONDITIONS.canManageStaffAndCitizens
-  ),
-  createManagerRule("report", QUEUE_PERMISSION_SETS.CREATE_READ),
-  createManagerRule("settings", QUEUE_PERMISSION_SETS.READ_ONLY),
+  { role: "manager", resource: "appointment", actions: ["view", "create", "update", "approve", "assign", "cancel"] },
+  { role: "manager", resource: "queue", actions: ["view", "create", "update"] },
+  { role: "manager", resource: "service", actions: ["view", "create", "update"] },
+  { role: "manager", resource: "user", actions: ["view", "update"], condition: CONDITIONS.canManageStaffAndCitizens },
+  { role: "manager", resource: "report", actions: ["view", "create"] },
+  { role: "manager", resource: "settings", actions: ["view"] },
 
   // Staff permissions - handle appointments and basic operations
-  createStaffRule(
-    "appointment",
-    QUEUE_PERMISSION_SETS.STAFF_ACTIONS,
-    CONDITIONS.isAssignedOrUnassigned
-  ),
-  createStaffRule("queue", QUEUE_PERMISSION_SETS.READ_ONLY),
-  createStaffRule("service", QUEUE_PERMISSION_SETS.READ_ONLY),
-  createStaffRule("user", QUEUE_PERMISSION_SETS.READ_ONLY, CONDITIONS.isCitizen),
-  createStaffRule("report", QUEUE_PERMISSION_SETS.READ_ONLY),
+  { role: "staff", resource: "appointment", actions: ["view", "create", "update", "assign"], condition: CONDITIONS.isAssignedOrUnassigned },
+  { role: "staff", resource: "queue", actions: ["view"] },
+  { role: "staff", resource: "service", actions: ["view"] },
+  { role: "staff", resource: "user", actions: ["view"], condition: CONDITIONS.isCitizen },
+  { role: "staff", resource: "report", actions: ["view"] },
 
   // Citizen permissions - manage own appointments
-  createCitizenRule("appointment", QUEUE_PERMISSION_SETS.USER_ACTIONS, CONDITIONS.isOwnResource),
-  createCitizenRule("queue", QUEUE_PERMISSION_SETS.READ_ONLY),
-  createCitizenRule("service", QUEUE_PERMISSION_SETS.READ_ONLY),
-  createCitizenRule("user", QUEUE_PERMISSION_SETS.READ_UPDATE, CONDITIONS.isOwnResource),
+  { role: "citizen", resource: "appointment", actions: ["view", "create", "update", "cancel"], condition: CONDITIONS.isOwnResource },
+  { role: "citizen", resource: "queue", actions: ["view"] },
+  { role: "citizen", resource: "service", actions: ["view"] },
+  { role: "citizen", resource: "user", actions: ["view", "update"], condition: CONDITIONS.isOwnResource },
 
   // Guest permissions - very limited read access
-  createGuestRule("service"),
-  createGuestRule("queue"),
-]
+  { role: "guest", resource: "service", actions: ["view"] },
+  { role: "guest", resource: "queue", actions: ["view"] },
+] as const // 'as const' enables precise type inference
 
 // Legacy export for backward compatibility
 export const PERMISSION_RULES = DEFAULT_QUEUE_RULES
