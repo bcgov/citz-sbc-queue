@@ -378,6 +378,7 @@ describe("auth/store", () => {
   describe("timer integration", () => {
     it("should schedule timers with correct callbacks", async () => {
       const logoutSpy = vi.spyOn(store, "logout").mockResolvedValue()
+      const refreshSpy = vi.spyOn(store, "refresh").mockResolvedValue(true)
 
       store.loginFromTokens(mockTokenResponse)
 
@@ -395,8 +396,9 @@ describe("auth/store", () => {
       const currentSession = call.getSession()
       expect(currentSession).toEqual(useAuthStore.getState().session)
 
-      // onRefresh should be the refresh method
-      expect(call.onRefresh).toBe(store.refresh)
+      // onRefresh should call the refresh method
+      await call.onRefresh()
+      expect(refreshSpy).toHaveBeenCalled()
 
       // onShowWarning should set warning state
       call.onShowWarning()
