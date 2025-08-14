@@ -4,7 +4,7 @@ This directory contains the middleware system for handling authentication and ro
 
 ## Overview
 
-The middleware system uses Next.js middleware to protect API routes and provide authentication context to downstream handlers. It follows a modular approach with utility functions for composing middleware logic.
+The middleware system uses Next.js middleware to protect both API routes and frontend pages, providing authentication context and enforcing access control. It follows a unified approach that handles different authentication methods based on route type.
 
 ## Architecture
 
@@ -24,38 +24,48 @@ src/
 
 ### 1. Main Middleware (`src/middleware.ts`)
 
-The main middleware applies authentication conditionally to protected routes:
+The main middleware applies authentication to all protected routes (both API and frontend):
 
 ```typescript
 // Only runs auth middleware on routes containing "protected" in their path
-const protectedAuthMiddleware = conditional(
-  (req: NextRequest) => isProtectedRoute(req.nextUrl.pathname),
-  authMiddleware
-)
+if (isProtectedRoute(pathname)) {
+  return authMiddleware(request)
+}
 ```
 
-**Configuration**: Matches all API routes (`/api/:path*`)
+**Configuration**: Matches all routes except auth routes and static files
 
-### 2. Route Protection (`auth.ts`)
+### 2. Unified Route Protection (`auth.ts`)
 
-Routes are protected based on pathname patterns:
+Routes are protected based on pathname patterns and automatically handle different authentication methods:
 
 ```typescript
 // Protected routes contain "/protected" in their path
 // Examples:
-// ✅ /api/protected/users
-// ✅ /api/admin/protected/settings
-// ❌ /api/public/health
+// ✅ /api/protected/users      (API route - uses Bearer token)
+// ✅ /protected/dashboard      (Frontend route - uses HTTP-only cookies)
+// ✅ /admin/protected/settings (Any route with "protected")
+// ❌ /api/public/health        (Public route)
+// ❌ /login                    (Public frontend route)
 ```
 
-### 3. Authentication Flow
+### 3. Dual Authentication Flow
 
-1. **Token Validation**: Extracts Bearer token from Authorization header
+The middleware automatically detects route type and applies appropriate authentication:
+
+#### For API Routes (`/api/*`)
+1. **Bearer Token**: Extracts token from Authorization header
 2. **JWT Verification**: Validates token against BC Gov SSO service
-3. **User Context**: Decodes user information and roles
-4. **Header Injection**: Adds auth context to request headers for API routes
+3. **User Context**: Adds auth context to request headers
+4. **Error Response**: Returns JSON error responses (401, 500)
 
-**Headers Added**:
+#### For Frontend Routes (non-API)
+1. **Cookie Authentication**: Reads access token from HTTP-only cookie
+2. **Token Validation**: Validates against BC Gov SSO service
+3. **Redirect on Failure**: Redirects to home page if authentication fails
+4. **Continue on Success**: Allows request to proceed to page
+
+**Headers Added (API Routes Only)**:
 - `x-user-token`: Original JWT token
 - `x-user-info`: Serialized user object
 - `x-user-roles`: User's client roles array
@@ -73,13 +83,27 @@ export async function GET(request: NextRequest) {
   const { user, token, roles } = getAuthContext(request)
 
   // Use user information for business logic
-  console.log(`User: ${user.display_name}, Roles: ${userRoles}`)
+  console.log(`User: ${user.display_name}, Roles: ${roles}`)
 }
 ```
 
+### In Frontend Pages
+
+Authentication is handled automatically by the middleware:
+- **Protected pages**: Users are redirected to home page if not authenticated
+- **Public pages**: No authentication required
+- **Access tokens**: Automatically managed via HTTP-only cookies
+
+## Cookie Configuration
+
+The authentication system uses environment-aware cookie settings:
+
+- **Development**: `sameSite: "lax"` (works with HTTP and port forwarding)
+- **Production**: `sameSite: "none"` with `secure: true` (for HTTPS cross-site scenarios)
+
 ## Middleware Utilities
 
-### `conditional(condition, middleware)`
+### `conditional(condition, middleware)` *(Available but not currently used)*
 
 Runs middleware only when condition is met:
 
@@ -90,7 +114,7 @@ const conditionalAuth = conditional(
 )
 ```
 
-### `chain(...middlewares)`
+### `chain(...middlewares)` *(Available but not currently used)*
 
 Chains multiple middleware functions:
 
@@ -104,8 +128,14 @@ const combinedMiddleware = chain(
 
 ## Error Handling
 
+### API Routes
 The auth middleware returns appropriate HTTP status codes:
 
 - `401 Unauthorized`: Missing/invalid token or auth header
-- `404 Not Found`: User not found after token validation
 - `500 Internal Server Error`: SSO configuration or validation errors
+
+### Frontend Routes
+Authentication failures result in:
+
+- **Redirect to Home**: Users are redirected to `/` for any authentication failure
+- **Silent Handling**: No error pages or JSON responses for better UX
