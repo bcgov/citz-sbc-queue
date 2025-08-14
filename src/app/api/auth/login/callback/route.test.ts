@@ -119,7 +119,7 @@ describe("/api/auth/login/callback", () => {
       })
     })
 
-    it("should set refresh token as HTTP-only cookie", async () => {
+    it("should set refresh token as HTTP-only cookie in production", async () => {
       vi.stubEnv("SSO_CLIENT_ID", "test-client-id")
       vi.stubEnv("SSO_CLIENT_SECRET", "test-client-secret")
       vi.stubEnv("APP_URL", "https://example.com")
@@ -137,14 +137,71 @@ describe("/api/auth/login/callback", () => {
 
       expect(response.status).toBe(200)
 
-      const setCookieHeader = response.headers.get("set-cookie")
-      expect(setCookieHeader).toBeDefined()
+      const setCookieHeaders = response.headers.getSetCookie()
+      expect(setCookieHeaders).toBeDefined()
 
-      expect(setCookieHeader).toContain("refresh_token=mock-refresh-token")
-      expect(setCookieHeader).toContain("HttpOnly")
-      expect(setCookieHeader).toContain("SameSite=none")
-      expect(setCookieHeader).toContain("Path=/")
-      expect(setCookieHeader).toContain("Secure") // Secure in production
+      // Check for refresh token cookie
+      const refreshTokenCookie = setCookieHeaders.find((cookie) =>
+        cookie.includes("refresh_token=mock-refresh-token")
+      )
+      expect(refreshTokenCookie).toBeDefined()
+      expect(refreshTokenCookie).toContain("HttpOnly")
+      expect(refreshTokenCookie).toContain("SameSite=none")
+      expect(refreshTokenCookie).toContain("Path=/")
+      expect(refreshTokenCookie).toContain("Secure") // Secure in production
+
+      // Check for id token cookie
+      const idTokenCookie = setCookieHeaders.find((cookie) =>
+        cookie.includes("id_token=mock-id-token")
+      )
+      expect(idTokenCookie).toBeDefined()
+      expect(idTokenCookie).toContain("HttpOnly")
+      expect(idTokenCookie).toContain("SameSite=none")
+      expect(idTokenCookie).toContain("Path=/")
+      expect(idTokenCookie).toContain("Secure") // Secure in production
+      expect(idTokenCookie).toContain("Max-Age=3600") // Should have expiry
+    })
+
+    it("should set cookies with lax sameSite in development", async () => {
+      vi.stubEnv("SSO_CLIENT_ID", "test-client-id")
+      vi.stubEnv("SSO_CLIENT_SECRET", "test-client-secret")
+      vi.stubEnv("APP_URL", "http://localhost:3000")
+      vi.stubEnv("NODE_ENV", "development")
+
+      const getTokensModule = await import("@/utils/auth/token/getTokens")
+      vi.mocked(getTokensModule.getTokens).mockResolvedValue(mockTokenResponse)
+
+      const { GET } = await import("./route")
+
+      const request = new NextRequest(
+        "http://localhost:3000/api/auth/login/callback?code=test-auth-code"
+      )
+      const response = await GET(request)
+
+      expect(response.status).toBe(200)
+
+      const setCookieHeaders = response.headers.getSetCookie()
+      expect(setCookieHeaders).toBeDefined()
+
+      // Check for refresh token cookie
+      const refreshTokenCookie = setCookieHeaders.find((cookie) =>
+        cookie.includes("refresh_token=mock-refresh-token")
+      )
+      expect(refreshTokenCookie).toBeDefined()
+      expect(refreshTokenCookie).toContain("HttpOnly")
+      expect(refreshTokenCookie).toContain("SameSite=lax")
+      expect(refreshTokenCookie).toContain("Path=/")
+      expect(refreshTokenCookie).not.toContain("Secure") // Not secure in development
+
+      // Check for id token cookie
+      const idTokenCookie = setCookieHeaders.find((cookie) =>
+        cookie.includes("id_token=mock-id-token")
+      )
+      expect(idTokenCookie).toBeDefined()
+      expect(idTokenCookie).toContain("HttpOnly")
+      expect(idTokenCookie).toContain("SameSite=lax")
+      expect(idTokenCookie).toContain("Path=/")
+      expect(idTokenCookie).not.toContain("Secure") // Not secure in development
     })
 
     it("should use default values when environment variables are not set", async () => {
