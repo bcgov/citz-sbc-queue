@@ -54,7 +54,7 @@ describe("/api/auth/logout", () => {
 
       expect(getLogoutURLModule.getLogoutURL).toHaveBeenCalledWith({
         idToken: "test-id-token",
-        postLogoutRedirectURI: "https://example.com/api/",
+        postLogoutRedirectURI: "https://example.com",
         ssoEnvironment: "dev",
         ssoRealm: "standard",
         ssoProtocol: "openid-connect",

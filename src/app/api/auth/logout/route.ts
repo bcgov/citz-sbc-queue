@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 
     // Use provided redirect_uri, fallback to referer, or default to home page
     const referer = request.headers.get("referer")
-    const postLogoutRedirectURI = redirect_uri || referer || `${APP_URL}/api/`
+    const postLogoutRedirectURI = redirect_uri || referer || `${APP_URL}`
 
     const redirectURL = getLogoutURL({
       idToken: id_token,
@@ -31,7 +31,26 @@ export async function GET(request: NextRequest) {
       ssoRealm: SSO_REALM as string,
     })
 
-    return NextResponse.redirect(redirectURL)
+    const response = NextResponse.redirect(redirectURL)
+
+    // Clear the access token and refresh token cookies
+    response.cookies.set("access_token", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      path: "/",
+      maxAge: 0, // Expire immediately
+    })
+
+    response.cookies.set("refresh_token", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      path: "/",
+      maxAge: 0, // Expire immediately
+    })
+
+    return response
   } catch (error) {
     console.error("Logout error:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })

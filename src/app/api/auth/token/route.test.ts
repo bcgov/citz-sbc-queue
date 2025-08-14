@@ -148,6 +148,7 @@ describe("/api/auth/token", () => {
     it("should set new refresh token as HTTP-only cookie when provided", async () => {
       vi.stubEnv("SSO_CLIENT_ID", "test-client-id")
       vi.stubEnv("SSO_CLIENT_SECRET", "test-client-secret")
+      vi.stubEnv("NODE_ENV", "production")
 
       mockCookieGet.mockReturnValue({ value: "test-refresh-token" })
 
@@ -170,6 +171,35 @@ describe("/api/auth/token", () => {
       expect(setCookieHeader).toContain("HttpOnly")
       expect(setCookieHeader).toContain("SameSite=none")
       expect(setCookieHeader).toContain("Path=/")
+    })
+
+    it("should set cookies with lax sameSite in development", async () => {
+      vi.stubEnv("SSO_CLIENT_ID", "test-client-id")
+      vi.stubEnv("SSO_CLIENT_SECRET", "test-client-secret")
+      vi.stubEnv("NODE_ENV", "development")
+
+      mockCookieGet.mockReturnValue({ value: "test-refresh-token" })
+
+      const getNewTokensModule = await import("@/utils/auth/token/getNewTokens")
+      vi.mocked(getNewTokensModule.getNewTokens).mockResolvedValue(mockTokenResponse)
+
+      const { POST } = await import("./route")
+
+      const request = new NextRequest("http://localhost:3000/api/auth/token", {
+        method: "POST",
+      })
+      const response = await POST(request)
+
+      expect(response.status).toBe(200)
+
+      const setCookieHeader = response.headers.get("set-cookie")
+      expect(setCookieHeader).toBeDefined()
+
+      expect(setCookieHeader).toContain("refresh_token=new-refresh-token")
+      expect(setCookieHeader).toContain("HttpOnly")
+      expect(setCookieHeader).toContain("SameSite=lax")
+      expect(setCookieHeader).toContain("Path=/")
+      expect(setCookieHeader).not.toContain("Secure") // Not secure in development
     })
 
     it("should use default values when environment variables are not set", async () => {
@@ -318,7 +348,9 @@ describe("/api/auth/token", () => {
 
       // Should not set new refresh token cookie when refresh_token is empty
       const setCookieHeader = response.headers.get("set-cookie")
-      expect(setCookieHeader).toBeNull()
+      expect(setCookieHeader).toBeDefined()
+      expect(setCookieHeader).toContain("access_token=new-access-token")
+      expect(setCookieHeader).not.toContain("refresh_token=")
     })
 
     it("should set secure cookie in production", async () => {
