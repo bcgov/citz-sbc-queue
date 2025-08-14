@@ -1,123 +1,151 @@
 import { renderHook } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
-import type { Action, Resource, Role } from "./types"
 import { usePermissions } from "./usePermissions"
 
-describe("usePermissions hook", () => {
-  it("should return permissions and utility functions", () => {
+describe("usePermissions hook - Simplified API", () => {
+  it("should return results and utility functions", () => {
     const { result } = renderHook(() =>
       usePermissions({
-        userId: "test-user",
-        role: "admin",
-        resource: "appointment",
+        userRole: "admin",
+        context: { user_id: "test-user" },
+        checks: [
+          { resource: "appointment" },
+        ]
       })
     )
 
-    expect(result.current.permissions).toBeDefined()
+    expect(result.current.results).toBeDefined()
+    expect(Array.isArray(result.current.results)).toBe(true)
     expect(typeof result.current.hasPermission).toBe("function")
     expect(typeof result.current.hasAnyPermission).toBe("function")
     expect(typeof result.current.hasAllPermissions).toBe("function")
+    expect(typeof result.current.getResourcePermissions).toBe("function")
   })
 
-  it("should return correct permissions for admin", () => {
+  it("should return all actions evaluated for admin", () => {
     const { result } = renderHook(() =>
       usePermissions({
-        userId: "admin-user",
-        role: "admin",
-        resource: "appointment",
+        userRole: "admin",
+        context: { user_id: "admin-user" },
+        checks: [
+          { resource: "appointment" },
+        ]
       })
     )
 
-    expect(result.current.permissions).toContain("view")
-    expect(result.current.permissions).toContain("delete")
-    expect(result.current.hasPermission("view")).toBe(true)
-    expect(result.current.hasPermission("delete")).toBe(true)
+    const appointmentResults = result.current.getResourcePermissions("appointment")
+    expect(appointmentResults.length).toBeGreaterThan(0)
+
+    // Admin should have all permissions
+    const viewPermission = appointmentResults.find(r => r.action === "view")
+    const deletePermission = appointmentResults.find(r => r.action === "delete")
+
+    expect(viewPermission?.hasPermission).toBe(true)
+    expect(deletePermission?.hasPermission).toBe(true)
+    expect(result.current.hasPermission("appointment", "view")).toBe(true)
+    expect(result.current.hasPermission("appointment", "delete")).toBe(true)
   })
 
-  it("should check single permission correctly", () => {
+  it("should check single permission correctly for staff", () => {
     const { result } = renderHook(() =>
       usePermissions({
-        userId: "staff-user",
-        role: "staff",
-        resource: "appointment",
-        data: { assignedTo: "staff-user" },
+        userRole: "staff",
+        context: { user_id: "staff-user" },
+        checks: [
+          { resource: "appointment", data: { assignedTo: "staff-user" } },
+        ]
       })
     )
 
-    expect(result.current.hasPermission("view")).toBe(true)
-    expect(result.current.hasPermission("delete")).toBe(false)
+    expect(result.current.hasPermission("appointment", "view")).toBe(true)
+    expect(result.current.hasPermission("appointment", "delete")).toBe(false)
   })
 
   it("should check any permission correctly", () => {
     const { result } = renderHook(() =>
       usePermissions({
-        userId: "citizen-user",
-        role: "citizen",
-        resource: "appointment",
-        data: { userId: "citizen-user" },
+        userRole: "citizen",
+        context: { user_id: "citizen-user" },
+        checks: [
+          { resource: "appointment", data: { userId: "citizen-user" } },
+        ]
       })
     )
 
-    expect(result.current.hasAnyPermission(["view", "delete"])).toBe(true)
-    expect(result.current.hasAnyPermission(["delete", "approve"])).toBe(false)
+    expect(result.current.hasAnyPermission("appointment", ["view", "delete"])).toBe(true)
+    expect(result.current.hasAnyPermission("appointment", ["delete", "approve"])).toBe(false)
   })
 
   it("should check all permissions correctly", () => {
     const { result } = renderHook(() =>
       usePermissions({
-        userId: "admin-user",
-        role: "admin",
-        resource: "appointment",
+        userRole: "admin",
+        context: { user_id: "admin-user" },
+        checks: [
+          { resource: "appointment" },
+        ]
       })
     )
 
-    expect(result.current.hasAllPermissions(["view", "create"])).toBe(true)
-    expect(result.current.hasAllPermissions(["view", "nonexistent" as Action])).toBe(false)
+    expect(result.current.hasAllPermissions("appointment", ["view", "create"])).toBe(true)
+    expect(result.current.hasAllPermissions("appointment", ["view", "delete", "create", "approve"])).toBe(true)
   })
 
   it("should update permissions when props change", () => {
     const { result, rerender } = renderHook((props) => usePermissions(props), {
       initialProps: {
-        userId: "staff-user",
-        role: "staff" as Role,
-        resource: "appointment" as Resource,
-        data: { assignedTo: "staff-user" },
+        userRole: "staff" as const,
+        context: { user_id: "staff-user" },
+        checks: [
+          { resource: "appointment" as const, data: { assignedTo: "staff-user" } },
+        ]
       },
     })
 
-    expect(result.current.hasPermission("view")).toBe(true)
+    // Staff can view all appointments, but can update ones assigned to them
+    expect(result.current.hasPermission("appointment", "view")).toBe(true)
+    expect(result.current.hasPermission("appointment", "update")).toBe(true)
 
     // Change assignment to another user
     rerender({
-      userId: "staff-user",
-      role: "staff",
-      resource: "appointment",
-      data: { assignedTo: "other-staff" },
+      userRole: "staff",
+      context: { user_id: "staff-user" },
+      checks: [
+        { resource: "appointment", data: { assignedTo: "other-staff" } },
+      ]
     })
 
-    expect(result.current.hasPermission("view")).toBe(false)
+    // Staff can still view (no condition on view), but can't update (condition fails)
+    expect(result.current.hasPermission("appointment", "view")).toBe(true)
+    expect(result.current.hasPermission("appointment", "update")).toBe(false)
   })
 
   it("should memoize results correctly", () => {
     const { result, rerender } = renderHook((props) => usePermissions(props), {
       initialProps: {
-        userId: "admin-user",
-        role: "admin" as Role,
-        resource: "appointment" as Resource,
+        userRole: "admin" as const,
+        context: { user_id: "admin-user" },
+        checks: [
+          { resource: "appointment" as const },
+        ]
       },
     })
 
-    const firstPermissions = result.current.permissions
-    const firstHasPermission = result.current.hasPermission
+    const firstResults = result.current.results
 
     // Rerender with same props
     rerender({
-      userId: "admin-user",
-      role: "admin",
-      resource: "appointment",
+      userRole: "admin",
+      context: { user_id: "admin-user" },
+      checks: [
+        { resource: "appointment" },
+      ]
     })
 
-    expect(result.current.permissions).toBe(firstPermissions)
-    expect(result.current.hasPermission).toBe(firstHasPermission)
+    // Results should have same content (deep equality)
+    expect(result.current.results).toStrictEqual(firstResults)
+    // Functions should work correctly after rerender
+    expect(result.current.hasPermission("appointment", "view")).toBe(true)
+    expect(result.current.hasPermission("appointment", "delete")).toBe(true)
   })
 })

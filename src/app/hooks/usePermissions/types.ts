@@ -16,10 +16,9 @@ export type InferRoles<T extends readonly PermissionRule[]> = T[number]['role']
 export type InferActions<T extends readonly PermissionRule[]> = T[number]['actions'][number]
 export type InferResources<T extends readonly PermissionRule[]> = T[number]['resource']
 
-// Multi-resource check structure
+// Multi-resource check structure - simplified to only require resource and data
 export type ResourceCheck<T extends readonly PermissionRule[] = readonly PermissionRule[]> = {
   resource: InferResources<T>
-  action: InferActions<T>
   data?: Record<string, unknown>
 }
 
@@ -31,11 +30,10 @@ export type PermissionResult<T extends readonly PermissionRule[] = readonly Perm
   data?: Record<string, unknown>
 }
 
-// Hook Props - supports multiple resource checks with type inference
+// Hook Props - supports multiple resource checks with type inference (rules imported internally)
 export type UsePermissionsProps<T extends readonly PermissionRule[]> = {
   userRole: InferRoles<T>
   context: PermissionContext
-  rules: T
   checks: ResourceCheck<T>[]
 }
 
@@ -48,14 +46,8 @@ export type UsePermissionsReturn<T extends readonly PermissionRule[]> = {
   hasAllPermissions: (resource: InferResources<T>, actions: InferActions<T>[]) => boolean
 }
 
-// Legacy single-resource support (for migration)
-export type UsePermissionsSingleProps<T extends readonly PermissionRule[] = readonly PermissionRule[]> = {
-  userId: string
-  role: InferRoles<T>
-  resource: InferResources<T>
-  data?: Record<string, unknown>
-  rules?: T
-}
+// Legacy single-resource support (REMOVED for simplicity)
+// This has been removed to keep the API clean and consistent
 
 // Queue Management System specific types (as examples)
 export type QueueAction = "view" | "create" | "update" | "delete" | "approve" | "assign" | "cancel"

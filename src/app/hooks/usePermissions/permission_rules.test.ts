@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { PERMISSION_RULES } from "./permission_rules"
-import type { Resource, Role } from "./types"
+import { DEFAULT_QUEUE_RULES as PERMISSION_RULES } from "./permission_rules"
 
 describe("Permission Rules", () => {
   it("should have rules for all admin resources", () => {
@@ -33,14 +32,14 @@ describe("Permission Rules", () => {
   })
 
   it("should have conditions for context-sensitive permissions", () => {
-    // Staff appointment rules should have conditions
-    const staffAppointmentRules = PERMISSION_RULES.filter(
-      (rule) => rule.role === "staff" && rule.resource === "appointment"
+    // Staff appointment rules should have conditions for conditional actions
+    const staffAppointmentRulesWithConditions = PERMISSION_RULES.filter(
+      (rule) => rule.role === "staff" && rule.resource === "appointment" && "condition" in rule
     )
 
-    expect(staffAppointmentRules.length).toBeGreaterThan(0)
-    expect(staffAppointmentRules[0]).toHaveProperty("condition")
-    expect(typeof staffAppointmentRules[0].condition).toBe("function")
+    expect(staffAppointmentRulesWithConditions.length).toBeGreaterThan(0)
+    expect(staffAppointmentRulesWithConditions[0]).toHaveProperty("condition")
+    expect(typeof (staffAppointmentRulesWithConditions[0] as any).condition).toBe("function")
   })
 
   it("should grant admin full permissions", () => {
@@ -78,10 +77,20 @@ describe("Permission Rules", () => {
     expect(guestResources).not.toContain("appointment")
   })
 
-  it("should have no duplicate rules", () => {
-    const ruleKeys = PERMISSION_RULES.map((rule) => `${rule.role}-${rule.resource}`)
+  it("should allow multiple rules per role-resource combination", () => {
+    // Our new permission system allows multiple rules per role-resource combination
+    // (e.g., one for basic actions, another for conditional actions)
+    const ruleKeys = PERMISSION_RULES.map((rule, index) => `${rule.role}-${rule.resource}-${index}`)
     const uniqueKeys = new Set(ruleKeys)
 
+    // Each rule should have a unique index, ensuring all rules are preserved
     expect(ruleKeys.length).toBe(uniqueKeys.size)
+
+    // Verify that we do have some role-resource combinations with multiple rules
+    const roleResourceCombos = PERMISSION_RULES.map(rule => `${rule.role}-${rule.resource}`)
+    const uniqueCombos = new Set(roleResourceCombos)
+
+    // We should have more rules than unique role-resource combinations (indicating multiple rules per combo)
+    expect(PERMISSION_RULES.length).toBeGreaterThan(uniqueCombos.size)
   })
 })

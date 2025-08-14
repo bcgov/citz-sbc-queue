@@ -10,16 +10,11 @@ import type {
  */
 
 /**
- * Context Helper Functions - Extract values from flexible context structures
+ * Context Helper Functions - Extract values from simplified context structures
  */
 const getUserId = (ctx: PermissionContext): string | undefined => {
-  // Support various field naming conventions
+  // Support various field naming conventions - no nested data structures
   return (ctx.userId || ctx.user_id || ctx.id || ctx.sub) as string | undefined
-}
-
-const getData = (ctx: PermissionContext): Record<string, unknown> | undefined => {
-  // Support various data field conventions
-  return (ctx.data || ctx.context || ctx.metadata || ctx.attributes) as Record<string, unknown> | undefined
 }
 
 /**
@@ -28,26 +23,26 @@ const getData = (ctx: PermissionContext): Record<string, unknown> | undefined =>
 const CONDITIONS = {
   isOwnResource: (ctx: PermissionContext): boolean => {
     const userId = getUserId(ctx)
-    const data = getData(ctx)
+    const data = ctx.data as Record<string, unknown> | undefined
     const ownerId = data?.userId || data?.user_id || data?.id
     return Boolean(userId && ownerId && userId === ownerId)
   },
 
   isAssignedOrUnassigned: (ctx: PermissionContext): boolean => {
     const userId = getUserId(ctx)
-    const data = getData(ctx)
+    const data = ctx.data as Record<string, unknown> | undefined
     const assignedTo = data?.assignedTo || data?.assigned_to || data?.assignee
     return Boolean(!assignedTo || (userId && assignedTo === userId))
   },
 
   canManageStaffAndCitizens: (ctx: PermissionContext): boolean => {
-    const data = getData(ctx)
+    const data = ctx.data as Record<string, unknown> | undefined
     const targetRole = data?.role || data?.userRole || data?.user_role
     return targetRole === "staff" || targetRole === "citizen"
   },
 
   isCitizen: (ctx: PermissionContext): boolean => {
-    const data = getData(ctx)
+    const data = ctx.data as Record<string, unknown> | undefined
     const targetRole = data?.role || data?.userRole || data?.user_role
     return targetRole === "citizen"
   },
@@ -56,7 +51,7 @@ const CONDITIONS = {
 /**
  * Queue Management System - Default Permission Rules Configuration
  *
- * These rules demonstrate the new type-safe permission system.
+ * These rules demonstrate the new per-action condition system.
  * Types are automatically inferred from this configuration.
  */
 export const DEFAULT_QUEUE_RULES = [
@@ -76,18 +71,24 @@ export const DEFAULT_QUEUE_RULES = [
   { role: "manager", resource: "report", actions: ["view", "create"] },
   { role: "manager", resource: "settings", actions: ["view"] },
 
-  // Staff permissions - handle appointments and basic operations
-  { role: "staff", resource: "appointment", actions: ["view", "create", "update", "assign"], condition: CONDITIONS.isAssignedOrUnassigned },
+  // Staff permissions - basic view access
+  { role: "staff", resource: "appointment", actions: ["view", "create"] },
+  // Staff can update/assign only assigned or unassigned appointments
+  { role: "staff", resource: "appointment", actions: ["update", "assign"], condition: CONDITIONS.isAssignedOrUnassigned },
   { role: "staff", resource: "queue", actions: ["view"] },
   { role: "staff", resource: "service", actions: ["view"] },
   { role: "staff", resource: "user", actions: ["view"], condition: CONDITIONS.isCitizen },
   { role: "staff", resource: "report", actions: ["view"] },
 
-  // Citizen permissions - manage own appointments
-  { role: "citizen", resource: "appointment", actions: ["view", "create", "update", "cancel"], condition: CONDITIONS.isOwnResource },
+  // Citizen permissions - basic view access
+  { role: "citizen", resource: "appointment", actions: ["view", "create"] },
+  // Citizens can update/cancel only their own appointments
+  { role: "citizen", resource: "appointment", actions: ["update", "cancel"], condition: CONDITIONS.isOwnResource },
   { role: "citizen", resource: "queue", actions: ["view"] },
   { role: "citizen", resource: "service", actions: ["view"] },
-  { role: "citizen", resource: "user", actions: ["view", "update"], condition: CONDITIONS.isOwnResource },
+  // Citizens can view all users but only update their own profile
+  { role: "citizen", resource: "user", actions: ["view"] },
+  { role: "citizen", resource: "user", actions: ["update"], condition: CONDITIONS.isOwnResource },
 
   // Guest permissions - very limited read access
   { role: "guest", resource: "service", actions: ["view"] },
