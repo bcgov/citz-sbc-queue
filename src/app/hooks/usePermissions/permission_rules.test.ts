@@ -4,7 +4,7 @@ import { DEFAULT_QUEUE_RULES as PERMISSION_RULES } from "./permission_rules"
 describe("Permission Rules", () => {
   it("should have rules for all admin resources", () => {
     const adminRules = PERMISSION_RULES.filter((rule) => rule.role === "admin")
-    const resources: Resource[] = ["appointment", "queue", "service", "user", "report", "settings"]
+    const resources = ["appointment", "queue", "service", "user", "report", "settings"]
 
     resources.forEach((resource) => {
       const hasRule = adminRules.some((rule) => rule.resource === resource)
@@ -23,7 +23,7 @@ describe("Permission Rules", () => {
   })
 
   it("should have proper role coverage", () => {
-    const roles: Role[] = ["admin", "manager", "staff", "citizen", "guest"]
+    const roles = ["admin", "manager", "staff", "citizen", "guest"]
 
     roles.forEach((role) => {
       const hasRules = PERMISSION_RULES.some((rule) => rule.role === role)
@@ -39,7 +39,9 @@ describe("Permission Rules", () => {
 
     expect(staffAppointmentRulesWithConditions.length).toBeGreaterThan(0)
     expect(staffAppointmentRulesWithConditions[0]).toHaveProperty("condition")
-    expect(typeof (staffAppointmentRulesWithConditions[0] as any).condition).toBe("function")
+
+    const ruleWithCondition = staffAppointmentRulesWithConditions[0] as typeof staffAppointmentRulesWithConditions[0] & { condition: () => boolean }
+    expect(typeof ruleWithCondition.condition).toBe("function")
   })
 
   it("should grant admin full permissions", () => {
