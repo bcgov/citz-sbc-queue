@@ -81,6 +81,15 @@ export async function POST(_request: NextRequest) {
       })
     }
 
+    // Set id token as HTTP-only cookie
+    response.cookies.set("id_token", tokens.id_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      path: "/",
+      maxAge: tokens.expires_in, // Set expiration based on token expiry
+    })
+
     return response
   } catch (error) {
     console.error("Token refresh error:", error)

@@ -12,11 +12,13 @@ const {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const id_token = searchParams.get("id_token")
     const redirect_uri = searchParams.get("redirect_uri")
 
+    // Get id_token from HTTP-only cookie
+    const id_token = request.cookies.get("id_token")?.value
+
     if (!id_token) {
-      return NextResponse.json({ error: "Missing id_token parameter" }, { status: 400 })
+      return NextResponse.json({ error: "Missing id_token in cookies" }, { status: 400 })
     }
 
     // Use provided redirect_uri, fallback to referer, or default to home page
@@ -43,6 +45,15 @@ export async function GET(request: NextRequest) {
     })
 
     response.cookies.set("refresh_token", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      path: "/",
+      maxAge: 0, // Expire immediately
+    })
+
+    // Clear the id token cookie
+    response.cookies.set("id_token", "", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",

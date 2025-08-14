@@ -164,13 +164,27 @@ describe("/api/auth/token", () => {
 
       expect(response.status).toBe(200)
 
-      const setCookieHeader = response.headers.get("set-cookie")
-      expect(setCookieHeader).toBeDefined()
+      const setCookieHeaders = response.headers.getSetCookie()
+      expect(setCookieHeaders).toBeDefined()
 
-      expect(setCookieHeader).toContain("refresh_token=new-refresh-token")
-      expect(setCookieHeader).toContain("HttpOnly")
-      expect(setCookieHeader).toContain("SameSite=none")
-      expect(setCookieHeader).toContain("Path=/")
+      // Check for refresh token cookie
+      const refreshTokenCookie = setCookieHeaders.find((cookie) =>
+        cookie.includes("refresh_token=new-refresh-token")
+      )
+      expect(refreshTokenCookie).toBeDefined()
+      expect(refreshTokenCookie).toContain("HttpOnly")
+      expect(refreshTokenCookie).toContain("SameSite=none")
+      expect(refreshTokenCookie).toContain("Path=/")
+
+      // Check for id token cookie
+      const idTokenCookie = setCookieHeaders.find((cookie) =>
+        cookie.includes("id_token=new-id-token")
+      )
+      expect(idTokenCookie).toBeDefined()
+      expect(idTokenCookie).toContain("HttpOnly")
+      expect(idTokenCookie).toContain("SameSite=none")
+      expect(idTokenCookie).toContain("Path=/")
+      expect(idTokenCookie).toContain("Max-Age=3600") // Should have expiry
     })
 
     it("should set cookies with lax sameSite in development", async () => {
@@ -192,14 +206,28 @@ describe("/api/auth/token", () => {
 
       expect(response.status).toBe(200)
 
-      const setCookieHeader = response.headers.get("set-cookie")
-      expect(setCookieHeader).toBeDefined()
+      const setCookieHeaders = response.headers.getSetCookie()
+      expect(setCookieHeaders).toBeDefined()
 
-      expect(setCookieHeader).toContain("refresh_token=new-refresh-token")
-      expect(setCookieHeader).toContain("HttpOnly")
-      expect(setCookieHeader).toContain("SameSite=lax")
-      expect(setCookieHeader).toContain("Path=/")
-      expect(setCookieHeader).not.toContain("Secure") // Not secure in development
+      // Check for refresh token cookie
+      const refreshTokenCookie = setCookieHeaders.find((cookie) =>
+        cookie.includes("refresh_token=new-refresh-token")
+      )
+      expect(refreshTokenCookie).toBeDefined()
+      expect(refreshTokenCookie).toContain("HttpOnly")
+      expect(refreshTokenCookie).toContain("SameSite=lax")
+      expect(refreshTokenCookie).toContain("Path=/")
+      expect(refreshTokenCookie).not.toContain("Secure") // Not secure in development
+
+      // Check for id token cookie
+      const idTokenCookie = setCookieHeaders.find((cookie) =>
+        cookie.includes("id_token=new-id-token")
+      )
+      expect(idTokenCookie).toBeDefined()
+      expect(idTokenCookie).toContain("HttpOnly")
+      expect(idTokenCookie).toContain("SameSite=lax")
+      expect(idTokenCookie).toContain("Path=/")
+      expect(idTokenCookie).not.toContain("Secure") // Not secure in development
     })
 
     it("should use default values when environment variables are not set", async () => {
@@ -347,10 +375,24 @@ describe("/api/auth/token", () => {
       })
 
       // Should not set new refresh token cookie when refresh_token is empty
-      const setCookieHeader = response.headers.get("set-cookie")
-      expect(setCookieHeader).toBeDefined()
-      expect(setCookieHeader).toContain("access_token=new-access-token")
-      expect(setCookieHeader).not.toContain("refresh_token=")
+      const setCookieHeaders = response.headers.getSetCookie()
+      expect(setCookieHeaders).toBeDefined()
+
+      const accessTokenCookie = setCookieHeaders.find((cookie) =>
+        cookie.includes("access_token=new-access-token")
+      )
+      expect(accessTokenCookie).toBeDefined()
+
+      const refreshTokenCookie = setCookieHeaders.find((cookie) =>
+        cookie.includes("refresh_token=")
+      )
+      expect(refreshTokenCookie).toBeUndefined()
+
+      // Should still set id token cookie
+      const idTokenCookie = setCookieHeaders.find((cookie) =>
+        cookie.includes("id_token=new-id-token")
+      )
+      expect(idTokenCookie).toBeDefined()
     })
 
     it("should set secure cookie in production", async () => {
@@ -372,8 +414,8 @@ describe("/api/auth/token", () => {
 
       expect(response.status).toBe(200)
 
-      const setCookieHeader = response.headers.get("set-cookie")
-      expect(setCookieHeader).toContain("Secure") // Secure in production
+      const setCookieHeaders = response.headers.getSetCookie()
+      expect(setCookieHeaders.some((cookie) => cookie.includes("Secure"))).toBe(true) // Secure in production
     })
   })
 })

@@ -17,7 +17,7 @@ describe("/api/auth/logout", () => {
   })
 
   describe("GET", () => {
-    it("should return 400 error when id_token is missing", async () => {
+    it("should return 400 error when id_token is missing from cookies", async () => {
       const { GET } = await import("./route")
 
       const request = new NextRequest("http://localhost:3000/api/auth/logout")
@@ -27,7 +27,7 @@ describe("/api/auth/logout", () => {
 
       const body = await response.json()
       expect(body).toEqual({
-        error: "Missing id_token parameter",
+        error: "Missing id_token in cookies",
       })
     })
 
@@ -44,9 +44,11 @@ describe("/api/auth/logout", () => {
 
       const { GET } = await import("./route")
 
-      const request = new NextRequest(
-        "http://localhost:3000/api/auth/logout?id_token=test-id-token"
-      )
+      const request = new NextRequest("http://localhost:3000/api/auth/logout", {
+        headers: {
+          cookie: "id_token=test-id-token",
+        },
+      })
       const response = await GET(request)
 
       expect(response.status).toBe(307) // NextResponse.redirect uses 307
@@ -76,7 +78,12 @@ describe("/api/auth/logout", () => {
       const { GET } = await import("./route")
 
       const request = new NextRequest(
-        `http://localhost:3000/api/auth/logout?id_token=test-id-token&redirect_uri=${encodeURIComponent(customRedirectURI)}`
+        `http://localhost:3000/api/auth/logout?redirect_uri=${encodeURIComponent(customRedirectURI)}`,
+        {
+          headers: {
+            cookie: "id_token=test-id-token",
+          },
+        }
       )
       const response = await GET(request)
 
@@ -102,14 +109,12 @@ describe("/api/auth/logout", () => {
 
       const { GET } = await import("./route")
 
-      const request = new NextRequest(
-        "http://localhost:3000/api/auth/logout?id_token=test-id-token",
-        {
-          headers: {
-            referer: refererURL,
-          },
-        }
-      )
+      const request = new NextRequest("http://localhost:3000/api/auth/logout", {
+        headers: {
+          referer: refererURL,
+          cookie: "id_token=test-id-token",
+        },
+      })
       const response = await GET(request)
 
       expect(response.status).toBe(307)
@@ -137,9 +142,11 @@ describe("/api/auth/logout", () => {
 
       const { GET } = await import("./route")
 
-      const request = new NextRequest(
-        "http://localhost:3000/api/auth/logout?id_token=test-id-token"
-      )
+      const request = new NextRequest("http://localhost:3000/api/auth/logout", {
+        headers: {
+          cookie: "id_token=test-id-token",
+        },
+      })
       const response = await GET(request)
 
       expect(response.status).toBe(500)
@@ -152,6 +159,48 @@ describe("/api/auth/logout", () => {
       expect(consoleSpy).toHaveBeenCalledWith("Logout error:", expect.any(Error))
 
       consoleSpy.mockRestore()
+    })
+
+    it("should clear all authentication cookies on successful logout", async () => {
+      const mockLogoutURL = "https://mock-sso-logout-url.com/"
+
+      vi.stubEnv("APP_URL", "https://example.com")
+      vi.stubEnv("NODE_ENV", "production")
+
+      const getLogoutURLModule = await import("@/utils/auth/url/getLogoutURL")
+      vi.mocked(getLogoutURLModule.getLogoutURL).mockReturnValue(mockLogoutURL)
+
+      const { GET } = await import("./route")
+
+      const request = new NextRequest("http://localhost:3000/api/auth/logout", {
+        headers: {
+          cookie:
+            "id_token=test-id-token; access_token=test-access-token; refresh_token=test-refresh-token",
+        },
+      })
+      const response = await GET(request)
+
+      expect(response.status).toBe(307)
+
+      const setCookieHeaders = response.headers.getSetCookie()
+      expect(setCookieHeaders).toBeDefined()
+
+      // Check that access_token cookie is cleared
+      const accessTokenCookie = setCookieHeaders.find((cookie) => cookie.includes("access_token="))
+      expect(accessTokenCookie).toBeDefined()
+      expect(accessTokenCookie).toContain("Max-Age=0")
+
+      // Check that refresh_token cookie is cleared
+      const refreshTokenCookie = setCookieHeaders.find((cookie) =>
+        cookie.includes("refresh_token=")
+      )
+      expect(refreshTokenCookie).toBeDefined()
+      expect(refreshTokenCookie).toContain("Max-Age=0")
+
+      // Check that id_token cookie is cleared
+      const idTokenCookie = setCookieHeaders.find((cookie) => cookie.includes("id_token="))
+      expect(idTokenCookie).toBeDefined()
+      expect(idTokenCookie).toContain("Max-Age=0")
     })
   })
 })

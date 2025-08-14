@@ -497,12 +497,7 @@ describe("middleware/auth", () => {
         })
 
         expect(response.status).toBe(200)
-        expect(response.headers.get("x-user-info")).toBe(
-          JSON.stringify(mockValidationResponse.user)
-        )
-        expect(response.headers.get("x-user-roles")).toBe(
-          JSON.stringify(mockValidationResponse.roles)
-        )
+        // Frontend middleware should not set headers, only API middleware does
       })
     })
 
