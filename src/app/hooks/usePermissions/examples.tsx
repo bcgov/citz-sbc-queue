@@ -1,256 +1,135 @@
 /**
- * Example components demonstrating enhanced usePermissions hook with type inference
- * This file shows practical examples of the multi-resource permission system
+ * Example components demonstrating the enhanced usePermissions hook with simplified API
+ * This file shows practical examples of the multi-resource permission system using queue management
  */
 
-import type { PermissionContext } from "./types"
 import { usePermissions } from "./usePermissions"
 
-// Example permission rules with type inference
-const BLOG_RULES = [
-  {
-    role: "admin",
-    resource: "post",
-    actions: ["read", "write", "delete", "publish"],
-  },
-  {
-    role: "author",
-    resource: "post",
-    actions: ["read", "write", "publish"],
-    condition: (ctx: PermissionContext) =>
-      (ctx.data as Record<string, unknown>)?.authorId === ctx.userId,
-  },
-  {
-    role: "editor",
-    resource: "post",
-    actions: ["read", "write"],
-    condition: (ctx: PermissionContext) => {
-      const data = ctx.data as Record<string, unknown>
-      const editorIds = data?.editorIds as string[]
-      return Array.isArray(editorIds) && editorIds.includes(ctx.userId as string)
-    },
-  },
-  {
-    role: "reader",
-    resource: "post",
-    actions: ["read"],
-    condition: (ctx: PermissionContext) =>
-      (ctx.data as Record<string, unknown>)?.status === "published",
-  },
-] as const
-
-const QUEUE_RULES = [
-  {
-    role: "admin",
-    resource: "appointment",
-    actions: ["view", "create", "update", "delete", "approve", "assign", "cancel"],
-  },
-  {
-    role: "manager",
-    resource: "appointment",
-    actions: ["view", "create", "update", "approve", "assign", "cancel"],
-  },
-  {
-    role: "staff",
-    resource: "appointment",
-    actions: ["view", "create", "update", "assign"],
-    condition: (ctx: PermissionContext) => {
-      const data = ctx.data as Record<string, unknown>
-      return !data?.assignedTo || data?.assignedTo === ctx.userId
-    },
-  },
-  {
-    role: "citizen",
-    resource: "appointment",
-    actions: ["view", "create", "update", "cancel"],
-    condition: (ctx: PermissionContext) =>
-      (ctx.data as Record<string, unknown>)?.userId === ctx.userId,
-  },
-  {
-    role: "admin",
-    resource: "user",
-    actions: ["view", "create", "update", "delete"],
-  },
-  {
-    role: "manager",
-    resource: "user",
-    actions: ["view", "update"],
-    condition: (ctx: PermissionContext) => {
-      const data = ctx.data as Record<string, unknown>
-      return ["staff", "citizen"].includes(data?.role as string)
-    },
-  },
-  {
-    role: "staff",
-    resource: "user",
-    actions: ["view"],
-    condition: (ctx: PermissionContext) =>
-      (ctx.data as Record<string, unknown>)?.role === "citizen",
-  },
-  {
-    role: "admin",
-    resource: "report",
-    actions: ["view", "create"],
-  },
-  {
-    role: "manager",
-    resource: "report",
-    actions: ["view", "create"],
-  },
-  {
-    role: "staff",
-    resource: "report",
-    actions: ["view"],
-  },
-  {
-    role: "admin",
-    resource: "settings",
-    actions: ["view", "update"],
-  },
-  {
-    role: "manager",
-    resource: "settings",
-    actions: ["view"],
-  },
-] as const
-
-// Mock user and data types
+// Mock user and data types for queue management
 type User = {
   id: string
   name: string
-  role: string
+  role: "admin" | "manager" | "staff" | "citizen" | "guest"
 }
 
-type BlogPost = {
+type Appointment = {
   id: string
   title: string
-  content: string
-  authorId: string
-  editorIds: string[]
-  status: "draft" | "published" | "archived"
+  assignedTo?: string
+  userId: string
+  status: "pending" | "confirmed" | "completed" | "cancelled"
 }
 
-type BlogPostCardProps = {
-  post: BlogPost
+type AppointmentCardProps = {
+  appointment: Appointment
   currentUser: User
   onEdit?: () => void
   onDelete?: () => void
-  onPublish?: () => void
+  onAssign?: () => void
 }
 
 /**
- * Example showing multi-resource permission checking for a blog post
+ * Example showing multi-resource permission checking for an appointment
  */
-export const BlogPostCard = ({
-  post,
+export const AppointmentCard = ({
+  appointment,
   currentUser,
   onEdit,
   onDelete,
-  onPublish,
-}: BlogPostCardProps) => {
+  onAssign,
+}: AppointmentCardProps) => {
   const { hasPermission, getResourcePermissions } = usePermissions({
-    userRole: currentUser.role as "admin" | "author" | "editor" | "reader",
-    context: { userId: currentUser.id },
-    rules: BLOG_RULES,
+    userRole: currentUser.role,
+    context: { user_id: currentUser.id },
     checks: [
       {
-        resource: "post",
-        action: "read",
-        data: { authorId: post.authorId, editorIds: post.editorIds, status: post.status },
-      },
-      {
-        resource: "post",
-        action: "write",
-        data: { authorId: post.authorId, editorIds: post.editorIds, status: post.status },
-      },
-      {
-        resource: "post",
-        action: "delete",
-        data: { authorId: post.authorId, editorIds: post.editorIds, status: post.status },
-      },
-      {
-        resource: "post",
-        action: "publish",
-        data: { authorId: post.authorId, editorIds: post.editorIds, status: post.status },
+        resource: "appointment",
+        data: {
+          assignedTo: appointment.assignedTo,
+          userId: appointment.userId,
+          status: appointment.status
+        },
       },
     ],
   })
 
-  // Get all permissions for this post
-  const postPermissions = getResourcePermissions("post")
-  const allowedActions = postPermissions.filter((p) => p.hasPermission).map((p) => p.action)
+  // Get all permissions for this appointment
+  const appointmentPermissions = getResourcePermissions("appointment")
+  const allowedActions = appointmentPermissions.filter((p) => p.hasPermission).map((p) => p.action)
 
   // Type-safe permission checking
-  const canEdit = hasPermission("post", "write")
-  const canDelete = hasPermission("post", "delete")
-  const canPublish = hasPermission("post", "publish")
+  const canView = hasPermission("appointment", "view")
+  const canUpdate = hasPermission("appointment", "update")
+  const canDelete = hasPermission("appointment", "delete")
+  const canAssign = hasPermission("appointment", "assign")
+
+  if (!canView) {
+    return null // User can't even see this appointment
+  }
 
   return (
     <div className="border rounded-lg p-4 space-y-3">
       <div className="flex justify-between items-start">
-        <h3 className="text-lg font-semibold">{post.title}</h3>
-        <span
-          className={`px-2 py-1 rounded text-sm ${
-            post.status === "published"
-              ? "bg-green-100 text-green-800"
-              : post.status === "draft"
-                ? "bg-yellow-100 text-yellow-800"
-                : "bg-gray-100 text-gray-800"
-          }`}
-        >
-          {post.status}
-        </span>
+        <div>
+          <h3 className="font-medium">{appointment.title}</h3>
+          <p className="text-sm text-gray-600">
+            Status: {appointment.status}
+            {appointment.assignedTo && ` • Assigned to: ${appointment.assignedTo}`}
+          </p>
+        </div>
       </div>
 
       <div className="text-sm text-gray-600">
-        <p>ID: {post.id}</p>
-        <p>Author: {post.authorId}</p>
-        {post.editorIds.length > 0 && <p>Editors: {post.editorIds.join(", ")}</p>}
+        <p>Appointment ID: {appointment.id}</p>
+        <p>User: {appointment.userId}</p>
       </div>
 
       {/* Show action buttons based on permissions */}
-      {allowedActions.length > 0 && (
-        <div className="border-t pt-3">
-          <h4 className="text-sm font-medium mb-2">Actions</h4>
-          <div className="flex gap-2 flex-wrap">
-            {canEdit && onEdit && (
-              <button
-                type="button"
-                onClick={onEdit}
-                className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
-              >
-                Edit
-              </button>
-            )}
-
-            {canPublish && onPublish && (
-              <button
-                type="button"
-                onClick={onPublish}
-                className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700"
-              >
-                Publish
-              </button>
-            )}
-
-            {canDelete && onDelete && (
-              <button
-                type="button"
-                onClick={onDelete}
-                className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
-              >
-                Delete
-              </button>
-            )}
-          </div>
+      {allowedActions.length > 1 && ( // More than just "view"
+        <div className="border-t pt-3 space-x-2">
+          {canUpdate && (
+            <button
+              type="button"
+              onClick={onEdit}
+              className="px-3 py-1 bg-blue-500 text-white rounded text-sm"
+            >
+              Edit
+            </button>
+          )}
+          {canDelete && (
+            <button
+              type="button"
+              onClick={onDelete}
+              className="px-3 py-1 bg-red-500 text-white rounded text-sm"
+            >
+              Delete
+            </button>
+          )}
+          {canAssign && (
+            <button
+              type="button"
+              onClick={onAssign}
+              className="px-3 py-1 bg-green-500 text-white rounded text-sm"
+            >
+              Assign
+            </button>
+          )}
         </div>
       )}
 
       {/* Debug info (remove in production) */}
       <details className="text-xs text-gray-500">
-        <summary>Debug: Permissions ({allowedActions.length})</summary>
-        <div className="mt-1">
-          <strong>Allowed actions:</strong> {allowedActions.join(", ") || "None"}
+        <summary>Permission Details</summary>
+        <div className="mt-2 space-y-1">
+          <p>User Role: {currentUser.role}</p>
+          <p>Allowed Actions: {allowedActions.join(", ") || "None"}</p>
+          <div className="grid grid-cols-2 gap-1 mt-2">
+            {appointmentPermissions.map((perm) => (
+              <div key={perm.action} className={perm.hasPermission ? "text-green-600" : "text-red-600"}>
+                {perm.action}: {perm.hasPermission ? "✓" : "✗"}
+              </div>
+            ))}
+          </div>
         </div>
       </details>
     </div>
@@ -258,70 +137,44 @@ export const BlogPostCard = ({
 }
 
 /**
- * Example showing navigation permissions with queue management rules
+ * Example showing navigation permissions
  */
 export const NavigationExample = ({ currentUser }: { currentUser: User }) => {
-  // Check permissions for different navigation items using queue rules
-  const appointmentPerms = usePermissions({
-    userRole: currentUser.role as "admin" | "manager" | "staff" | "citizen",
-    context: { userId: currentUser.id },
-    rules: QUEUE_RULES,
+  // Check permissions for different navigation items
+  const permissions = usePermissions({
+    userRole: currentUser.role,
+    context: { user_id: currentUser.id },
     checks: [
-      { resource: "appointment", action: "view" },
-      { resource: "appointment", action: "create" },
+      { resource: "appointment" },
+      { resource: "user" },
+      { resource: "report" },
+      { resource: "settings" },
     ],
-  })
-
-  const userPerms = usePermissions({
-    userRole: currentUser.role as "admin" | "manager" | "staff" | "citizen",
-    context: { userId: currentUser.id },
-    rules: QUEUE_RULES,
-    checks: [
-      { resource: "user", action: "view" },
-      { resource: "user", action: "create" },
-    ],
-  })
-
-  const reportPerms = usePermissions({
-    userRole: currentUser.role as "admin" | "manager" | "staff" | "citizen",
-    context: { userId: currentUser.id },
-    rules: QUEUE_RULES,
-    checks: [
-      { resource: "report", action: "view" },
-      { resource: "report", action: "create" },
-    ],
-  })
-
-  const settingsPerms = usePermissions({
-    userRole: currentUser.role as "admin" | "manager" | "staff" | "citizen",
-    context: { userId: currentUser.id },
-    rules: QUEUE_RULES,
-    checks: [{ resource: "settings", action: "view" }],
   })
 
   const navItems = [
     {
       label: "Appointments",
       href: "/appointments",
-      show: appointmentPerms.hasPermission("appointment", "view"),
-      canCreate: appointmentPerms.hasPermission("appointment", "create"),
+      show: permissions.hasPermission("appointment", "view"),
+      canCreate: permissions.hasPermission("appointment", "create"),
     },
     {
       label: "Users",
       href: "/users",
-      show: userPerms.hasPermission("user", "view"),
-      canCreate: userPerms.hasPermission("user", "create"),
+      show: permissions.hasPermission("user", "view"),
+      canCreate: permissions.hasPermission("user", "create"),
     },
     {
       label: "Reports",
       href: "/reports",
-      show: reportPerms.hasPermission("report", "view"),
-      canCreate: reportPerms.hasPermission("report", "create"),
+      show: permissions.hasPermission("report", "view"),
+      canCreate: permissions.hasPermission("report", "create"),
     },
     {
       label: "Settings",
       href: "/settings",
-      show: settingsPerms.hasPermission("settings", "view"),
+      show: permissions.hasPermission("settings", "view"),
       canCreate: false, // Settings don't have create action
     },
   ]
@@ -354,21 +207,13 @@ export const NavigationExample = ({ currentUser }: { currentUser: User }) => {
  */
 export const PermissionsDashboard = ({ currentUser }: { currentUser: User }) => {
   const { results } = usePermissions({
-    userRole: currentUser.role as "admin" | "manager" | "staff" | "citizen",
-    context: { userId: currentUser.id },
-    rules: QUEUE_RULES,
+    userRole: currentUser.role,
+    context: { user_id: currentUser.id },
     checks: [
-      { resource: "appointment", action: "view" },
-      { resource: "appointment", action: "create" },
-      { resource: "appointment", action: "update" },
-      { resource: "appointment", action: "delete" },
-      { resource: "user", action: "view" },
-      { resource: "user", action: "create" },
-      { resource: "user", action: "update" },
-      { resource: "report", action: "view" },
-      { resource: "report", action: "create" },
-      { resource: "settings", action: "view" },
-      { resource: "settings", action: "update" },
+      { resource: "appointment" },
+      { resource: "user" },
+      { resource: "report" },
+      { resource: "settings" },
     ],
   })
 
@@ -414,63 +259,66 @@ export const PermissionsDashboard = ({ currentUser }: { currentUser: User }) => 
 }
 
 /**
- * Example showing server action integration pattern
+ * Example showing user management with permissions
  */
-export const ServerActionExample = () => {
-  // This would typically be in a server action or API route
-  const exampleServerAction = async (_formData: FormData) => {
-    "use server"
+export const UserManagementExample = ({ currentUser }: { currentUser: User }) => {
+  const users = [
+    { id: "1", name: "John Admin", role: "admin" as const },
+    { id: "2", name: "Jane Manager", role: "manager" as const },
+    { id: "3", name: "Bob Staff", role: "staff" as const },
+    { id: "4", name: "Alice Citizen", role: "citizen" as const },
+  ]
 
-    // In a real implementation, you would:
-    // 1. Get user from session/auth
-    // 2. Extract appointment data from form
-    // 3. Use evaluatePermissions on the server
+  const { hasPermission } = usePermissions({
+    userRole: currentUser.role,
+    context: { user_id: currentUser.id },
+    checks: [
+      { resource: "user" },
+    ],
+  })
 
-    const mockPermissionCheck = `
-    import { evaluatePermissions } from '@/hooks/usePermissions';
+  const canViewUsers = hasPermission("user", "view")
+  const canCreateUsers = hasPermission("user", "create")
+  const canUpdateUsers = hasPermission("user", "update")
+  const canDeleteUsers = hasPermission("user", "delete")
 
-    export async function updateAppointment(formData: FormData) {
-      const user = await getCurrentUser();
-      const appointmentId = formData.get('appointmentId') as string;
-      const appointment = await getAppointment(appointmentId);
-
-      const canUpdate = evaluatePermissions({
-        userRole: user.role,
-        resource: 'appointment',
-        action: 'update',
-        context: {
-          userId: user.id,
-          data: {
-            assignedTo: appointment.assignedTo,
-            userId: appointment.userId
-          }
-        },
-        rules: QUEUE_RULES
-      });
-
-      if (!canUpdate) {
-        throw new Error('Insufficient permissions to update appointment');
-      }
-
-      // Proceed with update...
-    }
-    `
-
-    console.log("Server-side permission checking example:", mockPermissionCheck)
+  if (!canViewUsers) {
+    return <div className="p-4 text-red-600">You don't have permission to view users.</div>
   }
 
   return (
-    <div className="p-4 bg-gray-50 rounded">
-      <h3 className="font-medium mb-2">Server Action Integration</h3>
-      <p className="text-sm text-gray-600 mb-3">
-        The <code>evaluatePermissions</code> function can be used on the server for secure
-        permission checking in API routes and server actions.
-      </p>
-      <form action={exampleServerAction}>
-        <button type="submit" className="px-3 py-1 bg-gray-600 text-white rounded text-sm">
-          See Console for Example
-        </button>
-      </form>
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">User Management</h2>
+        {canCreateUsers && (
+          <button type="button" className="px-4 py-2 bg-blue-600 text-white rounded">
+            Add User
+          </button>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        {users.map((user) => (
+          <div key={user.id} className="flex justify-between items-center p-3 border rounded">
+            <div>
+              <span className="font-medium">{user.name}</span>
+              <span className="ml-2 text-sm text-gray-600">({user.role})</span>
+            </div>
+            <div className="space-x-2">
+              {canUpdateUsers && (
+                <button type="button" className="px-2 py-1 text-sm bg-yellow-100 text-yellow-800 rounded">
+                  Edit
+                </button>
+              )}
+              {canDeleteUsers && user.id !== currentUser.id && (
+                <button type="button" className="px-2 py-1 text-sm bg-red-100 text-red-800 rounded">
+                  Delete
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
