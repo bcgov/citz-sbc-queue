@@ -1,6 +1,12 @@
 import type { NextRequest } from "next/server"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { authMiddleware, isProtectedRoute } from "./auth"
+import {
+  apiAuthMiddleware,
+  authMiddleware,
+  frontendAuthMiddleware,
+  isFrontendRoute,
+  isProtectedRoute,
+} from "./auth"
 
 // Mock fetch globally
 const mockFetch = vi.fn()
@@ -23,6 +29,7 @@ describe("middleware/auth", () => {
       expect(isProtectedRoute("/api/admin/protected/settings")).toBe(true)
       expect(isProtectedRoute("/protected")).toBe(true)
       expect(isProtectedRoute("/some/protected/path")).toBe(true)
+      expect(isProtectedRoute("/dashboard/protected/admin")).toBe(true)
     })
 
     it("should return false for routes not containing '/protected'", () => {
@@ -31,18 +38,19 @@ describe("middleware/auth", () => {
       expect(isProtectedRoute("/")).toBe(false)
       expect(isProtectedRoute("/users")).toBe(false)
       expect(isProtectedRoute("/api/users")).toBe(false)
+      expect(isProtectedRoute("/dashboard")).toBe(false)
+      expect(isProtectedRoute("/appointments")).toBe(false)
     })
 
     it("should handle edge cases", () => {
       expect(isProtectedRoute("")).toBe(false)
-      expect(isProtectedRoute("/")).toBe(false)
       expect(isProtectedRoute("protected")).toBe(false) // No leading slash - doesn't contain "/protected"
       expect(isProtectedRoute("/protect")).toBe(false) // Partial match
       expect(isProtectedRoute("/protecteduser")).toBe(true) // Contains "/protected" as substring
     })
   })
 
-  describe("authMiddleware", () => {
+  describe("apiAuthMiddleware", () => {
     const createMockRequest = (
       headers: Record<string, string | null>,
       url = "https://example.com/api/test"
@@ -70,7 +78,7 @@ describe("middleware/auth", () => {
           authorization: null,
         })
 
-        const response = await authMiddleware(request)
+        const response = await apiAuthMiddleware(request)
         const responseData = await response.json()
 
         expect(response.status).toBe(401)
@@ -82,7 +90,7 @@ describe("middleware/auth", () => {
           authorization: "",
         })
 
-        const response = await authMiddleware(request)
+        const response = await apiAuthMiddleware(request)
         const responseData = await response.json()
 
         expect(response.status).toBe(401)
@@ -96,7 +104,7 @@ describe("middleware/auth", () => {
           authorization: "Bearer",
         })
 
-        const response = await authMiddleware(request)
+        const response = await apiAuthMiddleware(request)
         const responseData = await response.json()
 
         expect(response.status).toBe(401)
@@ -108,7 +116,7 @@ describe("middleware/auth", () => {
           authorization: "token123",
         })
 
-        const response = await authMiddleware(request)
+        const response = await apiAuthMiddleware(request)
         const responseData = await response.json()
 
         expect(response.status).toBe(401)
@@ -120,7 +128,7 @@ describe("middleware/auth", () => {
           authorization: "Bearer ",
         })
 
-        const response = await authMiddleware(request)
+        const response = await apiAuthMiddleware(request)
         const responseData = await response.json()
 
         expect(response.status).toBe(401)
@@ -144,7 +152,7 @@ describe("middleware/auth", () => {
           "https://example.com/api/test"
         )
 
-        await authMiddleware(request)
+        await apiAuthMiddleware(request)
 
         expect(mockFetch).toHaveBeenCalledWith("https://example.com/api/auth/validate", {
           method: "POST",
@@ -160,7 +168,7 @@ describe("middleware/auth", () => {
           authorization: "Bearer valid-token",
         })
 
-        const response = await authMiddleware(request)
+        const response = await apiAuthMiddleware(request)
 
         expect(response.status).toBe(200)
         expect(response.headers.get("x-user-token")).toBe("valid-token")
@@ -187,7 +195,7 @@ describe("middleware/auth", () => {
           authorization: "Bearer valid-token",
         })
 
-        const response = await authMiddleware(request)
+        const response = await apiAuthMiddleware(request)
 
         expect(response.status).toBe(200)
         expect(response.headers.get("x-user-roles")).toBe("[]")
@@ -207,7 +215,7 @@ describe("middleware/auth", () => {
           authorization: "Bearer invalid-token",
         })
 
-        const response = await authMiddleware(request)
+        const response = await apiAuthMiddleware(request)
         const responseData = await response.json()
 
         expect(response.status).toBe(401)
@@ -225,7 +233,7 @@ describe("middleware/auth", () => {
           authorization: "Bearer expired-token",
         })
 
-        const response = await authMiddleware(request)
+        const response = await apiAuthMiddleware(request)
         const responseData = await response.json()
 
         expect(response.status).toBe(200) // Uses response status from fetch
@@ -244,7 +252,7 @@ describe("middleware/auth", () => {
           authorization: "Bearer invalid-token",
         })
 
-        const response = await authMiddleware(request)
+        const response = await apiAuthMiddleware(request)
         const responseData = await response.json()
 
         expect(response.status).toBe(403)
@@ -260,7 +268,7 @@ describe("middleware/auth", () => {
           authorization: "Bearer valid-token",
         })
 
-        const response = await authMiddleware(request)
+        const response = await apiAuthMiddleware(request)
         const responseData = await response.json()
 
         expect(response.status).toBe(500)
@@ -278,7 +286,7 @@ describe("middleware/auth", () => {
           authorization: "Bearer valid-token",
         })
 
-        const response = await authMiddleware(request)
+        const response = await apiAuthMiddleware(request)
         const responseData = await response.json()
 
         expect(response.status).toBe(500)
@@ -301,7 +309,7 @@ describe("middleware/auth", () => {
           "http://localhost:3000/api/protected/data"
         )
 
-        await authMiddleware(request)
+        await apiAuthMiddleware(request)
 
         expect(mockFetch).toHaveBeenCalledWith("http://localhost:3000/api/auth/validate", {
           method: "POST",
@@ -319,7 +327,7 @@ describe("middleware/auth", () => {
 
         // This should fail because split(" ")[1] will be an empty string
         // when there are multiple spaces
-        const response = await authMiddleware(request)
+        const response = await apiAuthMiddleware(request)
         const responseData = await response.json()
 
         expect(response.status).toBe(401)
@@ -337,10 +345,218 @@ describe("middleware/auth", () => {
           authorization: `Bearer ${longToken}`,
         })
 
-        const response = await authMiddleware(request)
+        const response = await apiAuthMiddleware(request)
 
         expect(response.status).toBe(200)
         expect(response.headers.get("x-user-token")).toBe(longToken)
+      })
+    })
+  })
+
+  describe("authMiddleware", () => {
+    const createMockRequest = (
+      headers: Record<string, string | null>,
+      cookies: Record<string, string> = {},
+      url = "https://example.com/dashboard"
+    ): NextRequest => {
+      const headerEntries = Object.entries(headers).filter(([, value]) => value !== null)
+      const mockHeaders = new Headers(headerEntries as [string, string][])
+
+      return {
+        url,
+        nextUrl: { pathname: new URL(url).pathname },
+        headers: {
+          get: (name: string) => mockHeaders.get(name),
+        },
+        cookies: {
+          get: (name: string) => (cookies[name] ? { value: cookies[name] } : undefined),
+        },
+      } as NextRequest
+    }
+
+    beforeEach(() => {
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            valid: true,
+            user: { id: "123", name: "Test User" },
+            roles: ["user"],
+          }),
+      })
+    })
+
+    it("should call frontendAuthMiddleware for frontend routes", async () => {
+      const request = createMockRequest(
+        {},
+        { access_token: "valid-token" },
+        "https://example.com/dashboard"
+      )
+
+      const response = await authMiddleware(request)
+
+      expect(response.status).toBe(200)
+      expect(mockFetch).toHaveBeenCalledWith("https://example.com/api/auth/validate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: "valid-token" }),
+      })
+    })
+
+    it("should call apiAuthMiddleware for API routes", async () => {
+      const request = createMockRequest(
+        { authorization: "Bearer api-token" },
+        {},
+        "https://example.com/api/protected/users"
+      )
+
+      const response = await authMiddleware(request)
+
+      expect(response.status).toBe(200)
+      expect(mockFetch).toHaveBeenCalledWith("https://example.com/api/auth/validate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: "api-token" }),
+      })
+    })
+  })
+
+  describe("isFrontendRoute", () => {
+    it("should return true for non-API routes", () => {
+      expect(isFrontendRoute("/")).toBe(true)
+      expect(isFrontendRoute("/dashboard")).toBe(true)
+      expect(isFrontendRoute("/appointments")).toBe(true)
+      expect(isFrontendRoute("/appointments/123")).toBe(true)
+      expect(isFrontendRoute("/profile")).toBe(true)
+    })
+
+    it("should return false for API routes", () => {
+      expect(isFrontendRoute("/api/")).toBe(false)
+      expect(isFrontendRoute("/api/auth")).toBe(false)
+      expect(isFrontendRoute("/api/auth/login")).toBe(false)
+      expect(isFrontendRoute("/api/protected/users")).toBe(false)
+      expect(isFrontendRoute("/api/public/health")).toBe(false)
+    })
+  })
+
+  describe("frontendAuthMiddleware", () => {
+    const createMockRequestWithCookies = (
+      cookies: Record<string, string>,
+      url = "https://example.com/dashboard"
+    ): NextRequest => {
+      return {
+        url,
+        cookies: {
+          get: (name: string) => (cookies[name] ? { value: cookies[name] } : undefined),
+        },
+      } as NextRequest
+    }
+
+    const mockValidationResponse = {
+      valid: true,
+      user: { id: "123", name: "Test User" },
+      roles: ["user"],
+    }
+
+    describe("when access token cookie is missing", () => {
+      it("should redirect to home page", async () => {
+        const request = createMockRequestWithCookies({})
+
+        const response = await frontendAuthMiddleware(request)
+
+        expect(response.status).toBe(307) // Redirect status
+        expect(response.headers.get("location")).toBe("https://example.com/")
+      })
+    })
+
+    describe("when access token is present and valid", () => {
+      beforeEach(() => {
+        mockFetch.mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve(mockValidationResponse),
+        })
+      })
+
+      it("should call validation API and continue with request", async () => {
+        const request = createMockRequestWithCookies({
+          access_token: "valid-token",
+        })
+
+        const response = await frontendAuthMiddleware(request)
+
+        expect(mockFetch).toHaveBeenCalledWith("https://example.com/api/auth/validate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token: "valid-token" }),
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.headers.get("x-user-info")).toBe(
+          JSON.stringify(mockValidationResponse.user)
+        )
+        expect(response.headers.get("x-user-roles")).toBe(
+          JSON.stringify(mockValidationResponse.roles)
+        )
+      })
+    })
+
+    describe("when access token is present but invalid", () => {
+      it("should redirect to home page when validation fails", async () => {
+        mockFetch.mockResolvedValue({
+          ok: false,
+          status: 401,
+          json: () => Promise.resolve({ valid: false, error: "Invalid token" }),
+        })
+
+        const request = createMockRequestWithCookies({
+          access_token: "invalid-token",
+        })
+
+        const response = await frontendAuthMiddleware(request)
+
+        expect(response.status).toBe(307) // Redirect status
+        expect(response.headers.get("location")).toBe("https://example.com/")
+      })
+
+      it("should redirect to home page when validation returns invalid", async () => {
+        mockFetch.mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve({ valid: false }),
+        })
+
+        const request = createMockRequestWithCookies({
+          access_token: "invalid-token",
+        })
+
+        const response = await frontendAuthMiddleware(request)
+
+        expect(response.status).toBe(307) // Redirect status
+        expect(response.headers.get("location")).toBe("https://example.com/")
+      })
+    })
+
+    describe("when validation API call fails", () => {
+      it("should redirect to home page on network error", async () => {
+        mockFetch.mockRejectedValue(new Error("Network error"))
+
+        const request = createMockRequestWithCookies({
+          access_token: "valid-token",
+        })
+
+        const response = await frontendAuthMiddleware(request)
+
+        expect(response.status).toBe(307) // Redirect status
+        expect(response.headers.get("location")).toBe("https://example.com/")
+        expect(mockConsoleError).toHaveBeenCalledWith(
+          "Frontend auth middleware error:",
+          expect.any(Error)
+        )
       })
     })
   })
