@@ -1,4 +1,5 @@
 @import "./bcgov/colours.css";
+@import "./bcgov/spacing.css";
 @import "tailwindcss";
 
 :root {
