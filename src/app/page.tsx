@@ -9,13 +9,12 @@ export default function Home() {
           <div className="text-black italic p-8 p-8 bg-blue-100"> bg-blue-100 </div>
           <div className="text-black font-bold p-8 p-8 bg-blue-200"> bg-blue-200 </div>
           <div className="text-black font-bold italic p-8 p-8 bg-blue-300"> bg-blue-300 </div>
-          <div className="text-black p-8 p-8 bg-blue-400"> bg-gold-400 </div>
+          <div className="text-black p-8 p-8 bg-blue-400"> bg-blue-400 </div>
           <div className="text-black p-8 bg-blue-500"> bg-blue-500 </div>
           <div className="text-black p-8 bg-blue-600"> bg-blue-600 </div>
           <div className=" p-8 bg-blue-700"> bg-blue-700 </div>
           <div className=" p-8 bg-blue-800"> bg-blue-800 </div>
-          <div className=" p-8 bg-blue-900"> bg-blue-900 </div>
-          <div className=" p-8 bg-blue-950"> bg-blue-950 </div>
+          <div className=" p-8 bg-blue"> bg-blue </div>
         </div>
         <div>
           <div className="text-black p-8 bg-gold-50"> bg-gold-50 </div>
@@ -27,8 +26,20 @@ export default function Home() {
           <div className="text-black p-8 bg-gold-600"> bg-gold-600</div>
           <div className="text-black p-8 bg-gold-700"> bg-gold-700</div>
           <div className="text-black p-8 bg-gold-800"> bg-gold-800</div>
-          <div className="text-black p-8 bg-gold-900"> bg-gold-900</div>
-          <div className="text-black p-8 bg-gold-950"> bg-gold-950</div>
+          <div className="text-black p-8 bg-gold"> bg-gold</div>
+        </div>
+        <div>
+          <div className="text-black p-8 bg-gray-50"> bg-gray-50 </div>
+          <div className="text-black p-8 bg-gray-100"> bg-gray-100</div>
+          <div className="text-black p-8 bg-gray-200"> bg-gray-200</div>
+          <div className="text-black p-8 bg-gray-300"> bg-gray-300</div>
+          <div className="text-black p-8 bg-gray-400"> bg-gray-400</div>
+          <div className="text-black p-8 bg-gray-500"> bg-gray-500</div>
+          <div className="text-black p-8 bg-gray-600"> bg-gray-600</div>
+          <div className=" p-8 bg-gray-700"> bg-gray-700</div>
+          <div className=" p-8 bg-gray-800"> bg-gray-800</div>
+          <div className=" p-8 bg-gray-900"> bg-gray-900</div>
+          <div className=" p-8 bg-gray-950"> bg-gray-950</div>
         </div>
         <div>
           <div className="text-black p-8 bg-success-50"> bg-success-50</div>
