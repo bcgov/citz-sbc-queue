@@ -6,10 +6,13 @@ export default function Home() {
           {/* We can specify the font */}
           <div className="font-BCSans text-black p-8 p-8 bg-blue-50"> bg-blue-50 </div>
           {/* But because it is set as the default for the project we don't have to */}
-          <div className="text-black italic p-8 p-8 bg-blue-100"> bg-blue-100 </div>
+          <div className="text-black p-8 p-8 bg-blue-100"> bg-blue-100 </div>
+          {/* See this square for an example of bold BCSans */}
           <div className="text-black font-bold p-8 p-8 bg-blue-200"> bg-blue-200 </div>
-          <div className="text-black font-bold italic p-8 p-8 bg-blue-300"> bg-blue-300 </div>
-          <div className="text-black p-8 p-8 bg-blue-400"> bg-blue-400 </div>
+          {/* See this square for an example of itailic BCSans */}
+          <div className="text-black italic p-8 p-8 bg-blue-300"> bg-blue-300 </div>
+          {/* See this square for an example of bold itailic BCSans */}
+          <div className="text-black font-bold italic p-8 p-8 bg-blue-400"> bg-blue-400 </div>
           <div className="text-black p-8 bg-blue-500"> bg-blue-500 </div>
           <div className="text-black p-8 bg-blue-600"> bg-blue-600 </div>
           <div className=" p-8 bg-blue-700"> bg-blue-700 </div>

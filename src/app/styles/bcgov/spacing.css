@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/*
+Link to default Tailwind theme values:
+ https://tailwindcss.com/docs/theme#default-theme-variable-reference
+To see information on BC Gov Typography standards please see:
+ https://www2.gov.bc.ca/gov/content/digital/design-system/foundations/typography
+*/
+
 @theme {
   /* Adding font standard formatting */
   /* Only including non-default values */

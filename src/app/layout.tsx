@@ -17,7 +17,7 @@ const BCSans = localFont({
     {
       path: "../../public/fonts/BCSans-Bold.woff2",
       weight: "700",
-      style: "normal",
+      style: "bold",
     },
     {
       path: "../../public/fonts/BCSans-BoldItalic.woff2",
