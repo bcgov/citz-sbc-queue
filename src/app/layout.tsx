@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import "./styles/globals.css"
 import localFont from "next/font/local"
 
+
 const BCSans = localFont({
   src: [
     {
