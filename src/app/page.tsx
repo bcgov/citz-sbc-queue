@@ -1,14 +1,75 @@
 export default function Home() {
   return (
-    <div className="grid grid-cols-12 min-h-screen m-8 p-8 gap-4">
-      <div className="col-start-2 col-end-12">
-        <h1>This is a H1 header</h1>
-        <h2>This is a H2 header</h2>
-        <h3>This is a H3 header</h3>
-        <h4>This is a H4 header</h4>
-        <h5>This is a H5 header</h5>
-        <h6>This is a H6 header</h6>
+    /*
+    This first div wraps everything to all nested elements will inherit the following:
+      Grid with 9 columns & gap 4 between them,
+      min height to the screen height, margin 8, padding 4
+      NOTE: --spacing is set to 0.125rem in spacing.css
+            all spacing values are set using this formula:
+            calc(var(--spacing) * <value>); => 0.125rem * <value>
+            - gap 4 => 0.125rem * 4 = 0.5rem
+    */
+    <div className="grid grid-cols-8 min-h-screen m-8 p-8 gap-4">
+      {/*
+      Setting the following to use the same background colour with different text colours
+        Setting text to align to the top right of the available space,
+        Also setting the start and end columns for the section
+      */}
+      <div className="align-top text-right col-start-2 col-end-4 bg-background-default">
+        <h1 className="text-typography-primary p-2">This is a H1 header</h1>
+        <h2 className="text-typography-secondary p-2">This is a H2 header</h2>
+        <h3 className="text-typography-disabled p-2">This is a H3 header</h3>
+        <h4 className="text-typography-link p-2">This is a H4 header</h4>
+        <h5 className="text-typography-danger p-2">This is a H5 header</h5>
+        {/* Over writing the background colour for this block to see the text colour better */}
+        <h6 className="bg-gray-950 text-typography-primary-invert p-2">This is a H6 header</h6>
       </div>
+      {/*
+      This section has the text colour defined on the higer level and backgrounds lower
+        Keeping the text aligned to the center middle of available space
+        Also setting the start and end columns for the section
+      */}
+      <div className="align-middle text-typography-primary text-center col-start-4 col-end-6">
+        <h1 className="bg-background-light-gray p-2">This is a H1 header</h1>
+        <h2 className="bg-button-danger p-2">This is a H2 header</h2>
+        <h3 className="bg-button-danger-hover p-2">This is a H3 header</h3>
+        <h4 className="bg-disabled p-2">This is a H4 header</h4>
+        {/* Changing the background colour here to see the text colours better */}
+        <h5 className="bg-gray-950 text-typography-primary-invert p-2">This is a H5 header</h5>
+        <h6 className="bg-gray-950 text-typography-secondary-invert p-2">This is a H6 header</h6>
+      </div>
+      {/*
+      This section has the text colour defined on the higer level and backgrounds lower
+        Keeping the text aligned to the bottom right of available space
+        Also setting the start and end columns for the section
+      */}
+      <div className="align-bottom text-left col-start-6 col-end-8 bg-background-light-blue text-typography-primary">
+        <h1 className="bg-disabled p-2">This is a H1 header</h1>
+        <h2 className="bg-info p-2">This is a H2 header</h2>
+        <h3 className="bg-danger p-2">This is a H3 header</h3>
+        <h4 className="text-typography-primary-invert bg-button-primary p-2">
+          This is a H4 header
+        </h4>
+        <h5 className="text-typography-primary-invert bg-button-primary-hover p-2">
+          This is a H5 header
+        </h5>
+        <h6 className="bg-button-secondary p-2">This is a H6 header</h6>
+      </div>
+      {/*
+      Unsectioned area, defining start of the h1 which will effect the rest of the tags
+        Defining background in each tag, as well as text colour and alignment
+       */}
+      <h1 className="col-start-2 bg-button-secondary-hover text-typography-primary p-2">H1</h1>
+      <h2 className="bg-disabled text-typography-primary p-2">H2</h2>
+      <h3 className="bg-button-tertiary text-typography-primary p-2">H3</h3>
+      <h4 className="bg-button-tertiary-hover text-typography-primary p-2">H4</h4>
+      <h5 className="bg-background-dark-blue p-2">H5 </h5>
+      {/* no background defined, inherits from parent page */}
+      <h6 className="p-2">H6 </h6>
+      {/*
+       Defining the starting column again here, all child elements will align with this
+       And all further sections will fall in line
+      */}
       <div className="col-start-2">
         {/* We can specify the font */}
         <div className="font-BCSans text-typography-primary p-8 p-8 bg-blue-50"> bg-blue-50 </div>
@@ -93,16 +154,6 @@ export default function Home() {
         <div className=" p-8 bg-error-800"> bg-error-800</div>
         <div className=" p-8 bg-error-900"> bg-error-900</div>
         <div className=" p-8 bg-error-950"> bg-error-950</div>
-      </div>
-      <div>
-        <div className="text-typography-primary p-8 bg-info"> info </div>
-        <div className="text-typography-primary p-8 bg-danger"> danger</div>
-        <div className=" p-8 bg-button-primary"> button-primary</div>
-        <div className=" p-8 bg-button-primary-hover"> button-primary-hover</div>
-        <div className="text-typography-primary p-8 bg-button-secondary"> button-secondary</div>
-        <div className=" p-8 bg-button-danger"> button-danger</div>
-        <div className=" p-8 bg-button-danger-hover"> button-danger-hover</div>
-        <div className="text-typography-primary p-8 bg-disabled"> disabled</div>
       </div>
     </div>
   )
