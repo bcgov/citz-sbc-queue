@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+/*
+Link to default Tailwind theme values:
+ https://tailwindcss.com/docs/theme#default-theme-variable-reference
+To see information on BC Gov Typography standards please see:
+ https://www2.gov.bc.ca/gov/content/digital/design-system/foundations/typography
+*/
+
+@theme {
+  /* Adding font standard formatting */
+  /* Only including non-default values */
+  --text-xs--line-height: 1.125rem;
+  --text-sm--line-height: 1.313rem;
+  --text-base--line-height: 1.688rem;
+  --text-lg--line-height: 1.913rem;
+  --text-xl--line-height: 2.125rem;
+  --text-2xl--line-height: 2.25rem;
+  --text-3xl: 1.75rem;
+  --text-3xl--line-height: 3rem;
+  --text-4xl: 2rem;
+  --text-4xl--line-height: 3.375rem;
+  --text-5xl: 2.25rem;
+}
