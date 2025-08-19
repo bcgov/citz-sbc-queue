@@ -100,10 +100,6 @@ describe("auth/store", () => {
       })
       expect(state.showExpiryWarning).toBe(false)
       expect(mockLocalStorage.setItem).toHaveBeenCalledWith("auth.sessionStartAt", String(now))
-      expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
-        "auth.idToken",
-        mockTokenResponse.id_token
-      )
       expect(mockedScheduleAuthTimers).toHaveBeenCalled()
     })
 
@@ -116,6 +112,7 @@ describe("auth/store", () => {
 
       const state = useAuthStore.getState()
       expect(state.session?.sessionEndsAt).toBe(existingStartAt + 10 * 60 * 60 * 1000)
+      // Should not set sessionStartAt again
       expect(mockLocalStorage.setItem).not.toHaveBeenCalledWith(
         "auth.sessionStartAt",
         expect.any(String)
@@ -146,19 +143,12 @@ describe("auth/store", () => {
       expect(useAuthStore.getState().session).toBeNull()
     })
 
-    it("should use stored idToken when token response doesn't include one", () => {
-      const storedIdToken = "stored.id.token"
-      mockLocalStorage.getItem.mockImplementation((key) => {
-        if (key === "auth.idToken") return storedIdToken
-        return null
-      })
-
+    // idToken is only set from token response now; no localStorage fallback
+    it("should set idToken to undefined if not present in token response", () => {
       const tokenWithoutId = { ...mockTokenResponse, id_token: undefined }
-
       store.loginFromTokens(tokenWithoutId)
-
       const state = useAuthStore.getState()
-      expect(state.session?.idToken).toBe(storedIdToken)
+      expect(state.session?.idToken).toBeUndefined()
     })
 
     it("should clear showExpiryWarning when logging in", () => {
@@ -252,20 +242,11 @@ describe("auth/store", () => {
       expect(state.session).toBeNull()
       expect(state.showExpiryWarning).toBe(false)
       expect(mockedClearAuthTimers).toHaveBeenCalled()
-      expect(mockedServerLogout).toHaveBeenCalledWith(mockSession.idToken)
+      expect(mockedServerLogout).toHaveBeenCalled()
       expect(mockLocalStorage.removeItem).toHaveBeenCalledWith("auth.sessionStartAt")
-      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith("auth.idToken")
     })
 
-    it("should use stored idToken when session idToken is not available", async () => {
-      const storedIdToken = "stored.id.token"
-      mockLocalStorage.getItem.mockReturnValue(storedIdToken)
-      useAuthStore.setState({ session: { ...mockSession, idToken: undefined } })
-
-      await store.logout()
-
-      expect(mockedServerLogout).toHaveBeenCalledWith(storedIdToken)
-    })
+    // idToken is not read from localStorage anymore
 
     it("should handle logout when no session exists", async () => {
       useAuthStore.setState({ session: null })
@@ -273,7 +254,7 @@ describe("auth/store", () => {
       await store.logout()
 
       expect(mockedClearAuthTimers).toHaveBeenCalled()
-      expect(mockedServerLogout).toHaveBeenCalledWith(undefined)
+      expect(mockedServerLogout).toHaveBeenCalled()
     })
 
     it("should handle server logout errors gracefully", async () => {
@@ -308,7 +289,6 @@ describe("auth/store", () => {
       await store.bootstrap()
 
       expect(mockLocalStorage.removeItem).toHaveBeenCalledWith("auth.sessionStartAt")
-      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith("auth.idToken")
       expect(mockedRefreshTokens).not.toHaveBeenCalled()
     })
 

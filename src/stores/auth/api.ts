@@ -9,9 +9,8 @@ export const refreshTokens = async (): Promise<TokenResponse | null> => {
   return (await r.json()) as TokenResponse
 }
 
-export const serverLogout = async (idToken?: string): Promise<void> => {
-  if (!idToken) return
-  void fetch(`/api/auth/logout?id_token=${encodeURIComponent(idToken)}`, {
+export const serverLogout = async (): Promise<void> => {
+  void fetch("/api/auth/logout", {
     method: "POST",
     credentials: "include",
   })

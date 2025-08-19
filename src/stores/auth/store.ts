@@ -5,7 +5,6 @@ import type { Session, TokenResponse } from "./types"
 
 const TEN_HOURS_MS = 10 * 60 * 60 * 1000
 const SESSION_START_AT_KEY = "auth.sessionStartAt"
-const ID_TOKEN_KEY = "auth.idToken"
 
 const getSessionStartAt = (): number | null => {
   const raw = typeof window !== "undefined" ? localStorage.getItem(SESSION_START_AT_KEY) : null
@@ -16,15 +15,6 @@ const setSessionStartAt = (ts: number | null): void => {
   if (typeof window === "undefined") return
   if (ts) localStorage.setItem(SESSION_START_AT_KEY, String(ts))
   else localStorage.removeItem(SESSION_START_AT_KEY)
-}
-
-const getIdToken = (): string | undefined =>
-  typeof window !== "undefined" ? (localStorage.getItem(ID_TOKEN_KEY) ?? undefined) : undefined
-
-const setIdToken = (v?: string): void => {
-  if (typeof window === "undefined") return
-  if (v) localStorage.setItem(ID_TOKEN_KEY, v)
-  else localStorage.removeItem(ID_TOKEN_KEY)
 }
 
 type AuthStore = {
@@ -62,15 +52,13 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       return
     }
 
-    setIdToken(t.id_token)
-
     set({
       session: {
         accessToken: t.access_token,
         accessExpiresAt: now + t.expires_in * 1000,
         refreshExpiresAt: now + t.refresh_expires_in * 1000,
         sessionEndsAt: endsAt,
-        idToken: t.id_token ?? getIdToken(),
+        idToken: t.id_token,
       },
       showExpiryWarning: false,
     })
@@ -111,11 +99,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   logout: async () => {
     clearAuthTimers()
-    const idToken = get().session?.idToken ?? getIdToken()
     set({ session: null, showExpiryWarning: false })
     setSessionStartAt(null)
-    setIdToken(undefined)
-    await serverLogout(idToken)
+    await serverLogout()
   },
 
   // Called once on app mount: try to silently obtain tokens from refresh cookie
@@ -125,7 +111,6 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     if (startAt && Date.now() >= startAt + TEN_HOURS_MS) {
       // session window is over
       setSessionStartAt(null)
-      setIdToken(undefined)
       return
     }
 
