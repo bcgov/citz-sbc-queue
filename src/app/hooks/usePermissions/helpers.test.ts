@@ -14,19 +14,19 @@ import type { PermissionResult, PermissionRule } from "./types"
 
 describe("Permission Helpers", () => {
   const mockRules: readonly PermissionRule[] = [
-    { role: "admin", resource: "user", actions: ["view", "create", "update", "delete"] },
-    { role: "user", resource: "user", actions: ["view", "update"] },
-    { role: "admin", resource: "post", actions: ["view", "create", "update", "delete", "publish"] },
-    { role: "editor", resource: "post", actions: ["view", "update", "publish"] },
+    { role: "admin", resource: "appointment", actions: ["view", "create", "update", "delete"] },
+    { role: "staff", resource: "appointment", actions: ["view", "update"] },
+    { role: "admin", resource: "queue", actions: ["view", "create", "update", "delete"] },
+    { role: "manager", resource: "queue", actions: ["view", "update"] },
   ] as const
 
-  const mockResults: PermissionResult<typeof mockRules>[] = [
-    { resource: "user", action: "view", hasPermission: true },
-    { resource: "user", action: "create", hasPermission: true },
-    { resource: "user", action: "update", hasPermission: false },
-    { resource: "user", action: "delete", hasPermission: false },
-    { resource: "post", action: "view", hasPermission: true },
-    { resource: "post", action: "create", hasPermission: false },
+  const mockResults: PermissionResult[] = [
+    { resource: "appointment", action: "view", hasPermission: true },
+    { resource: "appointment", action: "create", hasPermission: true },
+    { resource: "appointment", action: "update", hasPermission: false },
+    { resource: "appointment", action: "delete", hasPermission: false },
+    { resource: "queue", action: "view", hasPermission: true },
+    { resource: "queue", action: "create", hasPermission: false },
   ]
 
   describe("extractAllActions", () => {
@@ -37,7 +37,6 @@ describe("Permission Helpers", () => {
       expect(actions).toContain("create")
       expect(actions).toContain("update")
       expect(actions).toContain("delete")
-      expect(actions).toContain("publish")
 
       // Should not have duplicates
       const uniqueActions = [...new Set(actions)]
@@ -54,12 +53,12 @@ describe("Permission Helpers", () => {
     it("should create function that checks permissions correctly", () => {
       const hasPermission = createPermissionChecker(mockResults)
 
-      expect(hasPermission("user", "view")).toBe(true)
-      expect(hasPermission("user", "create")).toBe(true)
-      expect(hasPermission("user", "update")).toBe(false)
-      expect(hasPermission("user", "delete")).toBe(false)
-      expect(hasPermission("post", "view")).toBe(true)
-      expect(hasPermission("post", "create")).toBe(false)
+      expect(hasPermission("appointment", "view")).toBe(true)
+      expect(hasPermission("appointment", "create")).toBe(true)
+      expect(hasPermission("appointment", "update")).toBe(false)
+      expect(hasPermission("appointment", "delete")).toBe(false)
+      expect(hasPermission("queue", "view")).toBe(true)
+      expect(hasPermission("queue", "create")).toBe(false)
 
       // Non-existent permission should return false
       expect(hasPermission("nonexistent", "action")).toBe(false)
@@ -70,13 +69,13 @@ describe("Permission Helpers", () => {
     it("should create function that filters by resource", () => {
       const getResourcePermissions = createResourcePermissionGetter(mockResults)
 
-      const userPermissions = getResourcePermissions("user")
-      expect(userPermissions).toHaveLength(4)
-      expect(userPermissions.every((p) => p.resource === "user")).toBe(true)
+      const appointmentPermissions = getResourcePermissions("appointment")
+      expect(appointmentPermissions).toHaveLength(4)
+      expect(appointmentPermissions.every((p) => p.resource === "appointment")).toBe(true)
 
-      const postPermissions = getResourcePermissions("post")
-      expect(postPermissions).toHaveLength(2)
-      expect(postPermissions.every((p) => p.resource === "post")).toBe(true)
+      const queuePermissions = getResourcePermissions("queue")
+      expect(queuePermissions).toHaveLength(2)
+      expect(queuePermissions.every((p) => p.resource === "queue")).toBe(true)
 
       const nonexistentPermissions = getResourcePermissions("nonexistent")
       expect(nonexistentPermissions).toHaveLength(0)
@@ -89,12 +88,12 @@ describe("Permission Helpers", () => {
       const hasAnyPermission = createAnyPermissionChecker(hasPermission)
 
       // Should return true if any action is permitted
-      expect(hasAnyPermission("user", ["view", "update"])).toBe(true) // view is true
-      expect(hasAnyPermission("user", ["update", "delete"])).toBe(false) // both false
-      expect(hasAnyPermission("post", ["view", "create"])).toBe(true) // view is true
+      expect(hasAnyPermission("appointment", ["view", "update"])).toBe(true) // view is true
+      expect(hasAnyPermission("appointment", ["update", "delete"])).toBe(false) // both false
+      expect(hasAnyPermission("queue", ["view", "create"])).toBe(true) // view is true
 
       // Empty actions array should return false
-      expect(hasAnyPermission("user", [])).toBe(false)
+      expect(hasAnyPermission("appointment", [])).toBe(false)
     })
   })
 
@@ -104,12 +103,12 @@ describe("Permission Helpers", () => {
       const hasAllPermissions = createAllPermissionChecker(hasPermission)
 
       // Should return true only if all actions are permitted
-      expect(hasAllPermissions("user", ["view", "create"])).toBe(true) // both true
-      expect(hasAllPermissions("user", ["view", "update"])).toBe(false) // update is false
-      expect(hasAllPermissions("user", ["update", "delete"])).toBe(false) // both false
+      expect(hasAllPermissions("appointment", ["view", "create"])).toBe(true) // both true
+      expect(hasAllPermissions("appointment", ["view", "update"])).toBe(false) // update is false
+      expect(hasAllPermissions("appointment", ["update", "delete"])).toBe(false) // both false
 
       // Empty actions array should return true (vacuous truth)
-      expect(hasAllPermissions("user", [])).toBe(true)
+      expect(hasAllPermissions("appointment", [])).toBe(true)
     })
   })
 })

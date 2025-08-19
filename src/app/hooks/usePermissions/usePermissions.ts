@@ -7,7 +7,7 @@ import {
   createResourcePermissionGetter,
   extractAllActions,
 } from "./helpers"
-import { DEFAULT_QUEUE_RULES } from "./permission_rules"
+import { QUEUE_RULES } from "./permission_rules"
 import type {
   PermissionContext,
   PermissionResult,
@@ -16,24 +16,20 @@ import type {
 } from "./types"
 
 /**
- * Multi-Resource Permission Hook with Simplified API
+ * Queue Management Permission Hook
  *
- * This hook provides type-safe permission checking for multiple resources.
+ * This hook provides type-safe permission checking for queue management resources.
  * It evaluates ALL possible actions for each resource and returns the results.
- * Types are automatically inferred from the permission rules configuration.
  */
-export function usePermissions(
-  props: UsePermissionsProps<typeof DEFAULT_QUEUE_RULES>
-): UsePermissionsReturn<typeof DEFAULT_QUEUE_RULES> {
+export function usePermissions(props: UsePermissionsProps): UsePermissionsReturn {
   const { userRole, context, checks } = props
-  const rules = DEFAULT_QUEUE_RULES // Rules imported internally
 
-  // Get all possible actions from rules for type inference
-  const allActions = useMemo(() => extractAllActions(rules), [rules])
+  // Get all possible actions from rules
+  const allActions = useMemo(() => extractAllActions(QUEUE_RULES), [])
 
   // Memoize permission evaluation results
-  const results = useMemo<PermissionResult<typeof DEFAULT_QUEUE_RULES>[]>(() => {
-    const allResults: PermissionResult<typeof DEFAULT_QUEUE_RULES>[] = []
+  const results = useMemo<PermissionResult[]>(() => {
+    const allResults: PermissionResult[] = []
 
     // For each check, evaluate ALL possible actions for that resource
     checks.forEach((check) => {
@@ -52,7 +48,7 @@ export function usePermissions(
           resource,
           action,
           context: checkContext,
-          rules,
+          rules: QUEUE_RULES,
         })
 
         allResults.push({
@@ -60,12 +56,12 @@ export function usePermissions(
           action,
           hasPermission,
           ...(data && { data }),
-        } as PermissionResult<typeof DEFAULT_QUEUE_RULES>)
+        } as PermissionResult)
       })
     })
 
     return allResults
-  }, [userRole, context, checks, rules, allActions])
+  }, [userRole, context, checks, allActions])
 
   // Helper functions created from results
   const hasPermission = useMemo(() => createPermissionChecker(results), [results])

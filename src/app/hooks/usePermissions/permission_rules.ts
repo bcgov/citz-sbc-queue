@@ -3,18 +3,14 @@ import type {
 } from "./types"
 
 /**
- * Queue Management System - Default Permission Rules
- *
- * These are example rules for the queue management system.
- * Other projects can provide their own rules to get proper type inference.
+ * Queue Management System Permission Rules
  */
 
 /**
- * Context Helper Functions - Extract values from simplified context structures
+ * Context Helper Functions
  */
 const getUserId = (ctx: PermissionContext): string | undefined => {
-  // Support various field naming conventions - no nested data structures
-  return (ctx.userId || ctx.user_id || ctx.id || ctx.sub) as string | undefined
+  return ctx.userId as string | undefined
 }
 
 /**
@@ -24,37 +20,34 @@ const CONDITIONS = {
   isOwnResource: (ctx: PermissionContext): boolean => {
     const userId = getUserId(ctx)
     const data = ctx.data as Record<string, unknown> | undefined
-    const ownerId = data?.userId || data?.user_id || data?.id
+    const ownerId = data?.userId
     return Boolean(userId && ownerId && userId === ownerId)
   },
 
   isAssignedOrUnassigned: (ctx: PermissionContext): boolean => {
     const userId = getUserId(ctx)
     const data = ctx.data as Record<string, unknown> | undefined
-    const assignedTo = data?.assignedTo || data?.assigned_to || data?.assignee
+    const assignedTo = data?.assignedTo
     return Boolean(!assignedTo || (userId && assignedTo === userId))
   },
 
   canManageStaffAndCitizens: (ctx: PermissionContext): boolean => {
     const data = ctx.data as Record<string, unknown> | undefined
-    const targetRole = data?.role || data?.userRole || data?.user_role
+    const targetRole = data?.role
     return targetRole === "staff" || targetRole === "citizen"
   },
 
   isCitizen: (ctx: PermissionContext): boolean => {
     const data = ctx.data as Record<string, unknown> | undefined
-    const targetRole = data?.role || data?.userRole || data?.user_role
+    const targetRole = data?.role
     return targetRole === "citizen"
   },
 }
 
 /**
- * Queue Management System - Default Permission Rules Configuration
- *
- * These rules demonstrate the new per-action condition system.
- * Types are automatically inferred from this configuration.
+ * Queue Management System Permission Rules Configuration
  */
-export const DEFAULT_QUEUE_RULES = [
+export const QUEUE_RULES = [
   // Admin permissions - full access to everything
   { role: "admin", resource: "appointment", actions: ["view", "create", "update", "delete", "approve", "assign", "cancel"] },
   { role: "admin", resource: "queue", actions: ["view", "create", "update", "delete"] },
@@ -93,7 +86,4 @@ export const DEFAULT_QUEUE_RULES = [
   // Guest permissions - very limited read access
   { role: "guest", resource: "service", actions: ["view"] },
   { role: "guest", resource: "queue", actions: ["view"] },
-] as const // 'as const' enables precise type inference
-
-// Legacy export for backward compatibility
-export const PERMISSION_RULES = DEFAULT_QUEUE_RULES
+] as const

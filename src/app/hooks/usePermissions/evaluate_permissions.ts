@@ -1,39 +1,13 @@
 import { EvaluationError, ValidationError } from "./errors"
-import { DEFAULT_QUEUE_RULES } from "./permission_rules"
+import { QUEUE_RULES } from "./permission_rules"
 import type { PermissionContext, PermissionRule } from "./types"
 import { validateAction, validateContext, validateResource, validateRole } from "./validators"
 
 /**
- * Core permission evaluation logic with configurable rules
- *
- * This function can be shared between client-side hooks and server-side API routes.
- * It evaluates user context against permission rules to determine if a specific action is allowed.
+ * Core permission evaluation logic for queue management system
  *
  * @param props - Evaluation parameters with userRole, resource, action, context, and rules
  * @returns boolean indicating if the permission is granted
- *
- * @example
- * ```typescript
- * // Using default queue management rules
- * const canUpdate = evaluatePermissions({
- *   userRole: 'staff',
- *   resource: 'appointment',
- *   action: 'update',
- *   context: { userId: 'user-123', data: { assignedTo: 'user-123' } }
- * });
- *
- * // Using custom project-specific rules
- * const customRules = [
- *   { role: 'editor', resource: 'document', actions: ['view', 'edit'], condition: (ctx) => ctx.data?.owner === ctx.userId }
- * ];
- * const canEdit = evaluatePermissions({
- *   userRole: 'editor',
- *   resource: 'document',
- *   action: 'edit',
- *   context: { userId: 'user-123' },
- *   rules: customRules
- * });
- * ```
  */
 
 type EvaluatePermissionsProps = {
@@ -54,7 +28,7 @@ type EvaluatePermissionsProps = {
  * @throws {EvaluationError} When condition evaluation fails
  */
 export function evaluatePermissions(props: EvaluatePermissionsProps): boolean {
-  const { userRole, resource, action, context, rules = DEFAULT_QUEUE_RULES } = props
+  const { userRole, resource, action, context, rules = QUEUE_RULES } = props
 
   try {
     // Validate all inputs
@@ -65,7 +39,7 @@ export function evaluatePermissions(props: EvaluatePermissionsProps): boolean {
 
     // Find matching rules for the user's role and the requested resource
     const matchingRules = rules.filter(
-      (rule) => rule.role === userRole && rule.resource === resource
+      (rule: PermissionRule) => rule.role === userRole && rule.resource === resource
     )
 
     // If no rules found, permission is denied

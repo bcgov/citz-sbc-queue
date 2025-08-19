@@ -95,7 +95,7 @@ describe("usePermissions hook - Simplified API", () => {
     const { result, rerender } = renderHook((props) => usePermissions(props), {
       initialProps: {
         userRole: "staff" as const,
-        context: { user_id: "staff-user" },
+        context: { userId: "staff-user" },
         checks: [
           { resource: "appointment" as const, data: { assignedTo: "staff-user" } },
         ]
@@ -109,7 +109,7 @@ describe("usePermissions hook - Simplified API", () => {
     // Change assignment to another user
     rerender({
       userRole: "staff",
-      context: { user_id: "staff-user" },
+      context: { userId: "staff-user" },
       checks: [
         { resource: "appointment", data: { assignedTo: "other-staff" } },
       ]

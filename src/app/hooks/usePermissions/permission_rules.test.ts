@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest"
-import { DEFAULT_QUEUE_RULES as PERMISSION_RULES } from "./permission_rules"
+import { QUEUE_RULES } from "./permission_rules"
 
 describe("Permission Rules", () => {
   it("should have rules for all admin resources", () => {
-    const adminRules = PERMISSION_RULES.filter((rule) => rule.role === "admin")
+    const adminRules = QUEUE_RULES.filter((rule) => rule.role === "admin")
     const resources = ["appointment", "queue", "service", "user", "report", "settings"]
 
     resources.forEach((resource) => {
@@ -13,7 +13,7 @@ describe("Permission Rules", () => {
   })
 
   it("should have consistent rule structure", () => {
-    PERMISSION_RULES.forEach((rule) => {
+    QUEUE_RULES.forEach((rule) => {
       expect(rule).toHaveProperty("role")
       expect(rule).toHaveProperty("resource")
       expect(rule).toHaveProperty("actions")
@@ -26,14 +26,14 @@ describe("Permission Rules", () => {
     const roles = ["admin", "manager", "staff", "citizen", "guest"]
 
     roles.forEach((role) => {
-      const hasRules = PERMISSION_RULES.some((rule) => rule.role === role)
+      const hasRules = QUEUE_RULES.some((rule) => rule.role === role)
       expect(hasRules).toBe(true)
     })
   })
 
   it("should have conditions for context-sensitive permissions", () => {
     // Staff appointment rules should have conditions for conditional actions
-    const staffAppointmentRulesWithConditions = PERMISSION_RULES.filter(
+    const staffAppointmentRulesWithConditions = QUEUE_RULES.filter(
       (rule) => rule.role === "staff" && rule.resource === "appointment" && "condition" in rule
     )
 
@@ -45,14 +45,14 @@ describe("Permission Rules", () => {
   })
 
   it("should grant admin full permissions", () => {
-    const adminRules = PERMISSION_RULES.filter((rule) => rule.role === "admin")
+    const adminRules = QUEUE_RULES.filter((rule) => rule.role === "admin")
 
     // Admin should have the most comprehensive permissions
     const adminActionCount = adminRules.reduce((total, rule) => total + rule.actions.length, 0)
 
     expect(adminActionCount).toBeGreaterThan(0)
     // Admin should have at least as many actions as any other single role
-    const managerActionCount = PERMISSION_RULES.filter((rule) => rule.role === "manager").reduce(
+    const managerActionCount = QUEUE_RULES.filter((rule) => rule.role === "manager").reduce(
       (total, rule) => total + rule.actions.length,
       0
     )
@@ -61,7 +61,7 @@ describe("Permission Rules", () => {
   })
 
   it("should restrict guest permissions appropriately", () => {
-    const guestRules = PERMISSION_RULES.filter((rule) => rule.role === "guest")
+    const guestRules = QUEUE_RULES.filter((rule) => rule.role === "guest")
 
     // Guests should only have view permissions
     guestRules.forEach((rule) => {
@@ -82,17 +82,17 @@ describe("Permission Rules", () => {
   it("should allow multiple rules per role-resource combination", () => {
     // Our new permission system allows multiple rules per role-resource combination
     // (e.g., one for basic actions, another for conditional actions)
-    const ruleKeys = PERMISSION_RULES.map((rule, index) => `${rule.role}-${rule.resource}-${index}`)
+    const ruleKeys = QUEUE_RULES.map((rule, index) => `${rule.role}-${rule.resource}-${index}`)
     const uniqueKeys = new Set(ruleKeys)
 
     // Each rule should have a unique index, ensuring all rules are preserved
     expect(ruleKeys.length).toBe(uniqueKeys.size)
 
     // Verify that we do have some role-resource combinations with multiple rules
-    const roleResourceCombos = PERMISSION_RULES.map(rule => `${rule.role}-${rule.resource}`)
+    const roleResourceCombos = QUEUE_RULES.map(rule => `${rule.role}-${rule.resource}`)
     const uniqueCombos = new Set(roleResourceCombos)
 
     // We should have more rules than unique role-resource combinations (indicating multiple rules per combo)
-    expect(PERMISSION_RULES.length).toBeGreaterThan(uniqueCombos.size)
+    expect(QUEUE_RULES.length).toBeGreaterThan(uniqueCombos.size)
   })
 })

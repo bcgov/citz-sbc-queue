@@ -1,8 +1,7 @@
 /**
  * Helper Functions for usePermissions Hook
  *
- * These utility functions provide reusable logic for the permission hook,
- * including action extraction and permission checking utilities.
+ * These utility functions provide reusable logic for the permission hook.
  */
 
 import type { PermissionResult, PermissionRule } from "./types"
@@ -27,8 +26,8 @@ export function extractAllActions(rules: readonly PermissionRule[]): string[] {
  * @param results - Array of permission results
  * @returns Function that checks if a specific resource/action combination is permitted
  */
-export function createPermissionChecker<T extends readonly PermissionRule[]>(
-  results: PermissionResult<T>[]
+export function createPermissionChecker(
+  results: PermissionResult[]
 ): (resource: string, action: string) => boolean {
   return (resource: string, action: string): boolean => {
     const result = results.find((r) => r.resource === resource && r.action === action)
@@ -42,9 +41,9 @@ export function createPermissionChecker<T extends readonly PermissionRule[]>(
  * @param results - Array of permission results
  * @returns Function that filters results by resource
  */
-export function createResourcePermissionGetter<T extends readonly PermissionRule[]>(
-  results: PermissionResult<T>[]
-): (resource: string) => PermissionResult<T>[] {
+export function createResourcePermissionGetter(
+  results: PermissionResult[]
+): (resource: string) => PermissionResult[] {
   return (resource: string) => {
     return results.filter((r) => r.resource === resource)
   }
