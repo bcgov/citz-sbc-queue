@@ -1,5 +1,7 @@
+import { EvaluationError, ValidationError } from "./errors"
 import { DEFAULT_QUEUE_RULES } from "./permission_rules"
 import type { PermissionContext, PermissionRule } from "./types"
+import { validateAction, validateContext, validateResource, validateRole } from "./validators"
 
 /**
  * Core permission evaluation logic with configurable rules
@@ -43,61 +45,6 @@ type EvaluatePermissionsProps = {
 }
 
 /**
- * Custom Error Classes for Permission System
- */
-export class PermissionError extends Error {
-  constructor(
-    message: string,
-    public code: string
-  ) {
-    super(message)
-    this.name = "PermissionError"
-  }
-}
-
-export class ValidationError extends PermissionError {
-  constructor(message: string) {
-    super(message, "VALIDATION_ERROR")
-  }
-}
-
-export class EvaluationError extends PermissionError {
-  constructor(message: string) {
-    super(message, "EVALUATION_ERROR")
-  }
-}
-
-/**
- * Validation Functions
- */
-const validateRole = (role: unknown): void => {
-  if (typeof role !== "string" || role.trim() === "") {
-    throw new ValidationError(`Invalid role: ${role}. Must be a non-empty string`)
-  }
-}
-
-const validateAction = (action: unknown): void => {
-  if (typeof action !== "string" || action.trim() === "") {
-    throw new ValidationError(`Invalid action: ${action}. Must be a non-empty string`)
-  }
-}
-
-const validateResource = (resource: unknown): void => {
-  if (typeof resource !== "string" || resource.trim() === "") {
-    throw new ValidationError(`Invalid resource: ${resource}. Must be a non-empty string`)
-  }
-}
-
-/**
- * Context Helper Functions - Extract values from flexible context structures
- */
-const validateContext = (context: unknown): void => {
-  if (!context || typeof context !== "object") {
-    throw new ValidationError("Permission context must be a non-null object")
-  }
-}
-
-/**
  * Core permission evaluation logic with comprehensive error handling.
  * This is a pure function that can be used on both client and server.
  *
@@ -134,7 +81,7 @@ export function evaluatePermissions(props: EvaluatePermissionsProps): boolean {
       }
 
       // If there's no condition, permission is granted
-      if (!('condition' in rule) || !rule.condition) {
+      if (!("condition" in rule) || !rule.condition) {
         return true
       }
 

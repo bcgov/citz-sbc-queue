@@ -1,5 +1,12 @@
-import { useCallback, useMemo } from "react"
+import { useMemo } from "react"
 import { evaluatePermissions } from "./evaluate_permissions"
+import {
+  createAllPermissionChecker,
+  createAnyPermissionChecker,
+  createPermissionChecker,
+  createResourcePermissionGetter,
+  extractAllActions,
+} from "./helpers"
 import { DEFAULT_QUEUE_RULES } from "./permission_rules"
 import type {
   PermissionContext,
@@ -22,13 +29,7 @@ export function usePermissions(
   const rules = DEFAULT_QUEUE_RULES // Rules imported internally
 
   // Get all possible actions from rules for type inference
-  const allActions = useMemo(() => {
-    const actionSet = new Set<string>()
-    rules.forEach((rule) => {
-      rule.actions.forEach((action) => actionSet.add(action))
-    })
-    return Array.from(actionSet)
-  }, [rules])
+  const allActions = useMemo(() => extractAllActions(rules), [rules])
 
   // Memoize permission evaluation results
   const results = useMemo<PermissionResult<typeof DEFAULT_QUEUE_RULES>[]>(() => {
@@ -66,36 +67,15 @@ export function usePermissions(
     return allResults
   }, [userRole, context, checks, rules, allActions])
 
-  // Helper function to check a specific permission from results
-  const hasPermission = useCallback(
-    (resource: string, action: string): boolean => {
-      const result = results.find((r) => r.resource === resource && r.action === action)
-      return result?.hasPermission ?? false
-    },
-    [results]
-  )
+  // Helper functions created from results
+  const hasPermission = useMemo(() => createPermissionChecker(results), [results])
 
-  // Helper function to get all permissions for a specific resource
-  const getResourcePermissions = useCallback(
-    (resource: string) => {
-      return results.filter((r) => r.resource === resource)
-    },
-    [results]
-  )
+  const getResourcePermissions = useMemo(() => createResourcePermissionGetter(results), [results])
 
-  // Helper function to check if user has any of the specified actions for a resource
-  const hasAnyPermission = useCallback(
-    (resource: string, actions: string[]): boolean => {
-      return actions.some((action) => hasPermission(resource, action))
-    },
-    [hasPermission]
-  )
+  const hasAnyPermission = useMemo(() => createAnyPermissionChecker(hasPermission), [hasPermission])
 
-  // Helper function to check if user has all of the specified actions for a resource
-  const hasAllPermissions = useCallback(
-    (resource: string, actions: string[]): boolean => {
-      return actions.every((action) => hasPermission(resource, action))
-    },
+  const hasAllPermissions = useMemo(
+    () => createAllPermissionChecker(hasPermission),
     [hasPermission]
   )
 
