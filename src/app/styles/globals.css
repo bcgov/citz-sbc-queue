@@ -1,3 +1,4 @@
+@import "@bcgov/bc-sans/css/BC_Sans.css";
 @import "./bcgov/spacing.css";
 @import "./bcgov/colours.css";
 @import "tailwindcss";
