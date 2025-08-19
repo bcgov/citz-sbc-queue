@@ -47,12 +47,30 @@ export async function GET(request: NextRequest) {
 
     const response = NextResponse.json(responseData, { status: 200 })
 
+    // Set access token as HTTP-only cookie
+    response.cookies.set("access_token", tokens.access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      path: "/",
+      maxAge: tokens.expires_in, // Set expiration based on token expiry
+    })
+
     // Set refresh token as HTTP-only cookie
     response.cookies.set("refresh_token", tokens.refresh_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       path: "/",
+    })
+
+    // Set id token as HTTP-only cookie
+    response.cookies.set("id_token", tokens.id_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      path: "/",
+      maxAge: tokens.expires_in, // Set expiration based on token expiry
     })
 
     return response
