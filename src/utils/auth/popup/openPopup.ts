@@ -1,5 +1,11 @@
-// Returns the Window or null if blocked by the browser.
-
+/**
+ * Opens a popup window for user authentication.
+ * @param url The URL to open in the popup.
+ * @param name The name of the popup window.
+ * @param width The width of the popup window.
+ * @param height The height of the popup window.
+ * @returns The opened popup window or null if blocked.
+ */
 export const openPopup = (
   url: string,
   name = "AuthPopup",
