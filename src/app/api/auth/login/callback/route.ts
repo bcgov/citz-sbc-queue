@@ -40,19 +40,68 @@ export async function GET(request: NextRequest) {
       ssoProtocol: SSO_PROTOCOL as "openid-connect",
     })
 
-    // Create response with tokens (excluding refresh_token)
-    const responseData = {
-      access_token: tokens.access_token,
-      id_token: tokens.id_token,
-      expires_in: tokens.expires_in,
-      refresh_expires_in: tokens.refresh_expires_in,
-    }
+    // Create HTML response for successful login
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login Successful</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #faf9f8; /* BC Gov background-light-gray */
+          }
+          .container {
+            text-align: center;
+            background: white;
+            max-width: 500px;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          }
+          h4 {
+            color: #22c55e; /* BC Gov success-500 */
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            line-height: 1.5em;
+          }
+          p {
+            color: #2d2d2d; /* BC Gov typography-primary */
+            margin: 0;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h4>Login Successful</h4>
+          <p>You may close this window. If it doesn't close automatically, your browser may be preventing it.</p>
+        </div>
+        <script>
+          setTimeout(() => {
+            window.close();
+          }, 1000);
+        </script>
+      </body>
+      </html>
+    `
 
-    const response = NextResponse.json(responseData, { status: 200 })
+    const response = new NextResponse(htmlContent, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/html",
+      },
+    })
 
-    // Set access token as HTTP-only cookie
+    // Set access token cookie
     response.cookies.set("access_token", tokens.access_token, {
-      httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? "none" : "lax",
       path: "/",
@@ -65,15 +114,29 @@ export async function GET(request: NextRequest) {
       secure: isProduction,
       sameSite: isProduction ? "none" : "lax",
       path: "/",
+      maxAge: tokens.refresh_expires_in, // Set expiration based on refresh token expiry
     })
 
-    // Set id token as HTTP-only cookie
+    // Set id token cookie
     response.cookies.set("id_token", tokens.id_token, {
-      httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? "none" : "lax",
       path: "/",
       maxAge: tokens.expires_in, // Set expiration based on token expiry
+    })
+
+    // Set expires_in as cookie
+    response.cookies.set("expires_in", tokens.expires_in.toString(), {
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      path: "/",
+    })
+
+    // Set refresh_expires_in as cookie
+    response.cookies.set("refresh_expires_in", tokens.refresh_expires_in.toString(), {
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      path: "/",
     })
 
     return response
