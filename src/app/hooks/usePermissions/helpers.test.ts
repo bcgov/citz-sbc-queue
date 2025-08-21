@@ -39,7 +39,7 @@ describe("Permission Helpers", () => {
       expect(actions).toContain("delete")
 
       // Should not have duplicates
-      const uniqueActions = [...new Set(actions)]
+      const uniqueActions = Array.from(new Set(actions))
       expect(actions.length).toBe(uniqueActions.length)
     })
 

@@ -9,6 +9,9 @@ import { ValidationError } from "./errors"
 
 /**
  * Validates that a role is a non-empty string
+ *
+ * @param role - The role to validate
+ * @throws {ValidationError} When role is not a non-empty string
  */
 export const validateRole = (role: unknown): void => {
   if (typeof role !== "string" || role.trim() === "") {
@@ -18,6 +21,9 @@ export const validateRole = (role: unknown): void => {
 
 /**
  * Validates that an action is a non-empty string
+ *
+ * @param action - The action to validate
+ * @throws {ValidationError} When action is not a non-empty string
  */
 export const validateAction = (action: unknown): void => {
   if (typeof action !== "string" || action.trim() === "") {
@@ -27,6 +33,9 @@ export const validateAction = (action: unknown): void => {
 
 /**
  * Validates that a resource is a non-empty string
+ *
+ * @param resource - The resource to validate
+ * @throws {ValidationError} When resource is not a non-empty string
  */
 export const validateResource = (resource: unknown): void => {
   if (typeof resource !== "string" || resource.trim() === "") {
@@ -36,6 +45,9 @@ export const validateResource = (resource: unknown): void => {
 
 /**
  * Validates that context is a non-null object (but not an array)
+ *
+ * @param context - The context to validate
+ * @throws {ValidationError} When context is not a valid object
  */
 export const validateContext = (context: unknown): void => {
   if (!context || typeof context !== "object" || Array.isArray(context)) {

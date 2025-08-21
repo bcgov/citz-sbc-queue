@@ -3,13 +3,6 @@ import { QUEUE_RULES } from "./permission_rules"
 import type { PermissionContext, PermissionRule } from "./types"
 import { validateAction, validateContext, validateResource, validateRole } from "./validators"
 
-/**
- * Core permission evaluation logic for queue management system
- *
- * @param props - Evaluation parameters with userRole, resource, action, context, and rules
- * @returns boolean indicating if the permission is granted
- */
-
 type EvaluatePermissionsProps = {
   userRole: string
   resource: string
@@ -23,9 +16,21 @@ type EvaluatePermissionsProps = {
  * This is a pure function that can be used on both client and server.
  *
  * @param props - The evaluation parameters
+ * @param props.userRole - The role of the current user
+ * @param props.resource - The resource being accessed
+ * @param props.action - The action being performed
+ * @param props.context - The permission context
+ * @param props.rules - Optional permission rules (defaults to QUEUE_RULES)
  * @returns boolean indicating if the permission is granted
  * @throws {ValidationError} When input parameters are invalid
  * @throws {EvaluationError} When condition evaluation fails
+ * @example
+ * const hasPermission = evaluatePermissions({
+ *   userRole: "staff",
+ *   resource: "appointment", 
+ *   action: "update",
+ *   context: { userId: "staff-123" }
+ * });
  */
 export function evaluatePermissions(props: EvaluatePermissionsProps): boolean {
   const { userRole, resource, action, context, rules = QUEUE_RULES } = props
@@ -94,6 +99,16 @@ export function evaluatePermissions(props: EvaluatePermissionsProps): boolean {
  * Safe wrapper for evaluatePermissions that never throws.
  * Returns false for any error during evaluation.
  * Useful for UI components that need graceful degradation.
+ *
+ * @param props - The evaluation parameters (same as evaluatePermissions)
+ * @returns boolean indicating if the permission is granted, false on any error
+ * @example
+ * const canEdit = safeEvaluatePermissions({
+ *   userRole: "citizen",
+ *   resource: "appointment",
+ *   action: "update", 
+ *   context: { userId: "citizen-123" }
+ * });
  */
 export function safeEvaluatePermissions(props: EvaluatePermissionsProps): boolean {
   try {
