@@ -19,6 +19,7 @@ This is a modern Service BC Queue Management System using Next.js App Router and
 | Validation     | Zod (schemas for forms, server actions)   |
 | Language       | TypeScript (strict mode, no `any`)        |
 | Testing        | Vitest (unit/integration), Playwright (E2E) |
+| Linting        | Biome (linting, formatting, import organization) |
 
 ---
 
@@ -28,16 +29,25 @@ This is a modern Service BC Queue Management System using Next.js App Router and
 
 ```
 src/
-├── app/                 # Next.js App Router pages
-├── components/          # Reusable UI components
-├── hooks/               # Custom React hooks
-├── lib/                 # External service integration (e.g., lib/prisma/)
-├── stores/              # Zustand store definitions
-├── utils/               # Utility functions
-└── test/                # Test utilities and setup
+├── app/                 # Next.js App Router pages & routes
+│   ├── administration/  # Admin pages
+│   ├── api/            # API routes
+│   ├── appointments/   # Appointment pages
+│   ├── exam-inventory/ # Exam inventory pages
+│   ├── hooks/          # App-specific React hooks
+│   ├── queue/          # Queue management pages
+│   ├── room-bookings/  # Room booking pages
+│   └── styles/         # Global styles & BC Gov design system
+├── components/         # Reusable UI components
+├── middleware/         # Next.js middleware functions
+├── stores/             # Zustand store definitions
+├── test/               # Test utilities and setup
+└── utils/              # Utility functions
 ```
 
-> `lib/` wraps third-party libraries like Prisma to keep integrations centralized. Not required for every library, but useful for complex integrations.
+> `middleware/` contains Next.js middleware for authentication, routing, etc.
+> `src/app/styles/` contains BC Government design system CSS files.
+> `src/app/hooks/` contains app-specific hooks like usePermissions.
 
 ---
 
@@ -58,6 +68,30 @@ src/
 - Avoid `any`; use `unknown`, `Record<string, unknown>`, etc.
 - Prefer `Partial`, `Pick`, `Omit`, and discriminated unions.
 - Always type props as `Props`, and all functions and stores explicitly.
+
+---
+
+## Code Quality & Formatting
+
+### Biome Configuration
+- Use **Biome** for linting, formatting, and import organization (not ESLint/Prettier)
+- Follow the project's Biome configuration in `biome.json`
+- Key formatting rules:
+  - 2-space indentation
+  - 100 character line width
+  - Double quotes for JSX attributes
+  - Trailing commas (ES5 style)
+  - Node.js import protocol (`node:` prefix for builtins)
+- Run `npm run lint` and `npm run format` before committing
+- Biome will auto-fix many issues with `npm run lint:fix` and `npm run format`
+
+### Code Style Guidelines
+- Use `const` instead of `let` when possible
+- Use template literals instead of string concatenation
+- Use fragment syntax (`<>`) instead of `React.Fragment`
+- Import types with `import type` syntax
+- Use self-closing elements when appropriate
+- Prefer explicit over implicit (avoid `any`, use proper typing)
 
 ---
 
