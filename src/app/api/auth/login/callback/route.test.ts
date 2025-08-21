@@ -39,7 +39,7 @@ describe("/api/auth/login/callback", () => {
       })
     })
 
-    it("should return 400 error when SSO_CLIENT_ID is missing", async () => {
+    it("should return 500 error when SSO_CLIENT_ID is missing", async () => {
       vi.stubEnv("SSO_CLIENT_SECRET", "test-client-secret")
       // Don't set SSO_CLIENT_ID
 
@@ -50,7 +50,7 @@ describe("/api/auth/login/callback", () => {
       )
       const response = await GET(request)
 
-      expect(response.status).toBe(400)
+      expect(response.status).toBe(500)
 
       const body = await response.json()
       expect(body).toEqual({
@@ -58,7 +58,7 @@ describe("/api/auth/login/callback", () => {
       })
     })
 
-    it("should return 400 error when SSO_CLIENT_SECRET is missing", async () => {
+    it("should return 500 error when SSO_CLIENT_SECRET is missing", async () => {
       vi.stubEnv("SSO_CLIENT_ID", "test-client-id")
       // Don't set SSO_CLIENT_SECRET
 
@@ -69,7 +69,7 @@ describe("/api/auth/login/callback", () => {
       )
       const response = await GET(request)
 
-      expect(response.status).toBe(400)
+      expect(response.status).toBe(500)
 
       const body = await response.json()
       expect(body).toEqual({
