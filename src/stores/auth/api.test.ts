@@ -99,12 +99,6 @@ describe("auth/api", () => {
       })
     })
 
-    // idToken is no longer used
-
-    // idToken is no longer used
-
-    // idToken is no longer used
-
     it("should handle fetch errors gracefully", async () => {
       mockFetch.mockRejectedValue(new Error("Network error"))
 
