@@ -25,13 +25,13 @@ export const scheduleAuthTimers = ({
   onHardLogout,
 }: ScheduleArgs): void => {
   clearAuthTimers()
-  const s = getSession()
-  if (!s) return
+  const session = getSession()
+  if (!session) return
 
   const now = Date.now()
 
   // Background access-token refresh ~45s before access expiry
-  const refreshIn = Math.max(1_000, s.accessExpiresAt - now - 45_000)
+  const refreshIn = Math.max(1_000, session.accessExpiresAt - now - 45_000)
   accessRefreshTO = setTimeout(async () => {
     const ok = await onRefresh()
     if (!ok) {
@@ -40,8 +40,8 @@ export const scheduleAuthTimers = ({
   }, refreshIn)
 
   // Session warning at T-2m, hard logout at T
-  const warnIn = Math.max(1_000, s.sessionEndsAt - now - 120_000)
-  const logoutIn = Math.max(1_000, s.sessionEndsAt - now)
+  const warnIn = Math.max(1_000, session.sessionEndsAt - now - 120_000)
+  const logoutIn = Math.max(1_000, session.sessionEndsAt - now)
 
   sessionWarnTO = setTimeout(() => onShowWarning(), warnIn)
   sessionLogoutTO = setTimeout(async () => {

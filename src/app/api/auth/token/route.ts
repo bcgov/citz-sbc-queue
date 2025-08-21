@@ -65,28 +65,27 @@ export async function POST(_request: NextRequest) {
       refresh_expires_in: tokens.refresh_expires_in,
     })
 
-    // Set access token as HTTP-only cookie
+    // Set access token cookie
     response.cookies.set("access_token", tokens.access_token, {
-      httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? "none" : "lax",
       path: "/",
       maxAge: tokens.expires_in, // Set expiration based on token expiry
     })
 
-    // Set refresh token as HTTP-only cookie (if present)
+    // Set refresh token as HTTP-only cookie
     if (tokens.refresh_token) {
       response.cookies.set("refresh_token", tokens.refresh_token, {
         httpOnly: true,
         secure: isProduction,
         sameSite: isProduction ? "none" : "lax",
         path: "/",
+        maxAge: tokens.refresh_expires_in, // Set expiration based on token expiry
       })
     }
 
-    // Set id token as HTTP-only cookie
+    // Set id token cookie
     response.cookies.set("id_token", tokens.id_token, {
-      httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? "none" : "lax",
       path: "/",
