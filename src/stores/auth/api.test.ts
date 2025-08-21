@@ -88,66 +88,30 @@ describe("auth/api", () => {
   })
 
   describe("serverLogout", () => {
-    it("should call logout endpoint with id_token when provided", async () => {
-      const idToken = "test.id.token"
+    it("should call logout endpoint", async () => {
       mockFetch.mockResolvedValue({ ok: true })
 
-      await serverLogout(idToken)
+      await serverLogout()
 
-      expect(mockFetch).toHaveBeenCalledWith(
-        `/api/auth/logout?id_token=${encodeURIComponent(idToken)}`,
-        {
-          method: "POST",
-          credentials: "include",
-        }
-      )
-    })
-
-    it("should handle id_token with special characters", async () => {
-      const idToken = "test.id.token+with/special=chars&more"
-      mockFetch.mockResolvedValue({ ok: true })
-
-      await serverLogout(idToken)
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        `/api/auth/logout?id_token=${encodeURIComponent(idToken)}`,
-        {
-          method: "POST",
-          credentials: "include",
-        }
-      )
-    })
-
-    it("should not call logout endpoint when id_token is undefined", async () => {
-      await serverLogout(undefined)
-
-      expect(mockFetch).not.toHaveBeenCalled()
-    })
-
-    it("should not call logout endpoint when id_token is empty string", async () => {
-      await serverLogout("")
-
-      expect(mockFetch).not.toHaveBeenCalled()
+      expect(mockFetch).toHaveBeenCalledWith("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      })
     })
 
     it("should handle fetch errors gracefully", async () => {
-      const idToken = "test.id.token"
       mockFetch.mockRejectedValue(new Error("Network error"))
 
       // Should not throw
-      await expect(serverLogout(idToken)).resolves.toBeUndefined()
+      await expect(serverLogout()).resolves.toBeUndefined()
 
-      expect(mockFetch).toHaveBeenCalledWith(
-        `/api/auth/logout?id_token=${encodeURIComponent(idToken)}`,
-        {
-          method: "POST",
-          credentials: "include",
-        }
-      )
+      expect(mockFetch).toHaveBeenCalledWith("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      })
     })
 
     it("should handle server errors gracefully", async () => {
-      const idToken = "test.id.token"
       mockFetch.mockResolvedValue({
         ok: false,
         status: 500,
@@ -155,12 +119,10 @@ describe("auth/api", () => {
       })
 
       // Should not throw
-      await expect(serverLogout(idToken)).resolves.toBeUndefined()
+      await expect(serverLogout()).resolves.toBeUndefined()
     })
 
     it("should use void to ignore promise result", async () => {
-      const idToken = "test.id.token"
-
       // Mock fetch to return a promise that resolves after a delay
       mockFetch.mockImplementation(
         () => new Promise((resolve) => setTimeout(() => resolve({ ok: true }), 100))
@@ -168,7 +130,7 @@ describe("auth/api", () => {
 
       // Should return immediately without waiting
       const startTime = Date.now()
-      await serverLogout(idToken)
+      await serverLogout()
       const endTime = Date.now()
 
       // Should complete quickly since we're not awaiting the fetch
