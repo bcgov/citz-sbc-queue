@@ -16,7 +16,7 @@ export async function GET(_request: NextRequest) {
     if (!SSO_CLIENT_ID) {
       return NextResponse.json(
         { error: "SSO_CLIENT_ID env variable is undefined." },
-        { status: 400 }
+        { status: 500 }
       )
     }
 

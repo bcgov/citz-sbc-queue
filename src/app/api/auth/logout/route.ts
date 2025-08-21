@@ -7,12 +7,15 @@ const {
   SSO_REALM = "standard",
   SSO_PROTOCOL = "openid-connect",
   APP_URL,
+  NODE_ENV,
 } = process.env
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const redirect_uri = searchParams.get("redirect_uri")
+
+    const isProduction = NODE_ENV === "production"
 
     // Get id_token from HTTP-only cookie
     const id_token = request.cookies.get("id_token")?.value
@@ -38,16 +41,16 @@ export async function GET(request: NextRequest) {
     // Clear the access token and refresh token cookies
     response.cookies.set("access_token", "", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       path: "/",
       maxAge: 0, // Expire immediately
     })
 
     response.cookies.set("refresh_token", "", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       path: "/",
       maxAge: 0, // Expire immediately
     })
@@ -55,8 +58,8 @@ export async function GET(request: NextRequest) {
     // Clear the id token cookie
     response.cookies.set("id_token", "", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       path: "/",
       maxAge: 0, // Expire immediately
     })

@@ -9,12 +9,12 @@ The middleware system uses Next.js middleware to protect both API routes and fro
 ## Architecture
 
 ```
-middleware/
-├── auth.ts      # Authentication middleware logic
-├── utils.ts     # Middleware utility functions (chain, conditional)
-└── README.md    # This file
-
 src/
+├── middleware/
+|   ├── auth.ts      # Authentication middleware logic
+|   ├── utils.ts     # Middleware utility functions (chain, conditional)
+|   └── README.md    # This file
+|
 ├── middleware.ts             # Main middleware entry point
 └── utils/auth/
     └── getAuthContext.ts     # Helper to extract auth from requests
@@ -59,16 +59,16 @@ The middleware automatically detects route type and applies appropriate authenti
 3. **User Context**: Adds auth context to request headers
 4. **Error Response**: Returns JSON error responses (401, 500)
 
+**Headers Added**:
+- `x-user-token`: Original JWT token
+- `x-user-info`: Serialized user object
+- `x-user-roles`: User's client roles array
+
 #### For Frontend Routes (non-API)
 1. **Cookie Authentication**: Reads access token from HTTP-only cookie
 2. **Token Validation**: Validates against BC Gov SSO service
 3. **Redirect on Failure**: Redirects to home page if authentication fails
 4. **Continue on Success**: Allows request to proceed to page
-
-**Headers Added (API Routes Only)**:
-- `x-user-token`: Original JWT token
-- `x-user-info`: Serialized user object
-- `x-user-roles`: User's client roles array
 
 ## Using Authentication Context
 
@@ -131,6 +131,7 @@ const combinedMiddleware = chain(
 ### API Routes
 The auth middleware returns appropriate HTTP status codes:
 
+- `400 Bad Request`: Improper use of endpoint
 - `401 Unauthorized`: Missing/invalid token or auth header
 - `500 Internal Server Error`: SSO configuration or validation errors
 
