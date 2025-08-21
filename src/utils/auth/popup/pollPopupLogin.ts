@@ -1,7 +1,7 @@
 /**
- * Polls an *already-opened* popup until it lands on /api/auth/login/callback and returns JSON.
+ * Polls an *already-opened* popup until it lands on /api/auth/login/callback and returns token data from cookies.
  * @param popup The popup window to poll.
- * @returns A promise that resolves with the parsed JSON response from the popup.
+ * @returns A promise that resolves with the token data read from cookies.
  */
 export const pollPopupLogin = (
   popup: Window
@@ -18,7 +18,7 @@ export const pollPopupLogin = (
     let done = false
 
     // The popup will be closed when:
-    // 1) Login succeeds (after token mint), or
+    // 1) Login succeeds (after cookies are set), or
     // 2) The user manually closes the popup, or
     // 3) The timeout (5 minutes) is exceeded.
 
@@ -44,32 +44,42 @@ export const pollPopupLogin = (
           await wait(50)
         }
       } catch {
-        /* ignore; we'll still try to read JSON */
+        /* ignore; we'll still try to read cookies */
+      }
+    }
+
+    const readTokensFromCookies = (): {
+      access_token: string
+      expires_in: number
+      refresh_expires_in: number
+      id_token: string
+    } => {
+      const getCookie = (name: string): string | null => {
+        const value = `; ${document.cookie}`
+        const parts = value.split(`; ${name}=`)
+        if (parts.length === 2) return parts.pop()?.split(";").shift() || null
+        return null
+      }
+
+      const access_token = getCookie("access_token")
+      const expires_in = getCookie("expires_in")
+      const refresh_expires_in = getCookie("refresh_expires_in")
+      const id_token = getCookie("id_token")
+
+      if (!access_token || !expires_in || !refresh_expires_in || !id_token) {
+        throw new Error("Required authentication cookies not found")
+      }
+
+      return {
+        access_token,
+        expires_in: Number.parseInt(expires_in, 10),
+        refresh_expires_in: Number.parseInt(refresh_expires_in, 10),
+        id_token,
       }
     }
 
     const schedule = () => {
       if (!done) window.setTimeout(tick, POLL_MS)
-    }
-
-    const readJsonFromPopup = (): string | null => {
-      try {
-        // 1) Most browsers put JSON in a <pre>
-        const pre = popup.document?.querySelector?.("pre")
-        if (pre?.textContent?.trim()) return pre.textContent.trim()
-
-        // 2) Some expose it as body textContent (not innerText)
-        const bodyText = popup.document?.body?.textContent?.trim()
-        if (bodyText) return bodyText
-
-        // 3) As a last resort, take the whole document text
-        const docText = popup.document?.documentElement?.textContent?.trim()
-        if (docText) return docText
-
-        return null
-      } catch {
-        return null
-      }
     }
 
     const tick = async () => {
@@ -92,33 +102,12 @@ export const pollPopupLogin = (
       // Only proceed on the callback URL (ignore the initial /api/auth/login hop)
       if (!(sameOrigin && path.startsWith("/api/auth/login/callback"))) return schedule()
 
-      // Hide the popup UI immediately so JSON doesn't flash
-      try {
-        const b = popup.document?.body
-        if (b) {
-          b.style.opacity = "0"
-          b.style.visibility = "hidden"
-          b.style.transition = "none"
-        }
-      } catch {
-        // Ignore - popup will close soon
-      }
-
       try {
         // Ensure the response fully loaded so cookies are committed
         await ensurePopupLoaded()
 
-        // Read JSON from the popup document
-        const text = readJsonFromPopup()
-
-        if (!text) throw new Error("Callback content empty")
-
-        const payload = JSON.parse(text) as {
-          access_token: string
-          expires_in: number
-          refresh_expires_in: number
-          id_token: string
-        }
+        // Read tokens from cookies (cookies are shared across same origin)
+        const payload = readTokensFromCookies()
 
         resolve(payload)
         return stop()

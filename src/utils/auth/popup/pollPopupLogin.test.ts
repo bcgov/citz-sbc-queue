@@ -1,10 +1,19 @@
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { pollPopupLogin } from "./pollPopupLogin"
 
 describe("pollPopupLogin", () => {
   let popup: Window
+  let mockCookie: string
 
   beforeEach(() => {
+    mockCookie = ""
+
+    // Mock document.cookie getter
+    Object.defineProperty(document, "cookie", {
+      get: () => mockCookie,
+      configurable: true,
+    })
+
     popup = {
       closed: false,
       location: {
@@ -13,17 +22,19 @@ describe("pollPopupLogin", () => {
       },
       document: {
         readyState: "complete",
-        body: { textContent: "" },
-        querySelector: vi.fn(() => ({
-          textContent:
-            '{"access_token":"abc","expires_in":3600,"refresh_expires_in":7200,"id_token":"xyz"}',
-        })),
       },
       close: vi.fn(),
     } as unknown as Window
   })
 
-  it("resolves with tokens when callback JSON is present", async () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it("resolves with tokens when cookies are present", async () => {
+    // Set mock cookies
+    mockCookie = "access_token=abc; expires_in=3600; refresh_expires_in=7200; id_token=xyz"
+
     const result = await pollPopupLogin(popup)
     expect(result).toEqual({
       access_token: "abc",
@@ -40,11 +51,68 @@ describe("pollPopupLogin", () => {
     expect(popup.close).toHaveBeenCalled()
   })
 
-  it("rejects if callback content is empty", async () => {
-    popup.document.querySelector = vi.fn(() => ({ textContent: "" }))
-    popup.document.body.textContent = ""
-    Object.defineProperty(popup.document, "documentElement", { value: { textContent: "" } })
-    await expect(pollPopupLogin(popup)).rejects.toThrow("Callback content empty")
+  it("rejects if required cookies are missing", async () => {
+    // Set incomplete cookies (missing id_token)
+    mockCookie = "access_token=abc; expires_in=3600; refresh_expires_in=7200"
+
+    await expect(pollPopupLogin(popup)).rejects.toThrow("Required authentication cookies not found")
     expect(popup.close).toHaveBeenCalled()
+  })
+
+  it("rejects if no cookies are present", async () => {
+    // Empty cookies
+    mockCookie = ""
+
+    await expect(pollPopupLogin(popup)).rejects.toThrow("Required authentication cookies not found")
+    expect(popup.close).toHaveBeenCalled()
+  })
+
+  it("parses numeric cookie values correctly", async () => {
+    // Set cookies with string numeric values
+    mockCookie = "access_token=abc; expires_in=1800; refresh_expires_in=3600; id_token=xyz"
+
+    const result = await pollPopupLogin(popup)
+    expect(result).toEqual({
+      access_token: "abc",
+      expires_in: 1800,
+      refresh_expires_in: 3600,
+      id_token: "xyz",
+    })
+    expect(typeof result.expires_in).toBe("number")
+    expect(typeof result.refresh_expires_in).toBe("number")
+  })
+
+  it("waits for popup to be on callback URL before reading cookies", async () => {
+    // Start with popup not on callback URL
+    Object.defineProperty(popup, "location", {
+      value: {
+        origin: window.location.origin,
+        pathname: "/some/other/path",
+      },
+    })
+
+    // Set mock cookies
+    mockCookie = "access_token=abc; expires_in=3600; refresh_expires_in=7200; id_token=xyz"
+
+    // Start the polling
+    const promise = pollPopupLogin(popup)
+
+    // Simulate popup navigating to callback URL after some time
+    setTimeout(() => {
+      Object.defineProperty(popup, "location", {
+        value: {
+          origin: window.location.origin,
+          pathname: "/api/auth/login/callback",
+        },
+      })
+    }, 100)
+
+    const result = await promise
+    expect(result).toEqual({
+      access_token: "abc",
+      expires_in: 3600,
+      refresh_expires_in: 7200,
+      id_token: "xyz",
+    })
   })
 })

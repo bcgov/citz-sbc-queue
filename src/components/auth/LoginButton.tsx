@@ -1,6 +1,5 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import { useCallback } from "react"
 import { useAuthStore } from "@/stores/auth/store"
 import { openPopup } from "@/utils/auth/popup/openPopup"
@@ -10,16 +9,14 @@ import { pollPopupLogin } from "@/utils/auth/popup/pollPopupLogin"
  * Login button component that opens a popup for user authentication.
  */
 export const LoginButton = () => {
-  const router = useRouter()
   const loginFromTokens = useAuthStore((s) => s.loginFromTokens)
 
   const onClick = useCallback(async () => {
     // 1) Open popup synchronously (prevents blockers)
     const popup = openPopup("/api/auth/login")
     if (!popup) {
-      // Popup was blocked by the browser
-      router.push("/api/auth/login")
-
+      // Popup was blocked by the browser - open in new tab as fallback
+      window.open("/api/auth/login", "_blank")
       return
     }
 
@@ -30,7 +27,7 @@ export const LoginButton = () => {
     } catch (err) {
       console.error(`Login failed: ${err}`)
     }
-  }, [loginFromTokens, router])
+  }, [loginFromTokens])
 
   return (
     <button type="button" className="primary" onClick={onClick}>
