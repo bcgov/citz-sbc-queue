@@ -10,6 +10,140 @@ export default function Home() {
             - gap 4 => 0.125rem * 4 = 0.5rem
     */
     <div className="grid grid-cols-8 min-h-screen m-8 p-8 gap-4">
+      <div className="col-span-8 mb-8 mx-auto">
+        <h2 className="text-typography-primary p-2">Buttons</h2>
+        <p className="p-2 mb-2">Try hover and active/focus (keyboard navigation) states</p>
+        <div className="overflow-auto">
+          <table className="table-auto w-full border-collapse">
+            <thead>
+              <tr>
+                <th className="text-left p-4 bg-gray-100">classNames</th>
+                <th className="text-left p-4">Enabled</th>
+                <th className="text-left p-4">Disabled</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="p-4 font-medium bg-gray-100">primary</td>
+                <td className="p-4">
+                  <button type="button" className="primary">
+                    Primary
+                  </button>
+                </td>
+                <td className="p-4">
+                  <button type="button" className="primary" disabled>
+                    Disabled
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td className="p-4 font-medium bg-gray-100">secondary</td>
+                <td className="p-4">
+                  <button type="button" className="secondary">
+                    Secondary
+                  </button>
+                </td>
+                <td className="p-4">
+                  <button type="button" className="secondary" disabled>
+                    Disabled
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td className="p-4 font-medium bg-gray-100">tertiary</td>
+                <td className="p-4">
+                  <button type="button" className="tertiary">
+                    Tertiary
+                  </button>
+                </td>
+                <td className="p-4">
+                  <button type="button" className="tertiary" disabled>
+                    Disabled
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td className="p-4 font-medium bg-gray-100">primary small</td>
+                <td className="p-4">
+                  <button type="button" className="primary small">
+                    Primary
+                  </button>
+                </td>
+                <td className="p-4">
+                  <button type="button" className="primary small" disabled>
+                    Disabled
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td className="p-4 font-medium bg-gray-100">secondary small</td>
+                <td className="p-4">
+                  <button type="button" className="secondary small">
+                    Secondary
+                  </button>
+                </td>
+                <td className="p-4">
+                  <button type="button" className="secondary small" disabled>
+                    Disabled
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td className="p-4 font-medium bg-gray-100">tertiary small</td>
+                <td className="p-4">
+                  <button type="button" className="tertiary small">
+                    Tertiary
+                  </button>
+                </td>
+                <td className="p-4">
+                  <button type="button" className="tertiary small" disabled>
+                    Disabled
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td className="p-4 font-medium bg-gray-100">primary danger</td>
+                <td className="p-4">
+                  <button type="button" className="primary danger">
+                    Primary
+                  </button>
+                </td>
+                <td className="p-4">
+                  <button type="button" className="primary danger" disabled>
+                    Disabled
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td className="p-4 font-medium bg-gray-100">secondary danger</td>
+                <td className="p-4">
+                  <button type="button" className="secondary danger">
+                    Secondary
+                  </button>
+                </td>
+                <td className="p-4">
+                  <button type="button" className="secondary danger" disabled>
+                    Disabled
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td className="p-4 font-medium bg-gray-100">tertiary danger</td>
+                <td className="p-4">
+                  <button type="button" className="tertiary danger">
+                    Tertiary
+                  </button>
+                </td>
+                <td className="p-4">
+                  <button type="button" className="tertiary danger" disabled>
+                    Disabled
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
       {/*
       Setting the following to use the same background colour with different text colours
         Setting text to align to the top right of the available space,
