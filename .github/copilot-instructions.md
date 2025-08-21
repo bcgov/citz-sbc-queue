@@ -85,6 +85,8 @@ src/
 - Implement **government-standard navigation** patterns and information architecture
 - Consider **privacy and security** requirements for government applications
 
+---
+
 ## TypeScript Practices
 
 - Use `type` (not `interface`) for consistency.
@@ -159,6 +161,12 @@ src/
 
 ## Testing Strategy
 
+### Test Organization
+- **Unit tests** - Co-located in the same folder as the code being tested
+- **Integration & E2E tests** - Place in dedicated `tests/` folder
+- **HTML components** - Do not require unit testing
+
+### Testing Tools & Approach
 - **Vitest** for business logic (hooks, utils, stores).
 - **Playwright** for user flows and accessibility testing.
 - Skip unit testing of UI markup; ensure components are type-safe and logic lives in hooks.
@@ -216,15 +224,55 @@ const { hasPermission } = usePermissions({
 
 ---
 
+## Documentation Standards
+
+### Inline Comments
+- Use **sparingly** - Only when a smart non-developer wouldn't understand the code's purpose
+- **Comment obscure patterns** - Regex, complex algorithms, or non-obvious logic
+- **Avoid over-commenting** - Don't explain obvious functionality
+
+### JSDoc Requirements
+- **Exported functions only** - Functions exported beyond their folder require JSDoc
+- **Helper functions exempt** - Internal/helper functions don't need JSDoc
+- **Complete JSDoc format**:
+  ```tsx
+  /**
+   * Validates user permissions for queue management actions.
+   * @param userRole - The role of the current user
+   * @param resource - The resource being accessed
+   * @returns True if user has permission, false otherwise
+   * @example
+   * const canEdit = validatePermission('admin', 'appointment');
+   */
+  export function validatePermission(userRole: string, resource: string): boolean {
+    // Implementation
+  }
+  ```
+
+### Documentation Philosophy
+- **Self-documenting code** - Write readable code that explains itself
+- **Strategic documentation** - Focus on exported APIs and complex logic
+- **Developer efficiency** - Avoid unnecessary documentation overhead
+
+---
+
 ## Naming Conventions
 
 | Element         | Convention            |
 |----------------|------------------------|
 | Components      | `PascalCase`          |
+| Types           | `PascalCase`          |
 | Functions/hooks | `camelCase`, `useXyz` |
+| Variables       | `camelCase`           |
+| Event handlers  | `handleClick`, `onSubmit` (internal vs props) |
+| Boolean vars    | `isLoading`, `hasData`, `canEdit` (semantic prefixes) |
+| Collections     | `users`, `appointments` (simple plural) |
+| Files           | `camelCase`           |
+| Folders         | `camelCase`           |
+| Test files      | `*.test.ts`           |
 | Props types     | `Props`               |
 | Constants       | `SCREAMING_SNAKE_CASE`|
-| Files           | `kebab-case`          |
+| Environment vars| `SCREAMING_SNAKE_CASE`|
 | Store files     | `*.store.ts`          |
 
 ---
