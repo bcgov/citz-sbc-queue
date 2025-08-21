@@ -14,7 +14,7 @@ This is a modern Service BC Queue Management System using Next.js App Router and
 | Area           | Stack                                     |
 |----------------|-------------------------------------------|
 | Framework      | Next.js (App Router, Server Components)   |
-| Styling        | TailwindCSS, BC Design Tokens, Headless UI |
+| Styling        | TailwindCSS v4 + BC Gov Theme, Headless UI |
 | State          | Zustand (global), useState/hooks (local)  |
 | Validation     | Zod (schemas for forms, server actions)   |
 | Language       | TypeScript (strict mode, no `any`)        |
@@ -61,6 +61,29 @@ src/
   const { id } = await params;
   ```
 - Use Image and Link from Next.js instead of native tags.
+
+---
+
+## BC Government Standards
+
+### Design System & Branding
+- Follow **BC Government Design System** guidelines and standards
+- Use **BC Government color palette**: `#013366` (blue), `#fcba19` (gold), `#ffffff` (white)
+- Implement **BC Government typography** using BC Sans font family
+- Maintain **consistent branding** with BC Government visual identity
+- Include **BC Government logos** and assets from `/public/bcgov/` directory
+
+### Font Integration
+- Use **`@bcgov/bc-sans`** package for official BC Government typography
+- Font weights available: Regular, Italic, Bold, BoldItalic
+- Fonts served from `/public/fonts/` directory as WOFF2 files
+- Follow **BC Sans usage guidelines** for government applications
+
+### Government Requirements
+- Ensure **bilingual considerations** for future French language support
+- Follow **accessibility standards** required for government services (WCAG 2.1 AA)
+- Implement **government-standard navigation** patterns and information architecture
+- Consider **privacy and security** requirements for government applications
 
 ## TypeScript Practices
 
@@ -113,8 +136,13 @@ src/
 
 ## Styling & Accessibility
 
-- Use **TailwindCSS** for utility-first styles.
+- Use **TailwindCSS v4** with custom BC Government theme for utility-first styles.
+- BC Government design system implemented via custom CSS theme in `src/app/styles/bcgov/`:
+  - `colours.css` - BC Gov color palette using `@theme` directive
+  - `spacing.css` - BC Gov spacing standards
+  - Custom color classes: `bg-blue`, `text-gold`, `bg-typography-primary`, etc.
 - Use **Headless UI** for accessible unstyled components.
+- **BC Sans font** integrated via `@bcgov/bc-sans` package.
 - Follow **WCAG 2.1 AA** standards for all components:
   - **Semantic HTML**: Use proper elements (`button`, `nav`, `main`, `section`, etc.)
   - **Keyboard navigation**: All interactive elements must be keyboard accessible
@@ -122,7 +150,7 @@ src/
   - **Form accessibility**: Use `htmlFor`/`id` relationships or `aria-label` for inputs
   - **Focus indicators**: Ensure visible focus states for keyboard users
   - **Alt text**: Provide meaningful `alt` attributes for images, `alt=""` for decorative
-  - **Color contrast**: Use design system colors (meet 4.5:1 minimum contrast ratio)
+  - **Color contrast**: Use BC Gov design system colors (meet 4.5:1 minimum contrast ratio)
   - **Heading hierarchy**: Maintain logical structure (h1 → h2 → h3, no skipping levels)
   - **Link purpose**: Make link text descriptive or add `aria-label`
   - **Screen reader support**: Test with assistive technologies in mind
@@ -141,14 +169,6 @@ src/
   - Check form labels and input associations
   - Validate color contrast and visual indicators
 
-### Testing Issues & Troubleshooting
-
-⚠️ **Important**: If you encounter issues writing tests (especially for API routes with environment variables), refer to `.github/copilot/TESTING.md` for detailed guidance on:
-- Environment variable mocking with Vitest
-- Dynamic import patterns for Next.js API routes
-- Common testing pitfalls and their solutions
-- Best practices for test isolation and cleanup
-
 ---
 
 ## State Management
@@ -156,6 +176,43 @@ src/
 - Global state → Zustand
 - Local/component state → `useState` or custom hooks
 - Add error handling directly in stores
+
+---
+
+## Authentication & Permissions
+
+### Permissions System (SBCQ-17)
+- Use **`usePermissions`** hook for role-based access control (RBAC)
+- Supports **attribute-based access control (ABAC)** with contextual conditions
+- **Type-safe permission checking** with TypeScript inference
+- **Multi-resource evaluation** for batch permission checks
+- Located in `src/app/hooks/usePermissions/` with comprehensive documentation
+
+### Usage Patterns
+```tsx
+import { usePermissions } from '@/app/hooks/usePermissions';
+
+// Basic permission check
+const { hasPermission } = usePermissions({
+  userRole: currentUser.role,
+  context: { userId: currentUser.id },
+  checks: [
+    {
+      resource: "appointment",
+      data: { appointmentId, ownerId },
+      actions: ["view", "edit"]
+    }
+  ]
+});
+
+// Conditional rendering
+{hasPermission("appointment", "edit") && <EditButton />}
+```
+
+### Authentication Middleware
+- **Next.js middleware** in `src/middleware/` handles authentication flows
+- **Route protection** and user context management
+- **JWT token validation** and refresh handling
 
 ---
 
