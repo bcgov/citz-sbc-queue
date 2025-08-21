@@ -39,7 +39,7 @@ describe("/api/auth/login/callback", () => {
       })
     })
 
-    it("should return 400 error when SSO_CLIENT_ID is missing", async () => {
+    it("should return 500 error when SSO_CLIENT_ID is missing", async () => {
       vi.stubEnv("SSO_CLIENT_SECRET", "test-client-secret")
       // Don't set SSO_CLIENT_ID
 
@@ -50,7 +50,7 @@ describe("/api/auth/login/callback", () => {
       )
       const response = await GET(request)
 
-      expect(response.status).toBe(400)
+      expect(response.status).toBe(500)
 
       const body = await response.json()
       expect(body).toEqual({
@@ -58,7 +58,7 @@ describe("/api/auth/login/callback", () => {
       })
     })
 
-    it("should return 400 error when SSO_CLIENT_SECRET is missing", async () => {
+    it("should return 500 error when SSO_CLIENT_SECRET is missing", async () => {
       vi.stubEnv("SSO_CLIENT_ID", "test-client-id")
       // Don't set SSO_CLIENT_SECRET
 
@@ -69,7 +69,7 @@ describe("/api/auth/login/callback", () => {
       )
       const response = await GET(request)
 
-      expect(response.status).toBe(400)
+      expect(response.status).toBe(500)
 
       const body = await response.json()
       expect(body).toEqual({
@@ -77,7 +77,7 @@ describe("/api/auth/login/callback", () => {
       })
     })
 
-    it("should successfully exchange code for tokens", async () => {
+    it("should successfully exchange code for tokens and return HTML", async () => {
       vi.stubEnv("SSO_CLIENT_ID", "test-client-id")
       vi.stubEnv("SSO_CLIENT_SECRET", "test-client-secret")
       vi.stubEnv("APP_URL", "https://example.com")
@@ -97,16 +97,34 @@ describe("/api/auth/login/callback", () => {
 
       expect(response.status).toBe(200)
 
-      const body = await response.json()
-      expect(body).toEqual({
-        access_token: "mock-access-token",
-        id_token: "mock-id-token",
-        expires_in: 3600,
-        refresh_expires_in: 7200,
-      })
+      // Check that response is HTML
+      expect(response.headers.get("Content-Type")).toBe("text/html")
 
-      // Check that refresh token is not in response body (should be in cookie)
-      expect(body).not.toHaveProperty("refresh_token")
+      const body = await response.text()
+      expect(body).toContain("Login Successful")
+      expect(body).toContain("You may close this window")
+      expect(body).toContain("<!DOCTYPE html>")
+
+      // Check that all cookies are set
+      const setCookieHeaders = response.headers.getSetCookie()
+      expect(setCookieHeaders).toBeDefined()
+      expect(setCookieHeaders.length).toBeGreaterThan(0)
+
+      // Check for access token cookie
+      const accessTokenCookie = setCookieHeaders.find((cookie) =>
+        cookie.includes("access_token=mock-access-token")
+      )
+      expect(accessTokenCookie).toBeDefined()
+
+      // Check for expires_in cookie
+      const expiresInCookie = setCookieHeaders.find((cookie) => cookie.includes("expires_in=3600"))
+      expect(expiresInCookie).toBeDefined()
+
+      // Check for refresh_expires_in cookie
+      const refreshExpiresInCookie = setCookieHeaders.find((cookie) =>
+        cookie.includes("refresh_expires_in=7200")
+      )
+      expect(refreshExpiresInCookie).toBeDefined()
 
       expect(getTokensModule.getTokens).toHaveBeenCalledWith({
         code: "test-auth-code",
@@ -119,7 +137,7 @@ describe("/api/auth/login/callback", () => {
       })
     })
 
-    it("should set refresh token as HTTP-only cookie in production", async () => {
+    it("should set cookies correctly in production", async () => {
       vi.stubEnv("SSO_CLIENT_ID", "test-client-id")
       vi.stubEnv("SSO_CLIENT_SECRET", "test-client-secret")
       vi.stubEnv("APP_URL", "https://example.com")
@@ -140,6 +158,16 @@ describe("/api/auth/login/callback", () => {
       const setCookieHeaders = response.headers.getSetCookie()
       expect(setCookieHeaders).toBeDefined()
 
+      // Check for access token cookie
+      const accessTokenCookie = setCookieHeaders.find((cookie) =>
+        cookie.includes("access_token=mock-access-token")
+      )
+      expect(accessTokenCookie).toBeDefined()
+      expect(accessTokenCookie).toContain("SameSite=none")
+      expect(accessTokenCookie).toContain("Path=/")
+      expect(accessTokenCookie).toContain("Secure") // Secure in production
+      expect(accessTokenCookie).toContain("Max-Age=3600") // Should have expiry
+
       // Check for refresh token cookie
       const refreshTokenCookie = setCookieHeaders.find((cookie) =>
         cookie.includes("refresh_token=mock-refresh-token")
@@ -149,17 +177,33 @@ describe("/api/auth/login/callback", () => {
       expect(refreshTokenCookie).toContain("SameSite=none")
       expect(refreshTokenCookie).toContain("Path=/")
       expect(refreshTokenCookie).toContain("Secure") // Secure in production
+      expect(refreshTokenCookie).toContain("Max-Age=7200") // Should have refresh expiry
 
       // Check for id token cookie
       const idTokenCookie = setCookieHeaders.find((cookie) =>
         cookie.includes("id_token=mock-id-token")
       )
       expect(idTokenCookie).toBeDefined()
-      expect(idTokenCookie).toContain("HttpOnly")
       expect(idTokenCookie).toContain("SameSite=none")
       expect(idTokenCookie).toContain("Path=/")
       expect(idTokenCookie).toContain("Secure") // Secure in production
       expect(idTokenCookie).toContain("Max-Age=3600") // Should have expiry
+
+      // Check for expires_in cookie
+      const expiresInCookie = setCookieHeaders.find((cookie) => cookie.includes("expires_in=3600"))
+      expect(expiresInCookie).toBeDefined()
+      expect(expiresInCookie).toContain("SameSite=none")
+      expect(expiresInCookie).toContain("Path=/")
+      expect(expiresInCookie).toContain("Secure") // Secure in production
+
+      // Check for refresh_expires_in cookie
+      const refreshExpiresInCookie = setCookieHeaders.find((cookie) =>
+        cookie.includes("refresh_expires_in=7200")
+      )
+      expect(refreshExpiresInCookie).toBeDefined()
+      expect(refreshExpiresInCookie).toContain("SameSite=none")
+      expect(refreshExpiresInCookie).toContain("Path=/")
+      expect(refreshExpiresInCookie).toContain("Secure") // Secure in production
     })
 
     it("should set cookies with lax sameSite in development", async () => {
@@ -183,6 +227,15 @@ describe("/api/auth/login/callback", () => {
       const setCookieHeaders = response.headers.getSetCookie()
       expect(setCookieHeaders).toBeDefined()
 
+      // Check for access token cookie
+      const accessTokenCookie = setCookieHeaders.find((cookie) =>
+        cookie.includes("access_token=mock-access-token")
+      )
+      expect(accessTokenCookie).toBeDefined()
+      expect(accessTokenCookie).toContain("SameSite=lax")
+      expect(accessTokenCookie).toContain("Path=/")
+      expect(accessTokenCookie).not.toContain("Secure") // Not secure in development
+
       // Check for refresh token cookie
       const refreshTokenCookie = setCookieHeaders.find((cookie) =>
         cookie.includes("refresh_token=mock-refresh-token")
@@ -198,10 +251,23 @@ describe("/api/auth/login/callback", () => {
         cookie.includes("id_token=mock-id-token")
       )
       expect(idTokenCookie).toBeDefined()
-      expect(idTokenCookie).toContain("HttpOnly")
       expect(idTokenCookie).toContain("SameSite=lax")
       expect(idTokenCookie).toContain("Path=/")
       expect(idTokenCookie).not.toContain("Secure") // Not secure in development
+
+      // Check for expires_in cookie
+      const expiresInCookie = setCookieHeaders.find((cookie) => cookie.includes("expires_in=3600"))
+      expect(expiresInCookie).toBeDefined()
+      expect(expiresInCookie).toContain("SameSite=lax")
+      expect(expiresInCookie).not.toContain("Secure") // Not secure in development
+
+      // Check for refresh_expires_in cookie
+      const refreshExpiresInCookie = setCookieHeaders.find((cookie) =>
+        cookie.includes("refresh_expires_in=7200")
+      )
+      expect(refreshExpiresInCookie).toBeDefined()
+      expect(refreshExpiresInCookie).toContain("SameSite=lax")
+      expect(refreshExpiresInCookie).not.toContain("Secure") // Not secure in development
     })
 
     it("should use default values when environment variables are not set", async () => {
@@ -221,6 +287,7 @@ describe("/api/auth/login/callback", () => {
       const response = await GET(request)
 
       expect(response.status).toBe(200)
+      expect(response.headers.get("Content-Type")).toBe("text/html")
 
       expect(getTokensModule.getTokens).toHaveBeenCalledWith({
         code: "test-auth-code",
@@ -298,6 +365,7 @@ describe("/api/auth/login/callback", () => {
       const response = await GET(request)
 
       expect(response.status).toBe(200)
+      expect(response.headers.get("Content-Type")).toBe("text/html")
 
       expect(getTokensModule.getTokens).toHaveBeenCalledWith(
         expect.objectContaining({

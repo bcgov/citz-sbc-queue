@@ -17,7 +17,7 @@ describe("/api/auth/login", () => {
   })
 
   describe("GET", () => {
-    it("should return 400 error when SSO_CLIENT_ID is not provided", async () => {
+    it("should return 500 error when SSO_CLIENT_ID is not provided", async () => {
       // Don't set SSO_CLIENT_ID to test the error case
       vi.stubEnv("SSO_CLIENT_ID", undefined)
 
@@ -27,7 +27,7 @@ describe("/api/auth/login", () => {
       const request = new NextRequest("http://localhost:3000/api/auth/login")
       const response = await GET(request)
 
-      expect(response.status).toBe(400)
+      expect(response.status).toBe(500)
 
       const body = await response.json()
       expect(body).toEqual({

@@ -9,6 +9,7 @@ const {
   SSO_PROTOCOL = "openid-connect",
   SSO_CLIENT_ID,
   SSO_CLIENT_SECRET,
+  NODE_ENV,
 } = process.env
 
 export async function POST(_request: NextRequest) {
@@ -16,13 +17,15 @@ export async function POST(_request: NextRequest) {
     const cookieStore = await cookies()
     const refresh_token = cookieStore.get("refresh_token")?.value
 
+    const isProduction = NODE_ENV === "production"
+
     if (!SSO_CLIENT_ID || !SSO_CLIENT_SECRET) {
       return NextResponse.json(
         {
           success: false,
           message: "SSO_CLIENT_ID and/or SSO_CLIENT_SECRET env variables are undefined.",
         },
-        { status: 400 }
+        { status: 500 }
       )
     }
 
@@ -65,8 +68,8 @@ export async function POST(_request: NextRequest) {
     // Set access token as HTTP-only cookie
     response.cookies.set("access_token", tokens.access_token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       path: "/",
       maxAge: tokens.expires_in, // Set expiration based on token expiry
     })
@@ -75,8 +78,8 @@ export async function POST(_request: NextRequest) {
     if (tokens.refresh_token) {
       response.cookies.set("refresh_token", tokens.refresh_token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
         path: "/",
       })
     }
@@ -84,8 +87,8 @@ export async function POST(_request: NextRequest) {
     // Set id token as HTTP-only cookie
     response.cookies.set("id_token", tokens.id_token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       path: "/",
       maxAge: tokens.expires_in, // Set expiration based on token expiry
     })
