@@ -145,7 +145,7 @@ describe("/api/auth/token", () => {
       })
     })
 
-    it("should set new refresh token as HTTP-only cookie when provided", async () => {
+    it("should set new tokens as cookies with correct attributes in production", async () => {
       vi.stubEnv("SSO_CLIENT_ID", "test-client-id")
       vi.stubEnv("SSO_CLIENT_SECRET", "test-client-secret")
       vi.stubEnv("NODE_ENV", "production")
@@ -167,24 +167,38 @@ describe("/api/auth/token", () => {
       const setCookieHeaders = response.headers.getSetCookie()
       expect(setCookieHeaders).toBeDefined()
 
+      // Check for access token cookie
+      const accessTokenCookie = setCookieHeaders.find((cookie) =>
+        cookie.includes("access_token=new-access-token")
+      )
+      expect(accessTokenCookie).toBeDefined()
+      expect(accessTokenCookie).not.toContain("HttpOnly") // Access token is not HttpOnly
+      expect(accessTokenCookie).toContain("SameSite=none")
+      expect(accessTokenCookie).toContain("Secure")
+      expect(accessTokenCookie).toContain("Path=/")
+      expect(accessTokenCookie).toContain("Max-Age=3600")
+
       // Check for refresh token cookie
       const refreshTokenCookie = setCookieHeaders.find((cookie) =>
         cookie.includes("refresh_token=new-refresh-token")
       )
       expect(refreshTokenCookie).toBeDefined()
-      expect(refreshTokenCookie).toContain("HttpOnly")
+      expect(refreshTokenCookie).toContain("HttpOnly") // Only refresh token is HttpOnly
       expect(refreshTokenCookie).toContain("SameSite=none")
+      expect(refreshTokenCookie).toContain("Secure")
       expect(refreshTokenCookie).toContain("Path=/")
+      expect(refreshTokenCookie).toContain("Max-Age=7200")
 
       // Check for id token cookie
       const idTokenCookie = setCookieHeaders.find((cookie) =>
         cookie.includes("id_token=new-id-token")
       )
       expect(idTokenCookie).toBeDefined()
-      expect(idTokenCookie).toContain("HttpOnly")
+      expect(idTokenCookie).not.toContain("HttpOnly") // ID token is not HttpOnly
       expect(idTokenCookie).toContain("SameSite=none")
+      expect(idTokenCookie).toContain("Secure")
       expect(idTokenCookie).toContain("Path=/")
-      expect(idTokenCookie).toContain("Max-Age=3600") // Should have expiry
+      expect(idTokenCookie).toContain("Max-Age=3600")
     })
 
     it("should set cookies with lax sameSite in development", async () => {
@@ -209,6 +223,16 @@ describe("/api/auth/token", () => {
       const setCookieHeaders = response.headers.getSetCookie()
       expect(setCookieHeaders).toBeDefined()
 
+      // Check for access token cookie
+      const accessTokenCookie = setCookieHeaders.find((cookie) =>
+        cookie.includes("access_token=new-access-token")
+      )
+      expect(accessTokenCookie).toBeDefined()
+      expect(accessTokenCookie).not.toContain("HttpOnly") // Access token is not HttpOnly
+      expect(accessTokenCookie).toContain("SameSite=lax")
+      expect(accessTokenCookie).toContain("Path=/")
+      expect(accessTokenCookie).not.toContain("Secure") // Not secure in development
+
       // Check for refresh token cookie
       const refreshTokenCookie = setCookieHeaders.find((cookie) =>
         cookie.includes("refresh_token=new-refresh-token")
@@ -224,7 +248,7 @@ describe("/api/auth/token", () => {
         cookie.includes("id_token=new-id-token")
       )
       expect(idTokenCookie).toBeDefined()
-      expect(idTokenCookie).toContain("HttpOnly")
+      expect(idTokenCookie).not.toContain("HttpOnly") // ID token is not HttpOnly
       expect(idTokenCookie).toContain("SameSite=lax")
       expect(idTokenCookie).toContain("Path=/")
       expect(idTokenCookie).not.toContain("Secure") // Not secure in development
@@ -374,7 +398,7 @@ describe("/api/auth/token", () => {
         refresh_expires_in: 7200,
       })
 
-      // Should not set new refresh token cookie when refresh_token is empty
+      // Should still set access token and id token cookies
       const setCookieHeaders = response.headers.getSetCookie()
       expect(setCookieHeaders).toBeDefined()
 

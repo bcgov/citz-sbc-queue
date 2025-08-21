@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 
     const isProduction = NODE_ENV === "production"
 
-    // Get id_token from HTTP-only cookie
+    // Get id_token from cookie
     const id_token = request.cookies.get("id_token")?.value
 
     if (!id_token) {
