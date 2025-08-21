@@ -34,20 +34,20 @@ src/
 │   ├── api/            # API routes
 │   ├── appointments/   # Appointment pages
 │   ├── exam-inventory/ # Exam inventory pages
-│   ├── hooks/          # App-specific React hooks
 │   ├── queue/          # Queue management pages
-│   ├── room-bookings/  # Room booking pages
-│   └── styles/         # Global styles & BC Gov design system
+│   └── room-bookings/  # Room booking pages
 ├── components/         # Reusable UI components
+├── hooks/              # App-specific React hooks
 ├── middleware/         # Next.js middleware functions
 ├── stores/             # Zustand store definitions
+├── styles/             # Global styles & BC Gov design system
 ├── test/               # Test utilities and setup
 └── utils/              # Utility functions
 ```
 
 > `middleware/` contains Next.js middleware for authentication, routing, etc.
-> `src/app/styles/` contains BC Government design system CSS files.
-> `src/app/hooks/` contains app-specific hooks like usePermissions.
+> `src/styles/` contains BC Government design system CSS files.
+> `src/hooks/` contains app-specific hooks like usePermissions.
 
 ---
 
@@ -171,7 +171,7 @@ src/
 ## Styling & Accessibility
 
 - Use **TailwindCSS v4** with custom BC Government theme for utility-first styles.
-- BC Government design system implemented via custom CSS theme in `src/app/styles/bcgov/`:
+- BC Government design system implemented via custom CSS theme in `src/styles/bcgov/`:
   - `colours.css` - BC Gov color palette using `@theme` directive
   - `spacing.css` - BC Gov spacing standards
   - Custom color classes: `bg-blue`, `text-gold`, `bg-typography-primary`, etc.
@@ -226,11 +226,11 @@ src/
 - Supports **attribute-based access control (ABAC)** with contextual conditions
 - **Type-safe permission checking** with TypeScript inference
 - **Multi-resource evaluation** for batch permission checks
-- Located in `src/app/hooks/usePermissions/` with comprehensive documentation
+- Located in `src/hooks/usePermissions/` with comprehensive documentation
 
 ### Usage Patterns
 ```tsx
-import { usePermissions } from '@/app/hooks/usePermissions';
+import { usePermissions } from '@/hooks/usePermissions';
 
 // Basic permission check
 const { hasPermission } = usePermissions({

@@ -9,7 +9,7 @@ The `usePermissions` hook provides type-safe, role-based access control (RBAC) w
 ## Quick Start
 
 ```tsx
-import { usePermissions } from '@/app/hooks/usePermissions';
+import { usePermissions } from '@/hooks/usePermissions';
 
 function AppointmentCard({ appointment, currentUser }) {
   const { hasPermission } = usePermissions({
@@ -327,7 +327,7 @@ usePermissions({
 For UI components that need graceful degradation, use the safe evaluation:
 
 ```tsx
-import { safeEvaluatePermissions } from '@/app/hooks/usePermissions';
+import { safeEvaluatePermissions } from '@/hooks/usePermissions';
 
 // This will return false instead of throwing on errors
 const hasPermission = safeEvaluatePermissions({
