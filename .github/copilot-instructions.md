@@ -93,6 +93,22 @@ src/
 - Avoid `any`; use `unknown`, `Record<string, unknown>`, etc.
 - Prefer `Partial`, `Pick`, `Omit`, and discriminated unions.
 - Always type props as `Props`, and all functions and stores explicitly.
+- **Function parameters**:
+  - 1-2 parameters: Use individual parameters
+  - 3+ parameters: Use object parameter for the remaining parameters
+  - Example:
+    ```tsx
+    // Good: 1-2 parameters
+    function validateUser(userId: string, role: string): boolean { }
+
+    // Good: 3+ parameters use object
+    function createAppointment(userId: string, options: {
+      date: Date
+      duration: number
+      location: string
+      notes?: string
+    }): Appointment { }
+    ```
 
 ---
 
@@ -125,6 +141,22 @@ src/
 - Small, focused components.
 - Separate all logic from JSX.
 - Include proper loading and error states.
+- **Component props structure**:
+  - Props should be an object with type `Props`
+  - `Props` type should be defined and exported within the component file
+  - Example:
+    ```tsx
+    export type Props = {
+      title: string
+      isVisible: boolean
+      onClose: () => void
+    }
+
+    export default function Modal(props: Props) {
+      const { title, isVisible, onClose } = props
+      // Component implementation
+    }
+    ```
 - **Accessibility-first development**:
   - Use semantic HTML elements by default
   - Include proper ARIA attributes for complex interactions
@@ -253,6 +285,14 @@ const { hasPermission } = usePermissions({
 - **Self-documenting code** - Write readable code that explains itself
 - **Strategic documentation** - Focus on exported APIs and complex logic
 - **Developer efficiency** - Avoid unnecessary documentation overhead
+
+### README File Guidelines
+- **Root level** - Project must have a README.md file
+- **Optional for utilities/hooks** - Complex folders may have README if:
+  - JSDoc examples are insufficient
+  - Many or complex parameters/return values
+  - Complex functionality requiring explanation
+- **No README needed** - Page directories, tests, and component folders should not have README files
 
 ---
 
