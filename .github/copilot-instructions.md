@@ -233,7 +233,21 @@ const { hasPermission } = usePermissions({
 
 - Use **conventional commits**
 - Create feature branches for new work
-- PRs should:
-  - Have meaningful descriptions
-  - Include tests for new logic
-  - Pass CI and follow the review process
+- **Pull Request Guidelines**:
+  - Use the **supplied PR template** (don't create custom formats)
+  - **PR titles** should start with ticket number in square brackets: `[SBCQ-17] Description`
+  - Write descriptions **for code reviewers** (short and concise)
+  - **Include**:
+    - Package/library changes (added, removed, updated dependencies)
+    - Testing instructions for new functionality
+    - Configuration file changes (env, project config)
+    - Potential risks (security, performance, breaking changes)
+  - **Don't include**:
+    - File change lists (reviewers see the diff)
+    - Test status reports ("all tests passing")
+    - Verbose implementation details
+- **Before creating PRs**:
+  - Ensure test suites are passing
+  - Check for TypeScript errors (`npm run type-check`)
+  - Resolve linting issues (`npm run lint`)
+  - Focus on **reviewer efficiency** and **actionable information**
