@@ -100,6 +100,11 @@ src/
 - Small, focused components.
 - Separate all logic from JSX.
 - Include proper loading and error states.
+- **Accessibility-first development**:
+  - Use semantic HTML elements by default
+  - Include proper ARIA attributes for complex interactions
+  - Ensure all interactive elements are keyboard accessible
+  - Provide meaningful labels and descriptions
 - Export:
   - Components: default export
   - Types, hooks, utils: named exports
@@ -110,10 +115,17 @@ src/
 
 - Use **TailwindCSS** for utility-first styles.
 - Use **Headless UI** for accessible unstyled components.
-- Follow **WCAG 2.1 AA**:
-  - Semantic HTML
-  - Keyboard navigation
-  - ARIA roles and screen reader support
+- Follow **WCAG 2.1 AA** standards for all components:
+  - **Semantic HTML**: Use proper elements (`button`, `nav`, `main`, `section`, etc.)
+  - **Keyboard navigation**: All interactive elements must be keyboard accessible
+  - **ARIA roles and labels**: Add `aria-label`, `aria-labelledby`, `aria-describedby` when needed
+  - **Form accessibility**: Use `htmlFor`/`id` relationships or `aria-label` for inputs
+  - **Focus indicators**: Ensure visible focus states for keyboard users
+  - **Alt text**: Provide meaningful `alt` attributes for images, `alt=""` for decorative
+  - **Color contrast**: Use design system colors (meet 4.5:1 minimum contrast ratio)
+  - **Heading hierarchy**: Maintain logical structure (h1 → h2 → h3, no skipping levels)
+  - **Link purpose**: Make link text descriptive or add `aria-label`
+  - **Screen reader support**: Test with assistive technologies in mind
 
 ---
 
@@ -123,6 +135,11 @@ src/
 - **Playwright** for user flows and accessibility testing.
 - Skip unit testing of UI markup; ensure components are type-safe and logic lives in hooks.
 - Organize tests with `describe()` blocks and use clear naming.
+- **Include accessibility tests**: Validate WCAG 2.1 AA compliance in component tests
+  - Test keyboard navigation and focus management
+  - Verify ARIA labels and semantic structure
+  - Check form labels and input associations
+  - Validate color contrast and visual indicators
 
 ### Testing Issues & Troubleshooting
 
