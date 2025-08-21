@@ -27,7 +27,7 @@ type EvaluatePermissionsProps = {
  * @example
  * const hasPermission = evaluatePermissions({
  *   userRole: "staff",
- *   resource: "appointment", 
+ *   resource: "appointment",
  *   action: "update",
  *   context: { userId: "staff-123" }
  * });
@@ -106,7 +106,7 @@ export function evaluatePermissions(props: EvaluatePermissionsProps): boolean {
  * const canEdit = safeEvaluatePermissions({
  *   userRole: "citizen",
  *   resource: "appointment",
- *   action: "update", 
+ *   action: "update",
  *   context: { userId: "citizen-123" }
  * });
  */
