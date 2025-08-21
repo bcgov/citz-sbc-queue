@@ -9,12 +9,15 @@ const {
   SSO_CLIENT_ID,
   SSO_CLIENT_SECRET,
   APP_URL,
+  NODE_ENV,
 } = process.env
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const code = searchParams.get("code")
+
+    const isProduction = NODE_ENV === "production"
 
     if (!code) {
       return NextResponse.json({ error: "Authorization code is required" }, { status: 400 })
@@ -23,7 +26,7 @@ export async function GET(request: NextRequest) {
     if (!SSO_CLIENT_ID || !SSO_CLIENT_SECRET) {
       return NextResponse.json(
         { error: "SSO_CLIENT_ID and/or SSO_CLIENT_SECRET env variables are undefined." },
-        { status: 400 }
+        { status: 500 }
       )
     }
 
@@ -47,12 +50,30 @@ export async function GET(request: NextRequest) {
 
     const response = NextResponse.json(responseData, { status: 200 })
 
+    // Set access token as HTTP-only cookie
+    response.cookies.set("access_token", tokens.access_token, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      path: "/",
+      maxAge: tokens.expires_in, // Set expiration based on token expiry
+    })
+
     // Set refresh token as HTTP-only cookie
     response.cookies.set("refresh_token", tokens.refresh_token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       path: "/",
+    })
+
+    // Set id token as HTTP-only cookie
+    response.cookies.set("id_token", tokens.id_token, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      path: "/",
+      maxAge: tokens.expires_in, // Set expiration based on token expiry
     })
 
     return response
