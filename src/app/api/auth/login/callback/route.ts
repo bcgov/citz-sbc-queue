@@ -84,11 +84,6 @@ export async function GET(request: NextRequest) {
           <h4>Login Successful</h4>
           <p>You may close this window. If it doesn't close automatically, your browser may be preventing it.</p>
         </div>
-        <script>
-          setTimeout(() => {
-            window.close();
-          }, 1000);
-        </script>
       </body>
       </html>
     `

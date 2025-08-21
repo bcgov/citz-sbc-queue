@@ -103,7 +103,6 @@ describe("/api/auth/login/callback", () => {
       const body = await response.text()
       expect(body).toContain("Login Successful")
       expect(body).toContain("You may close this window")
-      expect(body).toContain("window.close()")
       expect(body).toContain("<!DOCTYPE html>")
 
       // Check that all cookies are set
