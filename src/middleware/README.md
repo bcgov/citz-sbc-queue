@@ -59,13 +59,7 @@ The middleware automatically detects route type and applies appropriate authenti
 3. **User Context**: Adds auth context to request headers
 4. **Error Response**: Returns JSON error responses (401, 500)
 
-#### For Frontend Routes (non-API)
-1. **Cookie Authentication**: Reads access token from HTTP-only cookie
-2. **Token Validation**: Validates against BC Gov SSO service
-3. **Redirect on Failure**: Redirects to home page if authentication fails
-4. **Continue on Success**: Allows request to proceed to page
-
-**Headers Added (API Routes Only)**:
+**Headers Added**:
 - `x-user-token`: Original JWT token
 - `x-user-info`: Serialized user object
 - `x-user-roles`: User's client roles array
