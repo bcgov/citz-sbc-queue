@@ -1,12 +1,12 @@
 import type { TokenResponse } from "./types"
 
 export const refreshTokens = async (): Promise<TokenResponse | null> => {
-  const r = await fetch("/api/auth/token", {
+  const response = await fetch("/api/auth/token", {
     method: "POST",
     credentials: "include",
   })
-  if (!r.ok) return null
-  return (await r.json()) as TokenResponse
+  if (!response.ok) return null
+  return (await response.json()) as TokenResponse
 }
 
 export const serverLogout = async (): Promise<void> => {

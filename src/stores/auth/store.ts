@@ -11,9 +11,9 @@ const getSessionStartAt = (): number | null => {
   return raw ? Number(raw) : null
 }
 
-const setSessionStartAt = (ts: number | null): void => {
+const setSessionStartAt = (timestamp: number | null): void => {
   if (typeof window === "undefined") return
-  if (ts) localStorage.setItem(SESSION_START_AT_KEY, String(ts))
+  if (timestamp) localStorage.setItem(SESSION_START_AT_KEY, String(timestamp))
   else localStorage.removeItem(SESSION_START_AT_KEY)
 }
 
@@ -21,10 +21,10 @@ type AuthStore = {
   session: Session | null
   showExpiryWarning: boolean
   isRefreshing: boolean
-  loginFromTokens: (t: TokenResponse, opts?: { resetSessionWindow?: boolean }) => void
+  loginFromTokens: (tokens: TokenResponse, options?: { resetSessionWindow?: boolean }) => void
   refresh: () => Promise<boolean>
   logout: (reason?: "manual" | "expired") => Promise<void>
-  setShowExpiryWarning: (v: boolean) => void
+  setShowExpiryWarning: (show: boolean) => void
   bootstrap: () => Promise<void>
 }
 
@@ -33,14 +33,14 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   showExpiryWarning: false,
   isRefreshing: false,
 
-  setShowExpiryWarning: (v) => set({ showExpiryWarning: v }),
+  setShowExpiryWarning: (show) => set({ showExpiryWarning: show }),
 
   // Called after popup login OR after the user chooses "Stay logged in"
-  loginFromTokens: (t, opts) => {
+  loginFromTokens: (tokens, options) => {
     const now = Date.now()
     // If resetSessionWindow=true (fresh login), start a new 10h window
     let startAt = getSessionStartAt()
-    if (opts?.resetSessionWindow || !startAt) {
+    if (options?.resetSessionWindow || !startAt) {
       startAt = now
       setSessionStartAt(startAt)
     }
@@ -54,11 +54,11 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
     set({
       session: {
-        accessToken: t.access_token,
-        accessExpiresAt: now + t.expires_in * 1000,
-        refreshExpiresAt: now + t.refresh_expires_in * 1000,
+        accessToken: tokens.access_token,
+        accessExpiresAt: now + tokens.expires_in * 1000,
+        refreshExpiresAt: now + tokens.refresh_expires_in * 1000,
         sessionEndsAt: endsAt,
-        idToken: t.id_token,
+        idToken: tokens.id_token,
       },
       showExpiryWarning: false,
     })
@@ -75,11 +75,11 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   refresh: async () => {
     if (get().isRefreshing) return true // Already refreshing
 
-    const s = get().session
+    const session = get().session
     const now = Date.now()
 
     // Hard stop if 10h window is over
-    if (!s || now >= s.sessionEndsAt) return false
+    if (!session || now >= session.sessionEndsAt) return false
 
     set({ isRefreshing: true })
     try {
