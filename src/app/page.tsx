@@ -1,4 +1,5 @@
 import { LoginButton } from "@/components/auth/LoginButton"
+import { LogoutButton } from "@/components/auth/LogoutButton"
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
     */
     <div className="grid grid-cols-8 min-h-screen m-8 p-8 gap-4">
       <LoginButton />
+      <LogoutButton />
       {/*
       Setting the following to use the same background colour with different text colours
         Setting text to align to the top right of the available space,

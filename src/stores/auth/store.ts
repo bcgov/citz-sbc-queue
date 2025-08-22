@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import { refreshTokens, serverLogout } from "./api"
+import { refreshTokens } from "./api"
 import { clearAuthTimers, scheduleAuthTimers } from "./timers"
 import type { Session, TokenResponse } from "./types"
 
@@ -101,7 +101,6 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     clearAuthTimers()
     set({ session: null, showExpiryWarning: false })
     setSessionStartAt(null)
-    await serverLogout()
   },
 
   // Called once on app mount: try to silently obtain tokens from refresh cookie
