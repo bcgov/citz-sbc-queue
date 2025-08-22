@@ -84,7 +84,7 @@ export async function apiAuthMiddleware(request: NextRequest): Promise<NextRespo
 // Frontend authentication middleware handler
 export async function frontendAuthMiddleware(request: NextRequest): Promise<NextResponse> {
   try {
-    // Get access token from HTTP-only cookie
+    // Get access token from cookie
     const accessToken = request.cookies.get("access_token")?.value
 
     if (!accessToken) {
