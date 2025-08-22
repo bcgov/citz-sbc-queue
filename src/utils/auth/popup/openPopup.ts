@@ -14,8 +14,8 @@ export const openPopup = (
   width = 800,
   height = 600
 ): Window | null => {
-  // Reuse existing popup if still open
-  if (popupRef && !popupRef.closed) {
+  // Reuse existing popup if still open. Only reuse when closed === false.
+  if (popupRef && popupRef.closed === false) {
     try {
       popupRef.focus()
       return popupRef
