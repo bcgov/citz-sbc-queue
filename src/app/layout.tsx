@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import "./styles/globals.css"
 import localFont from "next/font/local"
+import { Suspense } from "react"
 import { AuthInitializer } from "@/components/auth/AuthInitializer"
 import { LogoutHandler } from "@/components/auth/LogoutHandler"
 
@@ -44,7 +45,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${BCSans.variable} font-sans`}>
         <AuthInitializer />
-        <LogoutHandler />
+        <Suspense fallback={null}>
+          {/* Suspense is required because LogoutHandler uses useSearchParams */}
+          <LogoutHandler />
+        </Suspense>
         {children}
       </body>
     </html>
