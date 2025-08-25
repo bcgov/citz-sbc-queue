@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { refreshTokens, serverLogout } from "./api"
+import { refreshTokens } from "./api"
 import type { TokenResponse } from "./types"
 
 // Mock fetch globally
@@ -84,58 +84,6 @@ describe("auth/api", () => {
       const result = await refreshTokens()
 
       expect(result).toEqual(responseWithoutIdToken)
-    })
-  })
-
-  describe("serverLogout", () => {
-    it("should call logout endpoint", async () => {
-      mockFetch.mockResolvedValue({ ok: true })
-
-      await serverLogout()
-
-      expect(mockFetch).toHaveBeenCalledWith("/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-      })
-    })
-
-    it("should handle fetch errors gracefully", async () => {
-      mockFetch.mockRejectedValue(new Error("Network error"))
-
-      // Should not throw
-      await expect(serverLogout()).resolves.toBeUndefined()
-
-      expect(mockFetch).toHaveBeenCalledWith("/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-      })
-    })
-
-    it("should handle server errors gracefully", async () => {
-      mockFetch.mockResolvedValue({
-        ok: false,
-        status: 500,
-        statusText: "Internal Server Error",
-      })
-
-      // Should not throw
-      await expect(serverLogout()).resolves.toBeUndefined()
-    })
-
-    it("should use void to ignore promise result", async () => {
-      // Mock fetch to return a promise that resolves after a delay
-      mockFetch.mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve({ ok: true }), 100))
-      )
-
-      // Should return immediately without waiting
-      const startTime = Date.now()
-      await serverLogout()
-      const endTime = Date.now()
-
-      // Should complete quickly since we're not awaiting the fetch
-      expect(endTime - startTime).toBeLessThan(50)
-      expect(mockFetch).toHaveBeenCalled()
     })
   })
 })

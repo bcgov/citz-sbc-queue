@@ -40,7 +40,6 @@ export async function GET(request: NextRequest) {
 
     // Clear the access token and refresh token cookies
     response.cookies.set("access_token", "", {
-      httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? "none" : "lax",
       path: "/",
@@ -57,7 +56,6 @@ export async function GET(request: NextRequest) {
 
     // Clear the id token cookie
     response.cookies.set("id_token", "", {
-      httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? "none" : "lax",
       path: "/",
