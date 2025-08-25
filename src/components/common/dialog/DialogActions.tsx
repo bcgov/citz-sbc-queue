@@ -1,0 +1,30 @@
+"use client";
+
+import { useMemo, type ReactNode } from "react";
+import { ALIGN_MAP } from "./constants";
+import type { Align } from "./types";
+
+export type DialogActionsProps = {
+	children: ReactNode;
+	align?: Align;
+	className?: string;
+};
+
+/**
+ * DialogActions component for displaying actions in a dialog.
+ * @param {DialogActionsProps} props - Props for the dialog actions component.
+ */
+export const DialogActions = ({ children, align = "end", className }: DialogActionsProps) => {
+  const actionClasses = useMemo(() => {
+    return [
+      `flex ${ALIGN_MAP[align]} gap-3 border-t border-gray-100 px-4 py-3 sm:px-6`,
+      `${className ?? ""}`
+    ].join(" ");
+  }, [align, className]);
+
+	return (
+		<div className={actionClasses}>
+			{children}
+		</div>
+	);
+};
