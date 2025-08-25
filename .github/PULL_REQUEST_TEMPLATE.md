@@ -5,7 +5,7 @@
 
 <!-- PROVIDE BELOW an explanation of your changes and any supporting images -->
 
-## 🔰 Checklist
+## 🧪 Testing
 
 <!--
 PROVIDE BELOW information on how to manually test all changes.
