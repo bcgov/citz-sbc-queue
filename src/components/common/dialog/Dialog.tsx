@@ -34,7 +34,7 @@ export const Dialog = ({
   const describedBy = describedById ?? `${internalId}-description`
 
   const dialogClasses = useMemo(() => {
-    return `relative z-50 ${className ?? ""}`
+    return `relative z-50 bg-white rounded-[4px] ${className ?? ""}`
   }, [className])
 
   const dialogContent = (

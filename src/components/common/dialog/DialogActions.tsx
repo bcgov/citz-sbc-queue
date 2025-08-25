@@ -17,7 +17,7 @@ export type DialogActionsProps = {
 export const DialogActions = ({ children, align = "end", className }: DialogActionsProps) => {
   const actionClasses = useMemo(() => {
     return [
-      `flex ${ALIGN_MAP[align]} gap-3 border-t border-gray-100 px-4 py-3 sm:px-6`,
+      `flex ${ALIGN_MAP[align]} gap-3 border-t border-[var(--color-border-light)] px-[24px] py-[16px]`,
       `${className ?? ""}`,
     ].join(" ")
   }, [align, className])

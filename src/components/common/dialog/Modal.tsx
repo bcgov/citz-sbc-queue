@@ -40,9 +40,9 @@ export const Modal = ({
 }: ModalProps) => {
   const panelClasses = useMemo(() => {
     return [
-      "w-full",
+      "w-full z-60",
       MODAL_SIZE_CLASSES[size],
-      "transform overflow-hidden rounded-lg bg-white shadow-xl ring-1 ring-black/10",
+      "transform overflow-hidden bg-white rounded-[4px]",
       "focus:outline-none",
       "data-[closed]:scale-95 data-[closed]:opacity-0",
       "data-[enter]:duration-150 data-[leave]:duration-100",
