@@ -8,10 +8,3 @@ export const refreshTokens = async (): Promise<TokenResponse | null> => {
   if (!response.ok) return null
   return (await response.json()) as TokenResponse
 }
-
-export const serverLogout = async (): Promise<void> => {
-  void fetch("/api/auth/logout", {
-    method: "POST",
-    credentials: "include",
-  })
-}
