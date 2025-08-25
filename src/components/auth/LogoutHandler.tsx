@@ -31,3 +31,5 @@ export const LogoutHandler = () => {
 
   return null
 }
+
+export default LogoutHandler
