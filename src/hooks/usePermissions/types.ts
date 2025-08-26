@@ -13,7 +13,7 @@ export type PermissionRule = {
 
 // Queue management specific types
 export type QueueAction = "view" | "create" | "update" | "delete" | "approve" | "assign" | "cancel"
-export type QueueRole = "admin" | "manager" | "staff" | "citizen" | "guest"
+export type QueueRole = "admin" | "manager" | "staff" | "citizen"
 export type QueueResource = "appointment" | "queue" | "service" | "user" | "report" | "settings"
 
 // Resource check structure for multiple resources

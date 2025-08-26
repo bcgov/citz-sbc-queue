@@ -22,7 +22,7 @@ import type {
  * It evaluates ALL possible actions for each resource and returns the results.
  *
  * @param props - Hook configuration
- * @param props.userRole - User's role ("admin" | "manager" | "staff" | "citizen" | "guest")
+ * @param props.userRole - User's role ("admin" | "manager" | "staff" | "citizen")
  * @param props.context - Permission context (typically includes userId)
  * @param props.checks - Array of resources to check permissions for
  *

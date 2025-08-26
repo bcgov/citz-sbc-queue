@@ -11,7 +11,7 @@ describe("Permission Validators", () => {
     it("should pass for valid string roles", () => {
       expect(() => validateRole("admin")).not.toThrow()
       expect(() => validateRole("user")).not.toThrow()
-      expect(() => validateRole("guest")).not.toThrow()
+      expect(() => validateRole("citizen")).not.toThrow()
     })
 
     it("should throw ValidationError for invalid roles", () => {

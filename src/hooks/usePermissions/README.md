@@ -46,7 +46,7 @@ function AppointmentCard({ appointment, currentUser }) {
 
 ```tsx
 type UsePermissionsProps = {
-  userRole: QueueRole;        // "admin" | "manager" | "staff" | "citizen" | "guest"
+  userRole: QueueRole;        // "admin" | "manager" | "staff" | "citizen"
   context: PermissionContext; // { userId: string, [key: string]: unknown }
   checks: ResourceCheck[];    // Resources to evaluate permissions for
 }
@@ -102,11 +102,6 @@ type UsePermissionsReturn = {
 - Can update/cancel their own appointments
 - Can view queues and services
 - Can view all users but only update their own profile
-
-### Guest
-- **Read-only** access to public information
-- Can view services and queues
-- No access to appointments, users, reports, or settings
 
 ## Permission Conditions
 

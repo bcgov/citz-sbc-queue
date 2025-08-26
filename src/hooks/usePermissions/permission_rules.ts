@@ -113,8 +113,4 @@ export const QUEUE_RULES = [
   // Citizens can view all users but only update their own profile
   { role: "citizen", resource: "user", actions: ["view"] },
   { role: "citizen", resource: "user", actions: ["update"], condition: CONDITIONS.isOwnResource },
-
-  // Guest permissions - very limited read access
-  { role: "guest", resource: "service", actions: ["view"] },
-  { role: "guest", resource: "queue", actions: ["view"] },
 ] as const

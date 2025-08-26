@@ -23,7 +23,7 @@ describe("Permission Rules", () => {
   })
 
   it("should have proper role coverage", () => {
-    const roles = ["admin", "manager", "staff", "citizen", "guest"]
+    const roles = ["admin", "manager", "staff", "citizen"]
 
     roles.forEach((role) => {
       const hasRules = QUEUE_RULES.some((rule) => rule.role === role)
@@ -58,25 +58,6 @@ describe("Permission Rules", () => {
     )
 
     expect(adminActionCount).toBeGreaterThanOrEqual(managerActionCount)
-  })
-
-  it("should restrict guest permissions appropriately", () => {
-    const guestRules = QUEUE_RULES.filter((rule) => rule.role === "guest")
-
-    // Guests should only have view permissions
-    guestRules.forEach((rule) => {
-      expect(rule.actions).toContain("view")
-      expect(rule.actions).not.toContain("create")
-      expect(rule.actions).not.toContain("update")
-      expect(rule.actions).not.toContain("delete")
-    })
-
-    // Guests should have limited resource access
-    const guestResources = guestRules.map((rule) => rule.resource)
-    expect(guestResources).not.toContain("user")
-    expect(guestResources).not.toContain("report")
-    expect(guestResources).not.toContain("settings")
-    expect(guestResources).not.toContain("appointment")
   })
 
   it("should allow multiple rules per role-resource combination", () => {
