@@ -4,7 +4,7 @@ A comprehensive permission management system for the Service BC Queue Management
 
 ## Overview
 
-The `usePermissions` hook provides type-safe, role-based access control (RBAC) with attribute-based conditions for queue management resources. It evaluates permissions for multiple resources simultaneously and returns both individual permission checks and batch results.
+The `usePermissions` hook provides type-safe, attribute-based access control (ABAC) for queue management resources. It evaluates permissions based on user roles, resource attributes, and contextual conditions, enabling fine-grained access control for multiple resources simultaneously.
 
 ## Quick Start
 
