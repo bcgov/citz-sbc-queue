@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { refreshTokens, serverLogout } from "./api"
+import { refreshTokens } from "./api"
 import { useAuthStore } from "./store"
 import { clearAuthTimers, scheduleAuthTimers } from "./timers"
 import type { Session, TokenResponse } from "./types"
@@ -22,7 +22,6 @@ Object.defineProperty(window, "localStorage", {
 
 // Type the mocked functions
 const mockedRefreshTokens = vi.mocked(refreshTokens)
-const mockedServerLogout = vi.mocked(serverLogout)
 const mockedClearAuthTimers = vi.mocked(clearAuthTimers)
 const mockedScheduleAuthTimers = vi.mocked(scheduleAuthTimers)
 
@@ -235,18 +234,15 @@ describe("auth/store", () => {
       useAuthStore.setState({ session: mockSession, showExpiryWarning: true })
     })
 
-    it("should clear session and call server logout", async () => {
+    it("should clear session", async () => {
       await store.logout()
 
       const state = useAuthStore.getState()
       expect(state.session).toBeNull()
       expect(state.showExpiryWarning).toBe(false)
       expect(mockedClearAuthTimers).toHaveBeenCalled()
-      expect(mockedServerLogout).toHaveBeenCalled()
       expect(mockLocalStorage.removeItem).toHaveBeenCalledWith("auth.sessionStartAt")
     })
-
-    // idToken is not read from localStorage anymore
 
     it("should handle logout when no session exists", async () => {
       useAuthStore.setState({ session: null })
@@ -254,16 +250,6 @@ describe("auth/store", () => {
       await store.logout()
 
       expect(mockedClearAuthTimers).toHaveBeenCalled()
-      expect(mockedServerLogout).toHaveBeenCalled()
-    })
-
-    it("should handle server logout errors gracefully", async () => {
-      mockedServerLogout.mockRejectedValue(new Error("Server error"))
-
-      // Should throw since logout awaits serverLogout
-      await expect(store.logout()).rejects.toThrow("Server error")
-      // But session should still be cleared
-      expect(useAuthStore.getState().session).toBeNull()
     })
   })
 
