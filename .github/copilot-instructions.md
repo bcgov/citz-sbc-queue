@@ -175,7 +175,6 @@ src/
   - `spacing.css` - BC Gov spacing standards
   - Custom color classes: `bg-blue`, `text-gold`, `bg-typography-primary`, etc.
 - Use **Headless UI** for accessible unstyled components.
-- **BC Sans font** integrated via `@bcgov/bc-sans` package.
 - Follow **WCAG 2.1 AA** standards for all components:
   - **Semantic HTML**: Use proper elements (`button`, `nav`, `main`, `section`, etc.)
   - **Keyboard navigation**: All interactive elements must be keyboard accessible
