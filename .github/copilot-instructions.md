@@ -29,13 +29,7 @@ This is a modern Service BC Queue Management System using Next.js App Router and
 
 ```
 src/
-├── app/                 # Next.js App Router pages & routes
-│   ├── administration/  # Admin pages
-│   ├── api/            # API routes
-│   ├── appointments/   # Appointment pages
-│   ├── exam-inventory/ # Exam inventory pages
-│   ├── queue/          # Queue management pages
-│   └── room-bookings/  # Room booking pages
+├── app/                # Next.js App Router pages & routes
 ├── components/         # Reusable UI components
 ├── hooks/              # App-specific React hooks
 ├── middleware/         # Next.js middleware functions
@@ -68,7 +62,11 @@ src/
 
 ### Design System & Branding
 - Follow **BC Government Design System** guidelines and standards
-- Use **BC Government color palette**: `#013366` (blue), `#fcba19` (gold), `#ffffff` (white)
+- Use **predefined BC Government color classes** from `src/styles/bcgov/colours.css`:
+  - `bg-blue`, `text-blue` for primary blue (`#013366`)
+  - `bg-gold`, `text-gold` for accent gold (`#fcba19`)
+  - `bg-typography-primary`, `text-typography-primary` for text colors
+  - Avoid hardcoding hex values - use the Tailwind-integrated color classes
 - Implement **BC Government typography** using BC Sans font family
 - Maintain **consistent branding** with BC Government visual identity
 - Include **BC Government logos** and assets from `/public/bcgov/` directory
@@ -169,11 +167,15 @@ src/
 
 ## Styling & Accessibility
 
-- Use **TailwindCSS v4** with custom BC Government theme for utility-first styles.
-- BC Government design system implemented via custom CSS theme in `src/styles/bcgov/`:
-  - `colours.css` - BC Gov color palette using `@theme` directive
-  - `spacing.css` - BC Gov spacing standards
-  - Custom color classes: `bg-blue`, `text-gold`, `bg-typography-primary`, etc.
+- Use **TailwindCSS v4** as the primary styling framework with utility-first approach
+- **BC Government design system** colors are predefined in `src/styles/bcgov/colours.css`:
+  - Use BC Gov color classes: `bg-blue`, `text-gold`, `bg-typography-primary`, etc.
+  - Colors defined using `@theme` directive for Tailwind integration
+  - Spacing standards available in `src/styles/bcgov/spacing.css`
+- **Styling approach**:
+  - Prefer Tailwind utility classes for layout, spacing, and styling
+  - Reference BC Gov colors from the predefined CSS file rather than hardcoding hex values
+  - Use responsive design patterns with Tailwind's responsive prefixes
 - Use **Headless UI** for accessible unstyled components.
 - **BC Sans font** integrated via `@bcgov/bc-sans` package.
 - Follow **WCAG 2.1 AA** standards for all components:
