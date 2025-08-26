@@ -74,7 +74,6 @@ src/
 - Include **BC Government logos** and assets from `/public/bcgov/` directory
 
 ### Font Integration
-- Use **`@bcgov/bc-sans`** package for official BC Government typography
 - Font weights available: Regular, Italic, Bold, BoldItalic
 - Fonts served from `/public/fonts/` directory as WOFF2 files
 - Follow **BC Sans usage guidelines** for government applications
