@@ -11,7 +11,12 @@ export type DialogBodyProps = {
 
 /**
  * DialogBody component for displaying the body content of a dialog.
+ *
  * @param {DialogBodyProps} props - Props for the dialog body component.
+ *
+ * @property {ReactNode} children - The content to render inside the dialog body.
+ * @property {boolean} [scroll=false] - Whether the dialog body should be scrollable.
+ * @property {string} [className] - Additional CSS classes to apply to the dialog body container.
  */
 export const DialogBody = ({ children, scroll = false, className }: DialogBodyProps) => {
   const bodyClasses = useMemo(() => {

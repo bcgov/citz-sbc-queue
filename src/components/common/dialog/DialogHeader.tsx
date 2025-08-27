@@ -11,7 +11,18 @@ export type DialogHeaderProps = {
 
 /**
  * DialogHeader component for displaying the header content of a dialog.
+ *
  * @param {DialogHeaderProps} props - Props for the dialog header component.
+ *
+ * @property {ReactNode} children - The content to render inside the dialog header.
+ * @property {ReactNode} [leading] - The content to render at the start of the dialog header.
+ * @property {ReactNode} [trailing] - The content to render at the end of the dialog header.
+ * @property {string} [className] - Additional CSS classes to apply to the dialog header container.
+ *
+ * @example
+ * <DialogHeader trailing={<CloseButton onClick={closeDialog} />}>
+ *   <DialogTitle>Confirm action</DialogTitle>
+ * </DialogHeader>
  */
 export const DialogHeader = ({ children, leading, trailing, className }: DialogHeaderProps) => {
   const headerClasses = useMemo(() => {

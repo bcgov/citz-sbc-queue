@@ -1,84 +1,156 @@
 "use client"
 
-import { TransitionChild } from "@headlessui/react"
-import type { ReactNode } from "react"
-import { Fragment, useMemo } from "react"
-import { MODAL_SIZE_CLASSES } from "./constants"
-import { Dialog } from "./Dialog"
-import type { ModalSize } from "./types"
+import { Dialog as HeadlessDialog, Transition, TransitionChild } from "@headlessui/react"
+import type { ReactNode, RefObject } from "react"
+import { Fragment, useId, useMemo } from "react"
+import { DIALOG_SIZE_CLASSES } from "./constants"
+import { DialogContext } from "./DialogContext"
+import type { DialogSize } from "./types"
 
 export type ModalProps = {
   open: boolean
   onClose: () => void
   children: ReactNode
-  size?: ModalSize
+  initialFocusRef?: RefObject<HTMLElement | null>
   className?: string
-  panelClassName?: string
-  overlayClassName?: string
+  size?: DialogSize
   withTransition?: boolean
-  initialFocusRef?: React.RefObject<HTMLElement | null>
   labelledById?: string
   describedById?: string
+  panelClassName?: string
+  overlayClassName?: string
 }
 
 /**
- * Modal component for displaying a modal dialog.
+ * Modal component with BC Gov styling.
+ * Creates a centered modal dialog with backdrop overlay.
+ *
  * @param {ModalProps} props - Props for the modal component.
+ *
+ * @property {boolean} open - Whether the modal is open and visible.
+ * @property {() => void} onClose - Function called when the modal should be closed.
+ * @property {ReactNode} children - The content to render inside the modal.
+ * @property {RefObject<HTMLElement | null>} [initialFocusRef] - Ref to the element that should receive focus when the modal opens.
+ * @property {string} [className] - Additional CSS classes to apply to the modal container.
+ * @property {DialogSize} [size="md"] - Size of the modal. Options: "sm", "md", "lg", "xl".
+ * @property {boolean} [withTransition=true] - Whether to animate the modal open/close with transitions.
+ * @property {string} [labelledById] - ID of the element that labels the modal for accessibility. Auto-generated if not provided.
+ * @property {string} [describedById] - ID of the element that describes the modal for accessibility. Auto-generated if not provided.
+ * @property {string} [panelClassName] - Additional CSS classes to apply to the modal content panel.
+ * @property {string} [overlayClassName] - Additional CSS classes to apply to the modal backdrop overlay.
+ *
+ * @example
+ * const { open, openDialog, closeDialog } = useDialog()
+ *
+ * return (
+ *   <div className="p-6">
+ *     <button type="button" onClick={openDialog}>
+ *       Open modal
+ *     </button>
+ *
+ *     <Modal open={open} onClose={closeDialog}>
+ *       {Dialog components}
+ *     </Modal>
+ *   </div>
+ * )
  */
 export const Modal = ({
   open,
   onClose,
   children,
-  size = "md",
-  className,
-  panelClassName,
-  overlayClassName,
-  withTransition = true,
   initialFocusRef,
+  className,
+  size = "md",
+  withTransition = true,
   labelledById,
   describedById,
+  panelClassName,
+  overlayClassName,
 }: ModalProps) => {
-  const panelClasses = useMemo(() => {
+  const internalId = useId() // Unique ID for the modal
+  const labelledBy = labelledById ?? `${internalId}-title`
+  const describedBy = describedById ?? `${internalId}-description`
+
+  const modalClasses = useMemo(() => {
+    return `relative bg-white rounded-[4px] ${DIALOG_SIZE_CLASSES[size]} z-50 ${className ?? ""}`
+  }, [size, className])
+
+  const modalPanelClasses = useMemo(() => {
     return [
       "w-full z-60",
-      MODAL_SIZE_CLASSES[size],
+      DIALOG_SIZE_CLASSES[size],
       "transform overflow-hidden bg-white rounded-[4px]",
       "focus:outline-none",
       "data-[closed]:scale-95 data-[closed]:opacity-0",
       "data-[enter]:duration-150 data-[leave]:duration-100",
-      `${panelClassName ?? ""}`,
+      panelClassName ?? "",
     ].join(" ")
   }, [size, panelClassName])
 
-  const overlayClasses = useMemo(() => {
+  const modalOverlayClasses = useMemo(() => {
     return [
       "fixed inset-0 bg-black/50 z-40 pointer-events-none data-[closed]:opacity-0 data-[enter]:duration-150 data-[leave]:duration-100",
-      `${overlayClassName ?? ""}`,
+      overlayClassName ?? "",
     ].join(" ")
   }, [overlayClassName])
 
-  return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      className={className}
-      withTransition={withTransition}
-      initialFocusRef={initialFocusRef}
-      labelledById={labelledById}
-      describedById={describedById}
-    >
-      <div className="fixed inset-0 flex items-center justify-center p-4">
-        <TransitionChild as={Fragment}>
-          <div aria-hidden className={overlayClasses} />
-        </TransitionChild>
+  const dialogContextValue = useMemo(
+    () => ({
+      titleId: labelledBy,
+      descriptionId: describedBy,
+    }),
+    [labelledBy, describedBy]
+  )
 
-        <TransitionChild as={Fragment}>
-          <div className={panelClasses} role="document">
-            {children}
+  if (!withTransition) {
+    return (
+      <DialogContext.Provider value={dialogContextValue}>
+        <HeadlessDialog
+          as="div"
+          className={modalClasses}
+          open={open}
+          onClose={onClose}
+          initialFocus={initialFocusRef}
+          aria-labelledby={labelledBy}
+          aria-describedby={describedBy}
+        >
+          <div className="fixed inset-0 flex items-center justify-center p-4">
+            <div aria-hidden className={modalOverlayClasses} />
+            <div className={modalPanelClasses} role="document">
+              {children}
+            </div>
           </div>
-        </TransitionChild>
-      </div>
-    </Dialog>
+        </HeadlessDialog>
+      </DialogContext.Provider>
+    )
+  }
+
+  return (
+    <DialogContext.Provider value={dialogContextValue}>
+      <Transition show={open} as={Fragment} appear>
+        <HeadlessDialog
+          as="div"
+          className={modalClasses}
+          open={open}
+          onClose={onClose}
+          initialFocus={initialFocusRef}
+          aria-labelledby={labelledBy}
+          aria-describedby={describedBy}
+        >
+          <div className="fixed inset-0 flex items-center justify-center p-4">
+            <TransitionChild as={Fragment}>
+              <div aria-hidden className={modalOverlayClasses} />
+            </TransitionChild>
+
+            <TransitionChild as={Fragment}>
+              <div className={modalPanelClasses} role="document">
+                {children}
+              </div>
+            </TransitionChild>
+          </div>
+        </HeadlessDialog>
+      </Transition>
+    </DialogContext.Provider>
   )
 }
 

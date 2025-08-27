@@ -4,7 +4,10 @@ export type CloseButtonProps = {
 
 /**
  * CloseButton component for displaying a button to close the dialog.
+ *
  * @param {CloseButtonProps} props - Props for the close button component.
+ *
+ * @property {() => void} onClick - Function called when the close button is clicked.
  */
 export const CloseButton = ({ onClick }: CloseButtonProps) => {
   return (
