@@ -184,7 +184,6 @@ src/
   - **Form accessibility**: Use `htmlFor`/`id` relationships or `aria-label` for inputs
   - **Focus indicators**: Ensure visible focus states for keyboard users
   - **Alt text**: Provide meaningful `alt` attributes for images, `alt=""` for decorative
-  - **Color contrast**: Use BC Gov design system colors (meet 4.5:1 minimum contrast ratio)
   - **Heading hierarchy**: Maintain logical structure (h1 → h2 → h3, no skipping levels)
   - **Link purpose**: Make link text descriptive or add `aria-label`
   - **Screen reader support**: Test with assistive technologies in mind
@@ -222,7 +221,7 @@ src/
 ## Authentication & Permissions
 
 ### Permissions System (SBCQ-17)
-- Use **`usePermissions`** hook for role-based access control (RBAC)
+- Use **`usePermissions`** hook for attribute-based access control (ABAC)
 - Supports **attribute-based access control (ABAC)** with contextual conditions
 - **Type-safe permission checking** with TypeScript inference
 - **Multi-resource evaluation** for batch permission checks
