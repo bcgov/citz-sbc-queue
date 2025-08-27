@@ -1,35 +1,39 @@
 "use client"
 
-import { useRef } from "react"
 import {
+  Dialog,
   DialogActions,
   DialogBody,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
-  Modal,
 } from "@/components/common/dialog"
 import { useDialog } from "@/hooks/useDialog/useDialog"
+import CloseButton from "./common/dialog/CloseButton"
 
-export const Example = () => {
+export const ExampleDialog = () => {
   const { open, openDialog, closeDialog } = useDialog()
-  const focusRef = useRef<HTMLButtonElement | null>(null)
 
   return (
     <div className="p-6">
-      <button type="button" className="primary" onClick={openDialog}>
-        Open modal
+      <button type="button" className="secondary" onClick={openDialog}>
+        Open dialog
       </button>
 
-      <Modal open={open} onClose={closeDialog} size="md" initialFocusRef={focusRef}>
-        <DialogHeader>
+      <Dialog
+        open={open}
+        onClose={closeDialog}
+        size="md"
+        position="top-right"
+        offset={{ x: -20, y: 20 }}
+      >
+        <DialogHeader trailing={<CloseButton onClick={closeDialog} />}>
           <DialogTitle>Confirm action</DialogTitle>
-          <DialogDescription>This will perform a sensitive operation. Continue?</DialogDescription>
         </DialogHeader>
 
         <DialogBody>
           <p className="text-sm text-gray-700">
-            Body content goes here. It can scroll if it gets long.
+            Are you sure you want to proceed with this action? This change cannot be undone. Please
+            review the details before confirming
           </p>
         </DialogBody>
 
@@ -37,11 +41,11 @@ export const Example = () => {
           <button type="button" className="tertiary" onClick={closeDialog}>
             Cancel
           </button>
-          <button ref={focusRef} type="button" className="primary" onClick={closeDialog}>
+          <button type="button" className="primary" onClick={closeDialog}>
             Confirm
           </button>
         </DialogActions>
-      </Modal>
+      </Dialog>
     </div>
   )
 }
