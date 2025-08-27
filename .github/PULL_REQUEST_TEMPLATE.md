@@ -5,6 +5,11 @@
 
 <!-- PROVIDE BELOW an explanation of your changes and any supporting images -->
 
+## 🧪 Testing
+
+<!--
+PROVIDE BELOW information on how to manually test all changes.
+Include tests that you have completed and any additional files/ documents required to test. -->
 
 ## 🔰 Checklist
 
