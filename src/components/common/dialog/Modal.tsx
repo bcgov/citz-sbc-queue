@@ -2,7 +2,7 @@
 
 import { Dialog as HeadlessDialog, Transition, TransitionChild } from "@headlessui/react"
 import type { ReactNode, RefObject } from "react"
-import { Fragment, useId, useMemo } from "react"
+import { Fragment, useEffect, useId, useMemo } from "react"
 import { DIALOG_SIZE_CLASSES } from "./constants"
 import { DialogContext } from "./DialogContext"
 import type { DialogSize } from "./types"
@@ -19,6 +19,7 @@ export type ModalProps = {
   describedById?: string
   panelClassName?: string
   overlayClassName?: string
+  disableEscapeKeyClose?: boolean
 }
 
 /**
@@ -38,6 +39,7 @@ export type ModalProps = {
  * @property {string} [describedById] - ID of the element that describes the modal for accessibility. Auto-generated if not provided.
  * @property {string} [panelClassName] - Additional CSS classes to apply to the modal content panel.
  * @property {string} [overlayClassName] - Additional CSS classes to apply to the modal backdrop overlay.
+ * @property {boolean} [disableEscapeKeyClose=false] - When true, pressing the Escape key will not close the modal, forcing the user to make a decision within the modal.
  *
  * @example
  * const { open, openDialog, closeDialog } = useDialog()
@@ -66,10 +68,28 @@ export const Modal = ({
   describedById,
   panelClassName,
   overlayClassName,
+  disableEscapeKeyClose = false,
 }: ModalProps) => {
   const internalId = useId() // Unique ID for the modal
   const labelledBy = labelledById ?? `${internalId}-title`
   const describedBy = describedById ?? `${internalId}-description`
+
+  // Handle escape key press when disableEscapeKeyClose is true
+  useEffect(() => {
+    if (!disableEscapeKeyClose || !open) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown, true)
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown, true)
+    }
+  }, [disableEscapeKeyClose, open])
 
   const modalClasses = useMemo(() => {
     return `relative bg-white rounded-[4px] ${DIALOG_SIZE_CLASSES[size]} z-50 ${className ?? ""}`
