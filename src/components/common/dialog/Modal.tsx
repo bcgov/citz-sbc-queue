@@ -91,29 +91,6 @@ export const Modal = ({
     }
   }, [disableEscapeKeyClose, open])
 
-  const modalClasses = useMemo(() => {
-    return `relative bg-white rounded-[4px] ${DIALOG_SIZE_CLASSES[size]} z-50 ${className ?? ""}`
-  }, [size, className])
-
-  const modalPanelClasses = useMemo(() => {
-    return [
-      "w-full z-60",
-      DIALOG_SIZE_CLASSES[size],
-      "transform overflow-hidden bg-white rounded-[4px]",
-      "focus:outline-none",
-      "data-[closed]:scale-95 data-[closed]:opacity-0",
-      "data-[enter]:duration-150 data-[leave]:duration-100",
-      panelClassName ?? "",
-    ].join(" ")
-  }, [size, panelClassName])
-
-  const modalOverlayClasses = useMemo(() => {
-    return [
-      "fixed inset-0 bg-black/50 z-40 pointer-events-none data-[closed]:opacity-0 data-[enter]:duration-150 data-[leave]:duration-100",
-      overlayClassName ?? "",
-    ].join(" ")
-  }, [overlayClassName])
-
   const dialogContextValue = useMemo(
     () => ({
       titleId: labelledBy,
@@ -127,16 +104,22 @@ export const Modal = ({
       <DialogContext.Provider value={dialogContextValue}>
         <HeadlessDialog
           as="div"
-          className={modalClasses}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
           open={open}
           onClose={onClose}
           initialFocus={initialFocusRef}
           aria-labelledby={labelledBy}
           aria-describedby={describedBy}
         >
+          <div
+            className={`fixed inset-0 bg-black/50 ${overlayClassName ?? ""}`}
+            aria-hidden="true"
+          />
           <div className="fixed inset-0 flex items-center justify-center p-4">
-            <div aria-hidden className={modalOverlayClasses} />
-            <div className={modalPanelClasses} role="document">
+            <div
+              className={`relative w-full transform overflow-hidden bg-white rounded-[4px] shadow-lg focus:outline-none ${DIALOG_SIZE_CLASSES[size]} ${panelClassName ?? ""} ${className ?? ""}`}
+              role="document"
+            >
               {children}
             </div>
           </div>
@@ -147,23 +130,44 @@ export const Modal = ({
 
   return (
     <DialogContext.Provider value={dialogContextValue}>
-      <Transition show={open} as={Fragment} appear>
+      <Transition show={open} as={Fragment}>
         <HeadlessDialog
           as="div"
-          className={modalClasses}
-          open={open}
+          className="relative z-50"
           onClose={onClose}
           initialFocus={initialFocusRef}
           aria-labelledby={labelledBy}
           aria-describedby={describedBy}
         >
-          <div className="fixed inset-0 flex items-center justify-center p-4">
-            <TransitionChild as={Fragment}>
-              <div aria-hidden className={modalOverlayClasses} />
-            </TransitionChild>
+          <TransitionChild
+            as={Fragment}
+            enter="ease-out duration-200"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div
+              className={`fixed inset-0 bg-black/50 ${overlayClassName ?? ""}`}
+              aria-hidden="true"
+            />
+          </TransitionChild>
 
-            <TransitionChild as={Fragment}>
-              <div className={modalPanelClasses} role="document">
+          <div className="fixed inset-0 flex items-center justify-center p-4">
+            <TransitionChild
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <div
+                className={`relative w-full transform overflow-hidden bg-white rounded-[4px] shadow-lg focus:outline-none ${DIALOG_SIZE_CLASSES[size]} ${panelClassName ?? ""} ${className ?? ""}`}
+                role="document"
+              >
                 {children}
               </div>
             </TransitionChild>

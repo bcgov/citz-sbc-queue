@@ -76,7 +76,9 @@ export const Dialog = ({
     const positionClasses = DIALOG_POSITION_CLASSES[position]
     const transitionClasses = "transition-all duration-200 ease-in-out"
     const shadowClasses = "shadow-lg border-1 border-gray-200 z-50"
-    const stateClasses = open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
+    const stateClasses = open
+      ? "opacity-100 scale-100"
+      : "opacity-0 scale-95 pointer-events-none invisible"
 
     return `${baseClasses} ${positionClasses} ${transitionClasses} ${shadowClasses} ${stateClasses} ${className ?? ""}`
   }, [size, position, open, className])
@@ -110,8 +112,6 @@ export const Dialog = ({
       onClose()
     }
   }
-
-  if (!open) return null
 
   const dialogElement = (
     <DialogContext.Provider value={dialogContextValue}>
