@@ -25,10 +25,7 @@ export const CloseButton = ({ onClick }: CloseButtonProps) => {
         aria-hidden="true"
         className="w-5 h-5 flex-none"
       >
-        <path
-          d="M16 5.21286L14.7871 4L10 8.78714L5.21286 4L4 5.21286L8.78714 10L4 14.7871L5.21286 16L10 11.2129L14.7871 16L16 14.7871L11.2129 10L16 5.21286Z"
-          fill="currentColor"
-        />
+        <path d="M4 4L16 16M16 4L4 16" stroke="currentColor" strokeWidth="2" />
       </svg>
     </button>
   )
