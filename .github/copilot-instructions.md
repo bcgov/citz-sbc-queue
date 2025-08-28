@@ -283,7 +283,6 @@ const { hasPermission } = usePermissions({
 | Files           | `camelCase`           |
 | Folders         | `camelCase`           |
 | Test files      | `*.test.ts`           |
-| Props types     | `Props`               |
 | Constants       | `SCREAMING_SNAKE_CASE`|
 | Environment vars| `SCREAMING_SNAKE_CASE`|
 | Store files     | `*.store.ts`          |
