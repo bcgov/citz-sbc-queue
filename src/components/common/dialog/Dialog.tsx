@@ -75,7 +75,7 @@ export const Dialog = ({
     const baseClasses = `bg-white rounded-[4px] ${DIALOG_SIZE_CLASSES[size]}`
     const positionClasses = DIALOG_POSITION_CLASSES[position]
     const transitionClasses = "transition-all duration-200 ease-in-out"
-    const shadowClasses = "shadow-lg border border-gray-200 z-50"
+    const shadowClasses = "shadow-lg border-1 border-gray-200 z-50"
     const stateClasses = open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
 
     return `${baseClasses} ${positionClasses} ${transitionClasses} ${shadowClasses} ${stateClasses} ${className ?? ""}`
