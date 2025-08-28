@@ -29,7 +29,7 @@ export const DialogTitle = ({ children, id, className }: DialogTitleProps) => {
 
   const titleClasses = useMemo(() => {
     return [
-      "text-[20px] font-bold leading-6 text-[var(--color-typography-primary)]",
+      "text-[20px] font-bold leading-6 text-typography-primary",
       `${className ?? ""}`,
     ].join(" ")
   }, [className])
