@@ -65,10 +65,6 @@ Follow **BC Government Design System** guidelines and standards
 - Use **predefined BC Government button classes** from `src/styles/bcgov/components.css`
   - Most commonly used button classes are `primary` and `secondary`
 
-### Font Integration
-- Font weights available: Regular, Italic, Bold, BoldItalic
-- Fonts served from `/public/fonts/` directory as WOFF2 files
-- Follow **BC Sans usage guidelines** for government applications
 
 ### Government Requirements
 - Ensure **bilingual considerations** for future French language support
@@ -83,7 +79,7 @@ Follow **BC Government Design System** guidelines and standards
 - Use `type` (not `interface`) for consistency.
 - Avoid `any`; use `unknown`, `Record<string, unknown>`, etc.
 - Prefer `Partial`, `Pick`, `Omit`, and discriminated unions.
-- Always type props as `Props`, and all functions and stores explicitly.
+- Always type component props as `<component-name>Props`, such as `LoginButtonProps` for the `LoginButton` component.
 - **Function parameters**:
   - 1-2 parameters: Use individual parameters
   - 3+ parameters: Use object parameter for the remaining parameters
