@@ -311,6 +311,7 @@ const { hasPermission } = usePermissions({
   - **Don't include in summary**:
     - File change lists (reviewers see the diff)
     - Test status reports ("all tests passing")
+    - Mentions of test coverage
     - Verbose implementation details
 - **Before creating PRs**:
   - Ensure test suites are passing
