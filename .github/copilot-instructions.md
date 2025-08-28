@@ -61,15 +61,11 @@ src/
 ## BC Government Standards
 
 ### Design System & Branding
-- Follow **BC Government Design System** guidelines and standards
-- Use **predefined BC Government color classes** from `src/styles/bcgov/colours.css`:
-  - `bg-blue`, `text-blue` for primary blue (`#013366`)
-  - `bg-gold`, `text-gold` for accent gold (`#fcba19`)
-  - `bg-typography-primary`, `text-typography-primary` for text colors
+Follow **BC Government Design System** guidelines and standards
+- Use **predefined BC Government color classes** from `src/styles/bcgov/colours.css`
   - Avoid hardcoding hex values - use the Tailwind-integrated color classes
-- Implement **BC Government typography** using BC Sans font family
-- Maintain **consistent branding** with BC Government visual identity
-- Include **BC Government logos** and assets from `/public/bcgov/` directory
+- Use **predefined BC Government button classes** from `src/styles/bcgov/components.css`
+  - Most commonly used button classes are `primary` and `secondary`
 
 ### Font Integration
 - Font weights available: Regular, Italic, Bold, BoldItalic
