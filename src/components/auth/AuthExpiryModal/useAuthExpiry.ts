@@ -12,9 +12,6 @@ export type UseAuthExpiryReturn = {
 /**
  * Hook for managing authentication expiry warning state and countdown timer.
  *
- * To test manually, temporarily set `TEN_HOURS_MS = 3 * 60 * 1000` in `src/stores/auth/store.ts`.
- * This will open the expiry modal after 1 minutes, leaving the modal open for another 2 minutes.
- *
  * @returns Object containing expiry warning state, time remaining, and time formatting function
  */
 export const useAuthExpiry = (): UseAuthExpiryReturn => {

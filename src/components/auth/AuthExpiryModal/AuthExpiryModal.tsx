@@ -14,6 +14,9 @@ import { useAuthExpiry } from "./useAuthExpiry"
 /**
  * Modal that appears when the user's session is about to expire.
  * Displays a 2-minute countdown and allows the user to login to extend their session.
+ *
+ * To test manually, temporarily set `TEN_HOURS_MS = 3 * 60 * 1000` in `src/stores/auth/store.ts`.
+ * This will open the expiry modal after 1 minutes, leaving the modal open for another 2 minutes.
  */
 export const AuthExpiryModal = () => {
   const { showExpiryWarning, timeRemaining, formatTime } = useAuthExpiry()
