@@ -81,7 +81,7 @@ Follow **BC Government Design System** guidelines and standards
 - Use `type` (not `interface`) for consistency.
 - Avoid `any`; use `unknown`, `Record<string, unknown>`, etc.
 - Prefer `Partial`, `Pick`, `Omit`, and discriminated unions.
-- Always type props as `Props`, and all functions and stores explicitly.
+- Always type component props as `<component-name>Props`, such as `LoginButtonProps` for the `LoginButton` component.
 - **Function parameters**:
   - 1-2 parameters: Use individual parameters
   - 3+ parameters: Use object parameter for the remaining parameters
