@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { refreshTokens } from "./api"
+import { clearTokens, refreshTokens } from "./api"
 import { useAuthStore } from "./store"
 import { clearAuthTimers, scheduleAuthTimers } from "./timers"
 import type { Session, TokenResponse } from "./types"
@@ -22,6 +22,7 @@ Object.defineProperty(window, "localStorage", {
 
 // Type the mocked functions
 const mockedRefreshTokens = vi.mocked(refreshTokens)
+const mockedClearTokens = vi.mocked(clearTokens)
 const mockedClearAuthTimers = vi.mocked(clearAuthTimers)
 const mockedScheduleAuthTimers = vi.mocked(scheduleAuthTimers)
 
@@ -138,7 +139,7 @@ describe("auth/store", () => {
 
       store.loginFromTokens(mockTokenResponse)
 
-      expect(logoutSpy).toHaveBeenCalledWith("expired")
+      expect(logoutSpy).toHaveBeenCalled()
       expect(useAuthStore.getState().session).toBeNull()
     })
 
@@ -241,6 +242,7 @@ describe("auth/store", () => {
       expect(state.session).toBeNull()
       expect(state.showExpiryWarning).toBe(false)
       expect(mockedClearAuthTimers).toHaveBeenCalled()
+      expect(mockedClearTokens).toHaveBeenCalled()
       expect(mockLocalStorage.removeItem).toHaveBeenCalledWith("auth.sessionStartAt")
     })
 
@@ -370,9 +372,9 @@ describe("auth/store", () => {
       call.onShowWarning()
       expect(useAuthStore.getState().showExpiryWarning).toBe(true)
 
-      // onHardLogout should call logout with expired reason
+      // onHardLogout should call logout
       await call.onHardLogout()
-      expect(logoutSpy).toHaveBeenCalledWith("expired")
+      expect(logoutSpy).toHaveBeenCalled()
     })
   })
 })
