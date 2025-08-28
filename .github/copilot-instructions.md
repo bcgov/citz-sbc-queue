@@ -39,9 +39,7 @@ src/
 └── utils/              # Utility functions
 ```
 
-> `middleware/` contains Next.js middleware for authentication, routing, etc.
-> `src/styles/` contains BC Government design system CSS files.
-> `src/hooks/` contains app-specific hooks like usePermissions.
+
 
 ---
 
@@ -61,20 +59,12 @@ src/
 ## BC Government Standards
 
 ### Design System & Branding
-- Follow **BC Government Design System** guidelines and standards
-- Use **predefined BC Government color classes** from `src/styles/bcgov/colours.css`:
-  - `bg-blue`, `text-blue` for primary blue (`#013366`)
-  - `bg-gold`, `text-gold` for accent gold (`#fcba19`)
-  - `bg-typography-primary`, `text-typography-primary` for text colors
+Follow **BC Government Design System** guidelines and standards
+- Use **predefined BC Government color classes** from `src/styles/bcgov/colours.css`
   - Avoid hardcoding hex values - use the Tailwind-integrated color classes
-- Implement **BC Government typography** using BC Sans font family
-- Maintain **consistent branding** with BC Government visual identity
-- Include **BC Government logos** and assets from `/public/bcgov/` directory
+- Use **predefined BC Government button classes** from `src/styles/bcgov/components.css`
+  - Most commonly used button classes are `primary` and `secondary`
 
-### Font Integration
-- Font weights available: Regular, Italic, Bold, BoldItalic
-- Fonts served from `/public/fonts/` directory as WOFF2 files
-- Follow **BC Sans usage guidelines** for government applications
 
 ### Government Requirements
 - Ensure **bilingual considerations** for future French language support
@@ -89,7 +79,7 @@ src/
 - Use `type` (not `interface`) for consistency.
 - Avoid `any`; use `unknown`, `Record<string, unknown>`, etc.
 - Prefer `Partial`, `Pick`, `Omit`, and discriminated unions.
-- Always type props as `Props`, and all functions and stores explicitly.
+- Always type component props as `<component-name>Props`, such as `LoginButtonProps` for the `LoginButton` component.
 - **Function parameters**:
   - 1-2 parameters: Use individual parameters
   - 3+ parameters: Use object parameter for the remaining parameters
@@ -139,28 +129,15 @@ src/
 - Separate all logic from JSX.
 - Include proper loading and error states.
 - **Component props structure**:
-  - Props should be an object with type `Props`
-  - `Props` type should be defined and exported within the component file
-  - Example:
-    ```tsx
-    export type Props = {
-      title: string
-      isVisible: boolean
-      onClose: () => void
-    }
-
-    export default function Modal(props: Props) {
-      const { title, isVisible, onClose } = props
-      // Component implementation
-    }
-    ```
+  - Props type should be defined and exported within the component file
+  - Props should be destructured within the component parameter list.
 - **Accessibility-first development**:
   - Use semantic HTML elements by default
   - Include proper ARIA attributes for complex interactions
   - Ensure all interactive elements are keyboard accessible
   - Provide meaningful labels and descriptions
 - Export:
-  - Components: default export
+  - Components: named and default export
   - Types, hooks, utils: named exports
 
 ---
@@ -168,10 +145,7 @@ src/
 ## Styling & Accessibility
 
 - Use **TailwindCSS v4** as the primary styling framework with utility-first approach
-- **BC Government design system** colors are predefined in `src/styles/bcgov/colours.css`:
-  - Use BC Gov color classes: `bg-blue`, `text-gold`, `bg-typography-primary`, etc.
-  - Colors defined using `@theme` directive for Tailwind integration
-  - Spacing standards available in `src/styles/bcgov/spacing.css`
+- Use BC Government design guidelines as listed above.
 - **Styling approach**:
   - Prefer Tailwind utility classes for layout, spacing, and styling
   - Reference BC Gov colors from the predefined CSS file rather than hardcoding hex values
@@ -309,7 +283,6 @@ const { hasPermission } = usePermissions({
 | Files           | `camelCase`           |
 | Folders         | `camelCase`           |
 | Test files      | `*.test.ts`           |
-| Props types     | `Props`               |
 | Constants       | `SCREAMING_SNAKE_CASE`|
 | Environment vars| `SCREAMING_SNAKE_CASE`|
 | Store files     | `*.store.ts`          |
@@ -338,6 +311,7 @@ const { hasPermission } = usePermissions({
   - **Don't include in summary**:
     - File change lists (reviewers see the diff)
     - Test status reports ("all tests passing")
+    - Mentions of test coverage
     - Verbose implementation details
 - **Before creating PRs**:
   - Ensure test suites are passing
