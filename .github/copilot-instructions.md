@@ -39,9 +39,7 @@ src/
 └── utils/              # Utility functions
 ```
 
-> `middleware/` contains Next.js middleware for authentication, routing, etc.
-> `src/styles/` contains BC Government design system CSS files.
-> `src/hooks/` contains app-specific hooks like usePermissions.
+
 
 ---
 
