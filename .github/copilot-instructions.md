@@ -321,15 +321,21 @@ const { hasPermission } = usePermissions({
 - Use **conventional commits**
 - Create feature branches for new work
 - **Pull Request Guidelines**:
-  - Use the **supplied PR template** (don't create custom formats)
+  - Use the **supplied PR template** (`.github/PULL_REQUEST_TEMPLATE.md`)
   - **PR titles** should start with ticket number in square brackets: `[SBCQ-17] Description`
-  - Write descriptions **for code reviewers** (short and concise)
-  - **Include**:
+  - **Summary section** should be **for code reviewers** (short and concise):
+    - Explain **what** changed and **why**
+    - Include JIRA link with correct ticket number
+    - Focus on **reviewer efficiency** and **actionable information**
+  - **Testing section** should include:
+    - Manual testing instructions for new functionality
+    - Any setup or configuration required
+    - Specific test scenarios to validate
+  - **Include in summary**:
     - Package/library changes (added, removed, updated dependencies)
-    - Testing instructions for new functionality
     - Configuration file changes (env, project config)
     - Potential risks (security, performance, breaking changes)
-  - **Don't include**:
+  - **Don't include in summary**:
     - File change lists (reviewers see the diff)
     - Test status reports ("all tests passing")
     - Verbose implementation details
