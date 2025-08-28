@@ -67,7 +67,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       getSession: () => get().session,
       onRefresh: () => get().refresh(),
       onShowWarning: () => get().setShowExpiryWarning(true),
-      onHardLogout: () => get().logout("expired"),
+      onHardLogout: () => get().logout(),
     })
   },
 
