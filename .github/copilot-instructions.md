@@ -129,21 +129,8 @@ Follow **BC Government Design System** guidelines and standards
 - Separate all logic from JSX.
 - Include proper loading and error states.
 - **Component props structure**:
-  - Props should be an object with type `Props`
-  - `Props` type should be defined and exported within the component file
-  - Example:
-    ```tsx
-    export type Props = {
-      title: string
-      isVisible: boolean
-      onClose: () => void
-    }
-
-    export default function Modal(props: Props) {
-      const { title, isVisible, onClose } = props
-      // Component implementation
-    }
-    ```
+  - Props type should be defined and exported within the component file
+  - Props should be destructured within the component parameter list.
 - **Accessibility-first development**:
   - Use semantic HTML elements by default
   - Include proper ARIA attributes for complex interactions
