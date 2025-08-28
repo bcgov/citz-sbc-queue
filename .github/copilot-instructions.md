@@ -137,7 +137,7 @@ Follow **BC Government Design System** guidelines and standards
   - Ensure all interactive elements are keyboard accessible
   - Provide meaningful labels and descriptions
 - Export:
-  - Components: default export
+  - Components: named and default export
   - Types, hooks, utils: named exports
 
 ---
