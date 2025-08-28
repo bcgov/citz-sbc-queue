@@ -145,10 +145,7 @@ Follow **BC Government Design System** guidelines and standards
 ## Styling & Accessibility
 
 - Use **TailwindCSS v4** as the primary styling framework with utility-first approach
-- **BC Government design system** colors are predefined in `src/styles/bcgov/colours.css`:
-  - Use BC Gov color classes: `bg-blue`, `text-gold`, `bg-typography-primary`, etc.
-  - Colors defined using `@theme` directive for Tailwind integration
-  - Spacing standards available in `src/styles/bcgov/spacing.css`
+- Use BC Government design guidelines as listed above.
 - **Styling approach**:
   - Prefer Tailwind utility classes for layout, spacing, and styling
   - Reference BC Gov colors from the predefined CSS file rather than hardcoding hex values
