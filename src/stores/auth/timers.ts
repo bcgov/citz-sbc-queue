@@ -39,8 +39,8 @@ export const scheduleAuthTimers = ({
     }
   }, refreshIn)
 
-  // Session warning at T-2m, hard logout at T
-  const warnIn = Math.max(1_000, session.sessionEndsAt - now - 120_000)
+  // Session warning at T-2m+2s, hard logout at T
+  const warnIn = Math.max(1_000, session.sessionEndsAt - now - 122_000)
   const logoutIn = Math.max(1_000, session.sessionEndsAt - now)
 
   sessionWarnTO = setTimeout(() => onShowWarning(), warnIn)

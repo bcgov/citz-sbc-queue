@@ -169,12 +169,12 @@ describe("auth/timers", () => {
         onHardLogout: mockOnHardLogout,
       })
 
-      // Advance to just before warning should show (2m before end)
-      vi.advanceTimersByTime(29000) // 29 seconds
+      // Advance to just before warning should show (2m 2s before end)
+      vi.advanceTimersByTime(27000) // 27 seconds
       expect(mockOnShowWarning).not.toHaveBeenCalled()
 
       // Advance to when warning should show
-      vi.advanceTimersByTime(2000) // Total 31 seconds (150s - 120s + 1s)
+      vi.advanceTimersByTime(2000) // Total 29 seconds (150s - 122s + 1s)
       expect(mockOnShowWarning).toHaveBeenCalled()
     })
 
@@ -316,12 +316,12 @@ describe("auth/timers", () => {
         onHardLogout: mockOnHardLogout,
       })
 
-      // Warning should show at 60 seconds (180s - 120s)
-      vi.advanceTimersByTime(60000)
+      // Warning should show at 58 seconds (180s - 122s)
+      vi.advanceTimersByTime(58000)
       expect(mockOnShowWarning).toHaveBeenCalledTimes(1)
 
       // Logout should happen at 180 seconds total
-      vi.advanceTimersByTime(120000) // Total 180 seconds
+      vi.advanceTimersByTime(122000) // Total 180 seconds
       await vi.runAllTimersAsync()
 
       // Logout timer should have been called (may be called multiple times due to timer interactions)
@@ -409,7 +409,7 @@ describe("auth/timers", () => {
     it("should calculate warning timer correctly", () => {
       const now = Date.now()
       const sessionEndsAt = now + 300000 // 5 minutes
-      const expectedWarnIn = 300000 - 120000 // 5 minutes - 2 minutes = 3 minutes
+      const expectedWarnIn = 300000 - 122000 // 5 minutes - 2 minutes 2 seconds = 2 minutes 58 seconds
 
       const session = {
         ...mockSession,

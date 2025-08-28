@@ -5,10 +5,20 @@ import { useAuthStore } from "@/stores/auth/store"
 import { openPopup } from "@/utils/auth/popup/openPopup"
 import { pollPopupLogin } from "@/utils/auth/popup/pollPopupLogin"
 
+export type LoginButtonProps = {
+  text?: string
+  variant?: "primary" | "secondary" | "tertiary"
+}
+
 /**
  * Login button component that opens a popup for user authentication.
+ *
+ * @param {LoginButtonProps} props - Props for the login button
+ *
+ * @property {string} [text="Login"] - The button text
+ * @property {string} [variant="primary"] - The button variant
  */
-export const LoginButton = () => {
+export const LoginButton = ({ text = "Login", variant = "primary" }: LoginButtonProps) => {
   const loginFromTokens = useAuthStore((s) => s.loginFromTokens)
 
   const onClick = useCallback(async () => {
@@ -30,8 +40,8 @@ export const LoginButton = () => {
   }, [loginFromTokens])
 
   return (
-    <button type="button" className="primary" onClick={onClick}>
-      Login
+    <button type="button" className={`${variant}`} onClick={onClick}>
+      {text}
     </button>
   )
 }
