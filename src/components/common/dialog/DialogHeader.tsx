@@ -27,7 +27,7 @@ export type DialogHeaderProps = {
 export const DialogHeader = ({ children, leading, trailing, className }: DialogHeaderProps) => {
   const headerClasses = useMemo(() => {
     return [
-      "flex items-center gap-3 border-b border-[var(--color-border-light)] px-[24px] py-[16px]",
+      "flex items-center gap-3 border-2 border-b-border-light px-[24px] py-[16px]",
       `${className ?? ""}`,
     ].join(" ")
   }, [className])
