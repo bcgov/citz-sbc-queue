@@ -21,7 +21,7 @@ export type DialogBodyProps = {
 export const DialogBody = ({ children, scroll = false, className }: DialogBodyProps) => {
   const bodyClasses = useMemo(() => {
     return [
-      "p-[24px] gap-[8px] leading[27px] text-[var(--color-typography-secondary)] text-[16px]",
+      "p-[24px] gap-[8px] leading[27px] text-typography-secondary text-[16px]",
       `${scroll ? "max-h-[70vh] overflow-y-auto" : ""}`,
       `${className ?? ""}`,
     ].join(" ")
