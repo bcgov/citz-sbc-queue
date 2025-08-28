@@ -67,10 +67,6 @@ Follow **BC Government Design System** guidelines and standards
 - Use **predefined BC Government button classes** from `src/styles/bcgov/components.css`
   - Most commonly used button classes are `primary` and `secondary`
 
-### Font Integration
-- Font weights available: Regular, Italic, Bold, BoldItalic
-- Fonts served from `/public/fonts/` directory as WOFF2 files
-- Follow **BC Sans usage guidelines** for government applications
 
 ### Government Requirements
 - Ensure **bilingual considerations** for future French language support
