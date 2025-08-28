@@ -31,10 +31,8 @@ export const ExampleDialog = () => {
         </DialogHeader>
 
         <DialogBody>
-          <p className="text-sm text-gray-700">
-            Are you sure you want to proceed with this action? This change cannot be undone. Please
-            review the details before confirming
-          </p>
+          Are you sure you want to proceed with this action? This change cannot be undone. Please
+          review the details before confirming
         </DialogBody>
 
         <DialogActions>
