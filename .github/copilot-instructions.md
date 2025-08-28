@@ -28,19 +28,16 @@ This is a modern Service BC Queue Management System using Next.js App Router and
 
 ```
 src/
-├── app/                # Next.js App Router pages & routes
-├── components/         # Reusable UI components
-├── hooks/              # App-specific React hooks
-├── middleware/         # Next.js middleware functions
-├── stores/             # Zustand store definitions
-├── styles/             # Global styles & BC Gov design system
-├── test/               # Test utilities and setup
-└── utils/              # Utility functions
+├── app/                 # Next.js App Router pages
+├── components/          # Reusable UI components
+├── hooks/               # Custom React hooks
+├── lib/                 # External service integration (e.g., lib/prisma/)
+├── stores/              # Zustand store definitions
+├── utils/               # Utility functions
+└── test/                # Test utilities and setup
 ```
 
-> `middleware/` contains Next.js middleware for authentication, routing, etc.
-> `src/styles/` contains BC Government design system CSS files.
-> `src/hooks/` contains app-specific hooks like usePermissions.
+> `lib/` wraps third-party libraries like Prisma to keep integrations centralized. Not required for every library, but useful for complex integrations.
 
 ---
 
