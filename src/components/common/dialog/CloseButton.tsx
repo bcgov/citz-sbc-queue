@@ -14,7 +14,7 @@ export const CloseButton = ({ onClick }: CloseButtonProps) => {
     <button
       type="button"
       aria-label="Close dialog"
-      className="w-[32px] h-[32px] flex items-center justify-center rounded-[4px] text-[var(--color-typography-primary)]"
+      className="w-[32px] h-[32px] flex items-center justify-center rounded-[4px] text-typography-primary"
       onClick={onClick}
     >
       <svg
