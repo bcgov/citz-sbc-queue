@@ -4,6 +4,12 @@
   "service": "app",
   "workspaceFolder": "/workspace",
 
+  "containerEnv": {
+    "WATCHPACK_POLLING": "true",
+    "CHOKIDAR_USEPOLLING": "true",
+    "CHOKIDAR_INTERVAL": "150"
+  },
+
   // Override command to prevent conflicts
   "overrideCommand": false,
 
