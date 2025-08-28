@@ -1,5 +1,7 @@
 import { LoginButton } from "@/components/auth/LoginButton"
 import { LogoutButton } from "@/components/auth/LogoutButton"
+import { ExampleDialog } from "@/components/ExampleDialog"
+import { ExampleModal } from "@/components/ExampleModal"
 
 export default function Home() {
   return (
@@ -13,8 +15,14 @@ export default function Home() {
             - gap 4 => 0.125rem * 4 = 0.5rem
     */
     <div className="grid grid-cols-8 min-h-screen m-8 p-8 gap-4">
-      <LoginButton />
-      <LogoutButton />
+      <div className="col-span-8 flex justify-between items-center gap-2 mx-auto">
+        <LoginButton />
+        <LogoutButton />
+      </div>
+      <div className="col-span-8 flex justify-between items-center gap-2 mx-auto">
+        <ExampleModal />
+        <ExampleDialog />
+      </div>
       <div className="col-span-8 mb-8 mx-auto">
         <h2 className="text-typography-primary p-2">Buttons</h2>
         <p className="p-2 mb-2">Try hover and active/focus (keyboard navigation) states</p>
