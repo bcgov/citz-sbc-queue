@@ -8,3 +8,10 @@ export const refreshTokens = async (): Promise<TokenResponse | null> => {
   if (!response.ok) return null
   return (await response.json()) as TokenResponse
 }
+
+export const clearTokens = async (): Promise<void> => {
+  await fetch("/api/auth/token/clear", {
+    method: "POST",
+    credentials: "include",
+  })
+}
