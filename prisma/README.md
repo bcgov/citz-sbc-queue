@@ -86,9 +86,6 @@ import { prisma } from '@/utils/db/prisma'
 const appointment = await prisma.appointment.findUnique({
   where: { id: 1 }
 })
-
-// Query public schema models
-const legacyData = await prisma.legacyAppointment.findMany()
 ```
 
 ### Viewing Data
