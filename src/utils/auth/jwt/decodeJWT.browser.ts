@@ -2,6 +2,14 @@ import type { SSOIdirUser } from "../types"
 
 /**
  * Convert a base64url string to standard base64 with padding.
+ *
+ * base64url differs from base64 in two characters ('-' and '_') and may omit
+ * padding. This helper normalizes the string so it can be decoded by btoa/atob
+ * or other base64 decoders.
+ *
+ * @param input - base64url encoded string (without padding)
+ * @returns Normalized base64 string with proper padding
+ * @throws {Error} If the input has an invalid length (not convertible)
  */
 function base64UrlToBase64(input: string): string {
   let base64 = input.replace(/-/g, "+").replace(/_/g, "/")
@@ -13,7 +21,14 @@ function base64UrlToBase64(input: string): string {
 }
 
 /**
- * Decode a base64 string to a UTF-8 string in the browser.
+ * Decode a base64 string to a UTF-8 string in browser environments.
+ *
+ * Uses `atob` to convert base64 to a binary string, then builds a Uint8Array
+ * and decodes it to UTF-8 using `TextDecoder` when available. A fallback is
+ * provided for older environments.
+ *
+ * @param base64 - standard base64 string
+ * @returns Decoded UTF-8 string
  */
 function base64ToUtf8(base64: string): string {
   // atob is available in browsers; in some test environments it may be polyfilled.
@@ -35,6 +50,17 @@ function base64ToUtf8(base64: string): string {
   return decodeURIComponent(escape(binaryString))
 }
 
+/**
+ * Decode a JWT's payload in browser environments.
+ *
+ * This is a convenience decoder intended for UI use (display, role checks).
+ * It does not validate signatures. For security-sensitive checks, always
+ * validate the token server-side.
+ *
+ * @param jwt - JWT string in the form header.payload.signature
+ * @returns Parsed payload as an `SSOIdirUser` object
+ * @throws {Error} When input is malformed, base64 decoding fails, or JSON is invalid
+ */
 export const decodeJWTBrowser = (jwt: string): SSOIdirUser => {
   if (!jwt || typeof jwt !== "string") throw new Error("Invalid JWT format")
 
