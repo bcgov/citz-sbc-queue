@@ -1,9 +1,15 @@
+"use client"
+import { useAuth } from "@/app/hooks"
 import { LoginButton } from "@/components/auth/LoginButton"
 import { LogoutButton } from "@/components/auth/LogoutButton"
 import { ExampleDialog } from "@/components/ExampleDialog"
 import { ExampleModal } from "@/components/ExampleModal"
 
 export default function Home() {
+  const x = useAuth()
+
+  console.log("Home session:", x)
+
   return (
     /*
     This first div wraps everything to all nested elements will inherit the following:
