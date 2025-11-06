@@ -74,6 +74,7 @@ export type UseAuthReturn = {
   family_name?: string | undefined
   given_name?: string | undefined
   idir_username?: string | undefined
+  idir_user_guid?: string | undefined
 }
 
 // Annotate export with the explicit return type for consumers/IDE hints
