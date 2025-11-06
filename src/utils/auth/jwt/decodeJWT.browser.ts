@@ -36,7 +36,7 @@ function base64ToUtf8(base64: string): string {
 }
 
 export const decodeJWTBrowser = (jwt: string): SSOIdirUser => {
-  if (!jwt || typeof jwt !== "string") throw new Error("Invalid JWT")
+  if (!jwt || typeof jwt !== "string") throw new Error("Invalid JWT format")
 
   const parts = jwt.split(".")
   if (parts.length !== 3) throw new Error("Invalid JWT format")
