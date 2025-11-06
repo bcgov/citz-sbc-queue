@@ -1,5 +1,3 @@
-"use client"
-import { useAuth } from "@/app/hooks"
 import { LoginButton } from "@/components/auth/LoginButton"
 import { LogoutButton } from "@/components/auth/LogoutButton"
 import { ExampleDialog } from "@/components/ExampleDialog"
