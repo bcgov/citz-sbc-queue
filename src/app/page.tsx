@@ -6,10 +6,6 @@ import { ExampleDialog } from "@/components/ExampleDialog"
 import { ExampleModal } from "@/components/ExampleModal"
 
 export default function Home() {
-  const x = useAuth()
-
-  console.log("Home session:", x)
-
   return (
     /*
     This first div wraps everything to all nested elements will inherit the following:
