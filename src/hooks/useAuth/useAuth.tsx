@@ -62,6 +62,7 @@ export const useAuth = () => {
     family_name: decodedAccessToken?.family_name,
     given_name: decodedAccessToken?.given_name,
     idir_username: decodedAccessToken?.idir_username,
+    idir_user_guid: decodedAccessToken?.idir_user_guid
   }
 }
 
