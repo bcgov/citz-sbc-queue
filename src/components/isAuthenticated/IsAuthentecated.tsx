@@ -1,15 +1,20 @@
+"use client"
+
+import { useAuth } from "@/hooks"
+
 type Props = {
-  isAuthenticated?: string
+  hasRole?: string
   children: React.ReactNode
 }
 
 export const IsAuthenticated = (props: Props) => {
-  const { isAuthenticated, children } = props
+  const { hasRole, children } = props
 
+  const auth = useAuth()
 
-  if (isAuthenticated) {
-    return <>{children}</>
-  }
+  if (!hasRole && auth.isAuthenticated) return <>{children}</>
+
+  if (hasRole && auth.hasRole(hasRole)) return <>{children}</>
 
   return null
 }
