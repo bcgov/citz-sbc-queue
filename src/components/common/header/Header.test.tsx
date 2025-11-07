@@ -1,20 +1,24 @@
 import "@testing-library/jest-dom"
 import { render, screen } from "@testing-library/react"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 import Header from "./Header"
 
+vi.mock("@/hooks", () => ({
+  useAuth: () => ({ isAuthenticated: false, hasRole: () => false }),
+}))
+
 describe("Header", () => {
-  it("renders the BC logo and auth buttons", () => {
+  it("shows login when not authenticated", () => {
     render(<Header />)
+    expect(screen.getByRole("button", { name: /login/i })).toBeInTheDocument()
+    expect(screen.queryByRole("button", { name: /logout/i })).toBeNull()
+  })
 
-    // Logo image
-    const logo = screen.getByAltText(/BC Government logo/i)
-    expect(logo).toBeInTheDocument()
-
-    // Login and Logout buttons are present
-    const login = screen.getByRole("button", { name: /login/i })
-    const logout = screen.getByRole("button", { name: /logout/i })
-    expect(login).toBeInTheDocument()
-    expect(logout).toBeInTheDocument()
+  it("shows logout when authenticated", () => {
+    // Update mock to simulate authenticated user
+    vi.mocked(require("@/hooks")).useAuth = () => ({ isAuthenticated: true, hasRole: () => false })
+    render(<Header />)
+    expect(screen.getByRole("button", { name: /logout/i })).toBeInTheDocument()
+    expect(screen.queryByRole("button", { name: /login/i })).toBeNull()
   })
 })

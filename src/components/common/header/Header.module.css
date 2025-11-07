@@ -21,7 +21,7 @@
 }
 
 .logoImg {
-  height: 40px;
+  height: 56px;
   width: auto;
 }
 
@@ -36,6 +36,6 @@
     padding: 0.5rem;
   }
   .logoImg {
-    height: 32px;
+    height: 48px;
   }
 }
