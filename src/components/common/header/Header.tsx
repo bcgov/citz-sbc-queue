@@ -1,3 +1,5 @@
+"use client"
+
 import {LoginButton, LogoutButton} from "@/components"
 
 export const Header = () => {
