@@ -18,3 +18,5 @@ export const IsAuthenticated = (props: Props) => {
 
   return null
 }
+
+export default IsAuthenticated
