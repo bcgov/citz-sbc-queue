@@ -2,6 +2,8 @@ import { render } from "@testing-library/react"
 import { act } from "react-dom/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import * as hooks from "@/hooks"
+// Note: we avoid importing UseAuthReturn directly to ensure mocks use the runtime
+// return type. If you need the type elsewhere, import it explicitly.
 import { useAuthStore } from "@/stores/auth/store"
 import { IsAuthenticated } from "./IsAuthenticated"
 
@@ -14,7 +16,7 @@ describe("IsAuthenticated component", () => {
     vi.spyOn(hooks, "useAuth").mockReturnValue({
       isAuthenticated: true,
       hasRole: (_role: string) => false,
-    } as any)
+    } as unknown as ReturnType<typeof hooks.useAuth>)
 
     const { getByText } = render(
       <IsAuthenticated>
@@ -29,7 +31,7 @@ describe("IsAuthenticated component", () => {
     vi.spyOn(hooks, "useAuth").mockReturnValue({
       isAuthenticated: false,
       hasRole: (_role: string) => false,
-    } as any)
+    } as unknown as ReturnType<typeof hooks.useAuth>)
 
     const { queryByText } = render(
       <IsAuthenticated>
@@ -44,7 +46,7 @@ describe("IsAuthenticated component", () => {
     vi.spyOn(hooks, "useAuth").mockReturnValue({
       isAuthenticated: true,
       hasRole: (role: string) => role === "admin",
-    } as any)
+    } as unknown as ReturnType<typeof hooks.useAuth>)
 
     const { getByText } = render(
       <IsAuthenticated hasRole="admin">
@@ -59,7 +61,7 @@ describe("IsAuthenticated component", () => {
     vi.spyOn(hooks, "useAuth").mockReturnValue({
       isAuthenticated: true,
       hasRole: (_role: string) => false,
-    } as any)
+    } as unknown as ReturnType<typeof hooks.useAuth>)
 
     const { queryByText } = render(
       <IsAuthenticated hasRole="admin">
