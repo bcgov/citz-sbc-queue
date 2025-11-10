@@ -48,12 +48,11 @@ Performs background token refresh:
 - Returns `boolean` indicating success/failure
 - Automatically reschedules timers on success
 
-### `logout(reason?)`
+### `logout()`
 Cleans up session state:
 - Clears all background timers
 - Removes tokens from memory and persistent storage
 - Calls `/api/auth/logout` with id_token for server cleanup
-- Accepts optional `reason` parameter for logging/analytics
 
 ### `setShowExpiryWarning(boolean)`
 Controls display of session expiry warning UI
