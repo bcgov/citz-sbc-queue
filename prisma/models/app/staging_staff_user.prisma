@@ -1,0 +1,19 @@
+model StagingStaffUser {
+  id                   Int       @id @default(autoincrement()) // public.csr.csr_id
+  username             String    @unique @db.VarChar(150)
+
+  officeId             Int
+  counterId            Int?
+  role                 Role
+
+  deletedAt            DateTime? @db.Timestamp(6)
+
+  isReceptionist       Boolean   @default(false)
+  isOfficeManager      Boolean   @default(false)
+  isPesticideDesignate Boolean   @default(false)
+  isFinanceDesignate   Boolean   @default(false)
+  isIta2Designate      Boolean   @default(false)
+
+  @@map("staging_staff_user")
+  @@schema("app")
+}
