@@ -98,31 +98,32 @@ Authentication is handled automatically by the middleware:
 
 The authentication system uses environment-aware cookie settings:
 
-- **Development**: `sameSite: "lax"` (works with HTTP and port forwarding)
-- **Production**: `sameSite: "none"` with `secure: true` (for HTTPS cross-site scenarios)
+- **Development**: `secure: false`, `sameSite: "lax"` (works with HTTP and port forwarding)
+- **Production**: `secure: true`, `sameSite: "none"` (for HTTPS cross-site scenarios)
 
 ## Middleware Utilities
 
-### `conditional(condition, middleware)` *(Available but not currently used)*
+### `chain(...middlewares)`
 
-Runs middleware only when condition is met:
-
-```typescript
-const conditionalAuth = conditional(
-  (req) => req.url.includes('/admin'),
-  authMiddleware
-)
-```
-
-### `chain(...middlewares)` *(Available but not currently used)*
-
-Chains multiple middleware functions:
+Chains multiple middleware functions together:
 
 ```typescript
 const combinedMiddleware = chain(
   loggingMiddleware,
   authMiddleware,
   rateLimitMiddleware
+)
+```
+
+### `conditional(condition, middleware)`
+
+Runs middleware only when condition is met. **Currently used in the main middleware** to apply auth only to protected routes:
+
+```typescript
+// src/middleware.ts
+const conditionalAuthMiddleware = conditional(
+  (req) => isProtectedRoute(req.nextUrl.pathname),
+  authMiddleware
 )
 ```
 

@@ -33,7 +33,7 @@ export const pollPopupLogin = (
       if (err) reject(err)
     }
 
-    const wait = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms))
+    const wait = (ms: number) => new Promise<void>((resolve) => window.setTimeout(resolve, ms))
 
     const ensurePopupLoaded = async () => {
       // Wait until the popup callback page fully loads to ensure Set-Cookie is committed.

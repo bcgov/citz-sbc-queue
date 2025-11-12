@@ -19,7 +19,7 @@ export type LoginButtonProps = {
  * @property {string} [variant="primary"] - The button variant
  */
 export const LoginButton = ({ text = "Login", variant = "primary" }: LoginButtonProps) => {
-  const loginFromTokens = useAuthStore((s) => s.loginFromTokens)
+  const loginFromTokens = useAuthStore((state) => state.loginFromTokens)
 
   const onClick = useCallback(async () => {
     // 1) Open popup synchronously (prevents blockers)

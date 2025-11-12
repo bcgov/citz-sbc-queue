@@ -12,7 +12,7 @@ import { useAuthStore } from "@/stores/auth/store"
 export const LogoutHandler = () => {
   const params = useSearchParams()
   const router = useRouter()
-  const storeLogout = useAuthStore((session) => session.logout)
+  const storeLogout = useAuthStore((state) => state.logout)
 
   useEffect(() => {
     if (!params) return

@@ -7,7 +7,7 @@ import { useAuthStore } from "@/stores/auth/store"
  * AuthInitializer component that initializes the authentication state.
  */
 export const AuthInitializer = () => {
-  const bootstrap = useAuthStore((s) => s.bootstrap)
+  const bootstrap = useAuthStore((state) => state.bootstrap)
 
   useEffect(() => {
     bootstrap()
