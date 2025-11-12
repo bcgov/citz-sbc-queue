@@ -1,0 +1,24 @@
+model StaffUser {
+  guid                 Int       @id @default(autoincrement()) // IDIR user guid
+  csrId                Int       @unique // public.csr.csr_id
+  username             String    @unique @db.VarChar(150) // IDIR username
+  displayName          String   @db.VarChar(250) // IDIR display name
+
+  officeId             Int
+  counterId            Int?
+  role                 Role
+  isActive             Boolean   @default(false)
+
+  deletedAt            DateTime? @db.Timestamp(6)
+  createdAt           DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt           DateTime  @updatedAt @db.Timestamp(6)
+
+  isReceptionist       Boolean   @default(false)
+  isOfficeManager      Boolean   @default(false)
+  isPesticideDesignate Boolean   @default(false)
+  isFinanceDesignate   Boolean   @default(false)
+  isIta2Designate      Boolean   @default(false)
+
+  @@map("staff_user")
+  @@schema("app")
+}
