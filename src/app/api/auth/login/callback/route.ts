@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
           }
           h4 {
-            color: #22c55e; /* BC Gov success-500 */
+            color: #7ab8f9; /* BC Gov blue-500 */
             margin-top: 0;
             margin-bottom: 1rem;
             font-size: 1.5rem;

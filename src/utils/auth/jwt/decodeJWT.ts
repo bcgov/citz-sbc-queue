@@ -12,10 +12,8 @@ export const decodeJWT = (jwt: string): BaseTokenPayload<unknown> => {
     return JSON.parse(decodedPayload)
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(
-        `Invalid input in decodeJWT(jwt: string) function of 'citz-imb-sso-js-core': ${error.message}`
-      )
+      throw new Error(`Invalid input in decodeJWT(jwt: string): ${error.message}`)
     }
-    throw new Error(`Unknown error occurred in decodeJWT() function of 'citz-imb-sso-js-core'`)
+    throw new Error(`Unknown error occurred in decodeJWT()`)
   }
 }
