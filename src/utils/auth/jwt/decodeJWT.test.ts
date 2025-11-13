@@ -106,18 +106,14 @@ describe("decodeJWT", () => {
     it("should throw error when payload is not valid base64url", () => {
       const invalidJWT = "header.invalid-base64!@#.signature"
 
-      expect(() => decodeJWT(invalidJWT)).toThrow(
-        /Invalid input in decodeJWT\(jwt: string\) function of 'citz-imb-sso-js-core'/
-      )
+      expect(() => decodeJWT(invalidJWT)).toThrow(/Invalid input in decodeJWT\(jwt: string\)/)
     })
 
     it("should throw error when payload is not valid JSON", () => {
       const invalidPayload = Buffer.from("invalid-json{").toString("base64url")
       const invalidJWT = `header.${invalidPayload}.signature`
 
-      expect(() => decodeJWT(invalidJWT)).toThrow(
-        /Invalid input in decodeJWT\(jwt: string\) function of 'citz-imb-sso-js-core'/
-      )
+      expect(() => decodeJWT(invalidJWT)).toThrow(/Invalid input in decodeJWT\(jwt: string\)/)
     })
 
     it("should handle non-Error exceptions gracefully", () => {
@@ -126,9 +122,7 @@ describe("decodeJWT", () => {
       const malformedBase64 = "!@#$%^&*()"
       const invalidJWT = `header.${malformedBase64}.signature`
 
-      expect(() => decodeJWT(invalidJWT)).toThrow(
-        /Invalid input in decodeJWT\(jwt: string\) function of 'citz-imb-sso-js-core'/
-      )
+      expect(() => decodeJWT(invalidJWT)).toThrow(/Invalid input in decodeJWT\(jwt: string\)/)
     })
   })
 

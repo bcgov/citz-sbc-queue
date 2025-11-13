@@ -2,9 +2,15 @@ import type { NextRequest } from "next/server"
 import type { SSOIdirUser } from "./types"
 
 /**
- * Extracts user information from request headers set by the authentication middleware
+ * Extracts authentication context from request headers set by the authentication middleware.
+ *
+ * Expected headers (set by middleware):
+ * - `x-user-token`: JWT access token
+ * - `x-user-info`: Serialized user object (SSOIdirUser)
+ * - `x-user-roles`: JSON array of user roles
+ *
  * @param request - The NextRequest object
- * @returns Object containing user, token, and roles or null if not authenticated
+ * @returns Object containing { user, token, roles } or null if not authenticated
  */
 export function getAuthContext(request: NextRequest) {
   try {
