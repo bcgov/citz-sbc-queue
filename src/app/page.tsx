@@ -1,5 +1,3 @@
-"use client"
-
 import { Header, IsAuthenticated } from "@/components"
 import { ExampleDialog } from "@/components/ExampleDialog"
 import { ExampleModal } from "@/components/ExampleModal"
