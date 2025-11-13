@@ -18,6 +18,7 @@ export const Header = () => {
               className={styles.logoImg}
               width={180}
               height={56}
+              fetchPriority="high"
             />
           </Link>
         </div>
