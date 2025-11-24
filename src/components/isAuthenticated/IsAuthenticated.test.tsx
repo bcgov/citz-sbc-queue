@@ -68,7 +68,7 @@ describe("IsAuthenticated component", () => {
     expect(queryByText("admin-only")).toBeNull()
   })
 
-  it("reacts to store updates and renders children when session is set", () => {
+  it("reacts to hook updates and renders children when isAuthenticated is set", () => {
     // Start with no session
     const mockUseAuth = vi.spyOn(hooks, "useAuth").mockReturnValue({
       isAuthenticated: false,
