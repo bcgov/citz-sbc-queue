@@ -15,27 +15,25 @@ const {
 
 /**
  * Makes an authenticated request to the CSS API.
- * @param {RequestParams} params - The request parameters.
+ * @param params - The request parameters.
  */
-// TODO: Make JSDoc format consistent - use TSDoc style: @param params - Description (no curly braces)
-// TODO: Add @returns tag - @returns {Promise<Record<string, unknown> | string | undefined>} The API response
-// TODO: Consider adding @example tag to show usage patterns
 export const request = async (
   params: RequestParams
 ): Promise<Record<string, unknown> | string | undefined> => {
   "use server"
   try {
-    // TODO: Remove default value for 'endpoint' - it should be required, not optional with empty string default
-    const { integrationEndpoint = false, endpoint = "", method = "GET", body } = params
+    const { integrationEndpoint = false, endpoint, method = "GET", body } = params
 
     // Get token.
     const access_token = await retrieveToken()
     if (!access_token) throw new Error("No access token provided by retrieveToken().")
 
     // TODO: Validate SSO_INTEGRATION_ID when integrationEndpoint is true
-    // if (integrationEndpoint && !SSO_INTEGRATION_ID) {
-    //   throw new Error("SSO_INTEGRATION_ID must be configured for integration endpoints")
-    // }
+    if (integrationEndpoint && !SSO_INTEGRATION_ID) {
+      throw new Error(
+        "SSO_INTEGRATION_ID env variable must be configured for CSS API integration endpoints"
+      )
+    }
 
     // Create headers.
     const headers = {
@@ -45,10 +43,10 @@ export const request = async (
     }
 
     // Create request url.
-    const integration = `integrations/${SSO_INTEGRATION_ID}/`
-    // TODO: Simplify nested template literal for better readability
-    // const url = `${CSS_API_URL}/${integrationEndpoint ? integration : ""}${SSO_ENVIRONMENT}/${endpoint}`
-    const url = `${CSS_API_URL}/${integrationEndpoint ? integration : ""}${`${SSO_ENVIRONMENT}/`}${endpoint}`
+    const integrationEndpointSegment = integrationEndpoint
+      ? `integrations/${SSO_INTEGRATION_ID}/`
+      : ""
+    const url = `${CSS_API_URL}/${integrationEndpointSegment}${`${SSO_ENVIRONMENT}/`}${endpoint}`
 
     // Fetch request.
     const response = await fetch(
