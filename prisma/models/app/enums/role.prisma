@@ -2,5 +2,7 @@ enum Role {
   CSR
   SCSR
   SDM
-  ADMIN
+  Administrator
+
+  @@schema("app")
 }
