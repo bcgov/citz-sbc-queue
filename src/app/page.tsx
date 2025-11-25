@@ -15,6 +15,7 @@ export default function Home() {
             calc(var(--spacing) * <value>); => 0.125rem * <value>
             - gap 4 => 0.125rem * 4 = 0.5rem
     */
+
     <div className="grid grid-cols-8 min-h-screen m-8 p-8 gap-4">
       <div className="col-span-8 flex justify-between items-center gap-2 mx-auto">
         <LoginButton />
