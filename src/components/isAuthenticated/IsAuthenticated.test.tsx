@@ -69,7 +69,7 @@ describe("IsAuthenticated component", () => {
   })
 
   it("reacts to hook updates and renders children when isAuthenticated is set", () => {
-    // Start with no session
+    // Start with no authentication
     const mockUseAuth = vi.spyOn(hooks, "useAuth").mockReturnValue({
       isAuthenticated: false,
       hasRole: (_role: string) => false,
