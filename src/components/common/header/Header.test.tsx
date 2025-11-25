@@ -13,7 +13,7 @@ describe("Header", () => {
     vi.spyOn(hooks, "useAuth").mockReturnValue({
       isAuthenticated: false,
       hasRole: () => false,
-    } as any)
+    } as unknown as ReturnType<typeof hooks.useAuth>)
     render(<Header />)
     expect(screen.getByRole("button", { name: /login/i })).toBeInTheDocument()
     expect(screen.queryByRole("button", { name: /logout/i })).toBeNull()
@@ -23,7 +23,7 @@ describe("Header", () => {
     vi.spyOn(hooks, "useAuth").mockReturnValue({
       isAuthenticated: true,
       hasRole: () => false,
-    } as any)
+    } as unknown as ReturnType<typeof hooks.useAuth>)
     render(<Header />)
     expect(screen.getByRole("button", { name: /logout/i })).toBeInTheDocument()
     expect(screen.queryByRole("button", { name: /login/i })).toBeNull()
