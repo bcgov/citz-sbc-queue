@@ -4,16 +4,6 @@ import { ExampleModal } from "@/components/examples/ExampleModal"
 
 export default function Home() {
   return (
-    /*
-    This first div wraps everything to all nested elements will inherit the following:
-      Grid with 9 columns & gap 4 between them,
-      min height to the screen height, margin 8, padding 4
-      NOTE: --spacing is set to 0.125rem in spacing.css
-            all spacing values are set using this formula:
-            calc(var(--spacing) * <value>); => 0.125rem * <value>
-            - gap 4 => 0.125rem * 4 = 0.5rem
-    */
-
     <div className="grid grid-cols-8 min-h-screen m-8 p-8 gap-4">
       <IsAuthenticated hasRole="Administrator">
         <h1 className="text-typography-primary p-2">only Admins see this</h1>

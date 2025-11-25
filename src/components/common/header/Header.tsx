@@ -12,7 +12,7 @@ export const Header = () => {
         <div className={styles.logo}>
           <Link href="/" aria-label="BC Government home">
             <Image
-              src="/bcgov/BCID_H_RGB_pos.svg"
+              src="/bcgov/BCID_H_RGB_rev.svg"
               alt="BC Government logo"
               className={styles.logoImg}
               width={140}
