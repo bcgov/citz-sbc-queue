@@ -3,7 +3,7 @@
 import React, { type ReactNode, useMemo, useState } from "react"
 import { generateUUID } from "@/utils/common/generateUUID"
 import { DEFAULT_DEBOUNCE_MS, DEFAULT_PAGE_SIZE } from "./constants"
-import type { DataTableProps, SortConfig } from "./types"
+import type { ColumnConfig, DataTableProps, SortConfig } from "./types"
 
 /**
  * Reusable data table component with configurable columns, pagination,
@@ -141,7 +141,12 @@ export const DataTable = <T extends Record<string, unknown>>({
     setCurrentPage(1) // Reset to first page on sort
   }
 
-  const renderCellContent = (content: unknown): ReactNode => {
+  const renderCellContent = (content: unknown, column: ColumnConfig<T>, row: T): ReactNode => {
+    // Use custom render function if provided
+    if (column.render) {
+      return column.render(content, row)
+    }
+
     if (React.isValidElement(content)) {
       return content
     }
@@ -269,7 +274,7 @@ export const DataTable = <T extends Record<string, unknown>>({
                         key={`${rowKey}-${String(column.key)}`}
                         className="px-4 py-3 text-typography-primary"
                       >
-                        {renderCellContent(row[column.key])}
+                        {renderCellContent(row[column.key], column, row)}
                       </td>
                     ))}
                   </tr>

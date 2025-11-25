@@ -1,25 +1,31 @@
 "use client"
 
 import {
+  Dialog,
   DialogActions,
   DialogBody,
   DialogHeader,
   DialogTitle,
-  Modal,
 } from "@/components/common/dialog"
 import { useDialog } from "@/hooks/useDialog/useDialog"
-import CloseButton from "./common/dialog/CloseButton"
+import CloseButton from "../common/dialog/CloseButton"
 
-export const ExampleModal = () => {
+export const ExampleDialog = () => {
   const { open, openDialog, closeDialog } = useDialog()
 
   return (
     <div className="p-6">
       <button type="button" className="secondary" onClick={openDialog}>
-        Open modal
+        Open dialog
       </button>
 
-      <Modal open={open} onClose={closeDialog} size="md">
+      <Dialog
+        open={open}
+        onClose={closeDialog}
+        size="md"
+        position="top-right"
+        offset={{ x: -20, y: 20 }}
+      >
         <DialogHeader trailing={<CloseButton onClick={closeDialog} />}>
           <DialogTitle>Confirm action</DialogTitle>
         </DialogHeader>
@@ -37,7 +43,7 @@ export const ExampleModal = () => {
             Confirm
           </button>
         </DialogActions>
-      </Modal>
+      </Dialog>
     </div>
   )
 }
