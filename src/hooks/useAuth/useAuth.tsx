@@ -62,7 +62,8 @@ export const useAuth = () => {
     family_name: decodedAccessToken?.family_name,
     given_name: decodedAccessToken?.given_name,
     idir_username: decodedAccessToken?.idir_username,
-    idir_user_guid: decodedAccessToken?.idir_user_guid
+    idir_user_guid: decodedAccessToken?.idir_user_guid,
+    sub: decodedAccessToken?.sub,
   }
 }
 
@@ -75,6 +76,7 @@ export type UseAuthReturn = {
   given_name?: string | undefined
   idir_username?: string | undefined
   idir_user_guid?: string | undefined
+  sub?: string | undefined
 }
 
 // Annotate export with the explicit return type for consumers/IDE hints
