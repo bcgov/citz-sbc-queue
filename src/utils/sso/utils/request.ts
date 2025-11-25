@@ -28,7 +28,6 @@ export const request = async (
     const access_token = await retrieveToken()
     if (!access_token) throw new Error("No access token provided by retrieveToken().")
 
-    // TODO: Validate SSO_INTEGRATION_ID when integrationEndpoint is true
     if (integrationEndpoint && !SSO_INTEGRATION_ID) {
       throw new Error(
         "SSO_INTEGRATION_ID env variable must be configured for CSS API integration endpoints"
