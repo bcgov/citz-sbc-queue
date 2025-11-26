@@ -7,8 +7,8 @@ import {
   DialogTitle,
   Modal,
 } from "@/components/common/dialog"
-import { useDialog } from "@/hooks/useDialog/useDialog"
 import CloseButton from "@/components/common/dialog/CloseButton"
+import { useDialog } from "@/hooks/useDialog/useDialog"
 
 export const ExampleModal = () => {
   const { open, openDialog, closeDialog } = useDialog()
