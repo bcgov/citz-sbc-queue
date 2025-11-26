@@ -1,5 +1,6 @@
 "use client"
 
+import { ArrowDownIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid"
 import React, { type ReactNode, useMemo, useState } from "react"
 import { generateUUID } from "@/utils/common/generateUUID"
 import { DEFAULT_DEBOUNCE_MS, DEFAULT_PAGE_SIZE } from "./constants"
@@ -161,20 +162,7 @@ export const DataTable = <T extends Record<string, unknown>>({
       {/* Search Bar */}
       {search?.enabled && (
         <div className="relative">
-          <svg
-            className="pointer-events-none absolute left-3 top-5 -translate-y-1/2 h-5 w-5 text-icon-secondary"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
+          <MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-5 -translate-y-1/2 h-5 w-5 text-icon-secondary" />
           <input
             type="text"
             placeholder="Search..."
@@ -206,7 +194,7 @@ export const DataTable = <T extends Record<string, unknown>>({
                         aria-label={`Sort by ${column.label}`}
                         aria-pressed={sortConfig?.key === column.key}
                       >
-                        <svg
+                        <ArrowDownIcon
                           className={`h-4 w-4 text-icon-secondary transition-transform ${
                             sortConfig?.key === column.key
                               ? sortConfig.direction === "desc"
@@ -214,18 +202,7 @@ export const DataTable = <T extends Record<string, unknown>>({
                                 : ""
                               : "opacity-50"
                           }`}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          aria-hidden="true"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                          />
-                        </svg>
+                        />
                       </button>
                     )}
                   </div>

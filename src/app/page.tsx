@@ -1,7 +1,6 @@
 import { IsAuthenticated } from "@/components"
 import { LoginButton } from "@/components/auth/LoginButton"
 import { LogoutButton } from "@/components/auth/LogoutButton"
-import ExampleDataTable from "@/components/examples/ExampleDataTable"
 import { ExampleDialog } from "@/components/examples/ExampleDialog"
 import { ExampleModal } from "@/components/examples/ExampleModal"
 
@@ -20,7 +19,6 @@ export default function Home() {
       <div className="col-span-8 flex justify-between items-center gap-2 mx-auto">
         <LoginButton />
         <LogoutButton />
-        <ExampleDataTable />
       </div>
       <IsAuthenticated hasRole="Administrator">
         <h1 className="text-typography-primary p-2">only Admins see this</h1>
