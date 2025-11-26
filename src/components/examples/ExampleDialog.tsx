@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/common/dialog"
 import { useDialog } from "@/hooks/useDialog/useDialog"
-import CloseButton from "./common/dialog/CloseButton"
+import CloseButton from "@/components/common/dialog/CloseButton"
 
 export const ExampleDialog = () => {
   const { open, openDialog, closeDialog } = useDialog()

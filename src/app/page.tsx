@@ -1,8 +1,8 @@
 import { IsAuthenticated } from "@/components"
 import { LoginButton } from "@/components/auth/LoginButton"
 import { LogoutButton } from "@/components/auth/LogoutButton"
-import { ExampleDialog } from "@/components/ExampleDialog"
-import { ExampleModal } from "@/components/ExampleModal"
+import { ExampleDialog } from "@/components/examples/ExampleDialog"
+import { ExampleModal } from "@/components/examples/ExampleModal"
 
 export default function Home() {
   return (
