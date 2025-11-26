@@ -157,12 +157,12 @@ export const DataTable = <T extends Record<string, unknown>>({
   }
 
   return (
-    <div className="w-full space-y-4">
+    <div className="space-y-4">
       {/* Search Bar */}
       {search?.enabled && (
         <div className="relative">
           <svg
-            className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-icon-secondary"
+            className="pointer-events-none absolute left-3 top-5 -translate-y-1/2 h-5 w-5 text-icon-secondary"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -186,14 +186,14 @@ export const DataTable = <T extends Record<string, unknown>>({
       )}
 
       {/* Table */}
-      <div className="overflow-x-auto rounded border border-border-light/50">
-        <table className="w-full border-collapse">
+      <div className="overflow-x-auto rounded border border-border-light">
+        <table>
           <thead className={`bg-background-light-gray ${sticky ? "sticky top-0" : ""}`}>
             <tr>
               {columns.map((column) => (
                 <th
                   key={String(column.key)}
-                  className="border-b border-border-light/50 px-4 py-3 text-left font-semibold text-typography-primary"
+                  className="border-b border-border-light px-4 py-3 text-left font-semibold text-typography-primary"
                   scope="col"
                 >
                   <div className="flex items-center gap-2">
@@ -238,7 +238,7 @@ export const DataTable = <T extends Record<string, unknown>>({
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="border-b border-border-light/50 px-4 py-8 text-center text-typography-secondary"
+                  className="border-b border-border-light px-4 py-8 text-center text-typography-secondary"
                 >
                   {emptyMessage}
                 </td>
@@ -259,7 +259,7 @@ export const DataTable = <T extends Record<string, unknown>>({
                     onKeyDown={handleKeyDown}
                     tabIndex={onRowClick ? 0 : -1}
                     role={onRowClick ? "button" : undefined}
-                    className={`border-b border-border-light/50 transition-colors ${
+                    className={`border-b border-border-light transition-colors ${
                       paginatedData.indexOf(row) % 2 === 0
                         ? "bg-background-default"
                         : "bg-background-light-gray"
