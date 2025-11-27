@@ -81,7 +81,7 @@ export const DataTable = <T extends Record<string, unknown>>({
 
       {/* Table */}
       <div className="overflow-x-auto rounded border border-border-light">
-        <table>
+        <table className="w-full">
           <thead className={`bg-background-light-gray ${sticky ? "sticky top-0" : ""}`}>
             <tr>
               {columns.map((column) => (
