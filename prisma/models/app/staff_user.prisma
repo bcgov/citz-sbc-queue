@@ -1,5 +1,5 @@
 model StaffUser {
-  guid                 Int       @id @default(autoincrement()) // IDIR user guid
+  guid                 String    @id @default(uuid()) // IDIR user guid
   csrId                Int       @unique @map("csr_id") // public.csr.csr_id
   username             String    @unique @db.VarChar(150) // IDIR username
   displayName          String    @db.VarChar(250) @map("display_name") // IDIR display name
