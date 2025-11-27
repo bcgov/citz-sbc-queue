@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import "../styles/globals.css"
 import localFont from "next/font/local"
 import { AuthProvider } from "@/components/auth/AuthProvider"
+import { Header } from "@/components/common"
 
 const BCSans = localFont({
   src: [
@@ -43,6 +44,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${BCSans.variable} font-sans`}>
         <AuthProvider />
+        <Header />
         {children}
       </body>
     </html>
