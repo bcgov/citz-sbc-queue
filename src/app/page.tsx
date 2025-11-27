@@ -1,6 +1,4 @@
 import { IsAuthenticated } from "@/components"
-import { LoginButton } from "@/components/auth/LoginButton"
-import { LogoutButton } from "@/components/auth/LogoutButton"
 import { ExampleDialog } from "@/components/examples/ExampleDialog"
 import { ExampleModal } from "@/components/examples/ExampleModal"
 
@@ -17,10 +15,6 @@ export default function Home() {
     */
 
     <div className="grid grid-cols-8 min-h-screen m-8 p-8 gap-4">
-      <div className="col-span-8 flex justify-between items-center gap-2 mx-auto">
-        <LoginButton />
-        <LogoutButton />
-      </div>
       <IsAuthenticated hasRole="Administrator">
         <h1 className="text-typography-primary p-2">only Admins see this</h1>
       </IsAuthenticated>
