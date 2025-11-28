@@ -20,6 +20,7 @@ describe("getStaffUsers", () => {
     const mockUsers = [
       {
         guid: "550e8400-e29b-41d4-a716-446655440000",
+        sub: "550e8400-e29b-41d4-a716-446655440000@azureidir",
         csrId: 1,
         username: "user1",
         displayName: "User One",
@@ -38,6 +39,7 @@ describe("getStaffUsers", () => {
       },
       {
         guid: "550e8400-e29b-41d4-a716-446655440001",
+        sub: "550e8400-e29b-41d4-a716-446655440001@azureidir",
         csrId: 2,
         username: "user2",
         displayName: "User Two",
@@ -67,6 +69,7 @@ describe("getStaffUsers", () => {
     const allUsers = [
       {
         guid: "550e8400-e29b-41d4-a716-446655440000",
+        sub: "550e8400-e29b-41d4-a716-446655440000@azureidir",
         csrId: 1,
         username: "user1",
         displayName: "User One",
@@ -85,6 +88,7 @@ describe("getStaffUsers", () => {
       },
       {
         guid: "550e8400-e29b-41d4-a716-446655440001",
+        sub: "550e8400-e29b-41d4-a716-446655440001@azureidir",
         csrId: 2,
         username: "admin1",
         displayName: "Admin One",

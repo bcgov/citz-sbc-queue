@@ -1,0 +1,451 @@
+import { render, screen, waitFor } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import type { StaffUser } from "@/generated/prisma/client"
+import { EditUserModal } from "./EditUserModal"
+
+// Mock child components
+vi.mock("./UserInformationSection", () => ({
+  UserInformationSection: ({ user }: { user: StaffUser | null }) => (
+    <div data-testid="user-info-section">User Info: {user?.username}</div>
+  ),
+}))
+
+vi.mock("./RoleAndAssignmentSection", () => ({
+  RoleAndAssignmentSection: ({
+    onRoleChange,
+    onOfficeIdChange,
+  }: {
+    onRoleChange: (role: string) => void
+    onOfficeIdChange: (officeId: number) => void
+  }) => (
+    <div data-testid="role-assignment-section">
+      <button type="button" onClick={() => onRoleChange("Administrator")}>
+        Change Role
+      </button>
+      <button type="button" onClick={() => onOfficeIdChange(2)}>
+        Change Office
+      </button>
+    </div>
+  ),
+}))
+
+vi.mock("./PermissionsSection", () => ({
+  PermissionsSection: ({
+    user,
+    onIsReceptionistChange,
+    onIsOfficeManagerChange,
+    onIsPesticideDesignateChange,
+    onIsFinanceDesignateChange,
+    onIsIta2DesignateChange,
+  }: {
+    user: StaffUser
+    onIsReceptionistChange: (value: boolean) => void
+    onIsOfficeManagerChange: (value: boolean) => void
+    onIsPesticideDesignateChange: (value: boolean) => void
+    onIsFinanceDesignateChange: (value: boolean) => void
+    onIsIta2DesignateChange: (value: boolean) => void
+  }) => (
+    <div data-testid="permissions-section">
+      <button
+        type="button"
+        onClick={() => onIsReceptionistChange(!user.isReceptionist)}
+        data-testid="toggle-receptionist"
+      >
+        Toggle Receptionist
+      </button>
+      <button
+        type="button"
+        onClick={() => onIsOfficeManagerChange(!user.isOfficeManager)}
+        data-testid="toggle-office-manager"
+      >
+        Toggle Office Manager
+      </button>
+      <button
+        type="button"
+        onClick={() => onIsPesticideDesignateChange(!user.isPesticideDesignate)}
+        data-testid="toggle-pesticide"
+      >
+        Toggle Pesticide
+      </button>
+      <button
+        type="button"
+        onClick={() => onIsFinanceDesignateChange(!user.isFinanceDesignate)}
+        data-testid="toggle-finance"
+      >
+        Toggle Finance
+      </button>
+      <button
+        type="button"
+        onClick={() => onIsIta2DesignateChange(!user.isIta2Designate)}
+        data-testid="toggle-ita2"
+      >
+        Toggle ITA2
+      </button>
+    </div>
+  ),
+}))
+
+const mockStaffUser: StaffUser = {
+  guid: "550e8400-e29b-41d4-a716-446655440000",
+  sub: "550e8400-e29b-41d4-a716-446655440000@azureidir",
+  csrId: 1,
+  username: "john.doe",
+  displayName: "John Doe",
+  officeId: 1,
+  counterId: 1,
+  role: "CSR",
+  isActive: true,
+  deletedAt: null,
+  createdAt: new Date("2025-01-01"),
+  updatedAt: new Date("2025-01-01"),
+  isReceptionist: false,
+  isOfficeManager: false,
+  isPesticideDesignate: false,
+  isFinanceDesignate: false,
+  isIta2Designate: false,
+}
+
+describe("EditUserModal", () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it("should render nothing when user is null", () => {
+    const mockUpdateUser = vi.fn()
+    const { container } = render(
+      <EditUserModal open={true} onClose={vi.fn()} user={null} updateUser={mockUpdateUser} />
+    )
+
+    expect(container.firstChild).toBeNull()
+  })
+
+  it("should render nothing when modal is closed", () => {
+    const mockUpdateUser = vi.fn()
+    const { container } = render(
+      <EditUserModal
+        open={false}
+        onClose={vi.fn()}
+        user={mockStaffUser}
+        updateUser={mockUpdateUser}
+      />
+    )
+
+    expect(container.firstChild).toBeNull()
+  })
+
+  it("should render modal when open is true and user exists", () => {
+    const mockUpdateUser = vi.fn()
+    render(
+      <EditUserModal
+        open={true}
+        onClose={vi.fn()}
+        user={mockStaffUser}
+        updateUser={mockUpdateUser}
+      />
+    )
+
+    expect(screen.getByText(`Edit User: ${mockStaffUser.username}`)).toBeTruthy()
+  })
+
+  it("should display all three sections when open", () => {
+    const mockUpdateUser = vi.fn()
+    render(
+      <EditUserModal
+        open={true}
+        onClose={vi.fn()}
+        user={mockStaffUser}
+        updateUser={mockUpdateUser}
+      />
+    )
+
+    expect(screen.getByTestId("user-info-section")).toBeTruthy()
+    expect(screen.getByTestId("role-assignment-section")).toBeTruthy()
+    expect(screen.getByTestId("permissions-section")).toBeTruthy()
+  })
+
+  it("should call onClose when close button is clicked", async () => {
+    const mockOnClose = vi.fn()
+    const mockUpdateUser = vi.fn()
+    render(
+      <EditUserModal
+        open={true}
+        onClose={mockOnClose}
+        user={mockStaffUser}
+        updateUser={mockUpdateUser}
+      />
+    )
+
+    const closeButton = screen.getByRole("button", { name: /close/i })
+    await userEvent.click(closeButton)
+
+    expect(mockOnClose).toHaveBeenCalledOnce()
+  })
+
+  it("should call onClose when Cancel button is clicked", async () => {
+    const mockOnClose = vi.fn()
+    const mockUpdateUser = vi.fn()
+    render(
+      <EditUserModal
+        open={true}
+        onClose={mockOnClose}
+        user={mockStaffUser}
+        updateUser={mockUpdateUser}
+      />
+    )
+
+    const cancelButton = screen.getByRole("button", { name: /cancel/i })
+    await userEvent.click(cancelButton)
+
+    expect(mockOnClose).toHaveBeenCalledOnce()
+  })
+
+  it("should call updateUser with updated data when Save Changes is clicked", async () => {
+    const mockOnClose = vi.fn()
+    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+    render(
+      <EditUserModal
+        open={true}
+        onClose={mockOnClose}
+        user={mockStaffUser}
+        updateUser={mockUpdateUser}
+      />
+    )
+
+    const saveButton = screen.getByRole("button", { name: /save changes/i })
+    await userEvent.click(saveButton)
+
+    await waitFor(() => {
+      expect(mockUpdateUser).toHaveBeenCalledWith(mockStaffUser, mockStaffUser)
+    })
+  })
+
+  it("should call onClose after successful save", async () => {
+    const mockOnClose = vi.fn()
+    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+    render(
+      <EditUserModal
+        open={true}
+        onClose={mockOnClose}
+        user={mockStaffUser}
+        updateUser={mockUpdateUser}
+      />
+    )
+
+    const saveButton = screen.getByRole("button", { name: /save changes/i })
+    await userEvent.click(saveButton)
+
+    await waitFor(() => {
+      expect(mockOnClose).toHaveBeenCalledOnce()
+    })
+  })
+
+  it("should update form data when role changes", async () => {
+    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+    render(
+      <EditUserModal
+        open={true}
+        onClose={vi.fn()}
+        user={mockStaffUser}
+        updateUser={mockUpdateUser}
+      />
+    )
+
+    const changeRoleButton = screen.getByRole("button", { name: /change role/i })
+    await userEvent.click(changeRoleButton)
+
+    const saveButton = screen.getByRole("button", { name: /save changes/i })
+    await userEvent.click(saveButton)
+
+    await waitFor(() => {
+      const callArgs = mockUpdateUser.mock.calls[0]
+      expect(callArgs[0]).toEqual(expect.objectContaining({ role: "Administrator" }))
+    })
+  })
+
+  it("should update form data when office id changes", async () => {
+    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+    render(
+      <EditUserModal
+        open={true}
+        onClose={vi.fn()}
+        user={mockStaffUser}
+        updateUser={mockUpdateUser}
+      />
+    )
+
+    const changeOfficeButton = screen.getByRole("button", { name: /change office/i })
+    await userEvent.click(changeOfficeButton)
+
+    const saveButton = screen.getByRole("button", { name: /save changes/i })
+    await userEvent.click(saveButton)
+
+    await waitFor(() => {
+      const callArgs = mockUpdateUser.mock.calls[0]
+      expect(callArgs[0]).toEqual(expect.objectContaining({ officeId: 2 }))
+    })
+  })
+
+  it("should update form data when permissions change", async () => {
+    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+    render(
+      <EditUserModal
+        open={true}
+        onClose={vi.fn()}
+        user={mockStaffUser}
+        updateUser={mockUpdateUser}
+      />
+    )
+
+    const toggleReceptionistButton = screen.getByTestId("toggle-receptionist")
+    await userEvent.click(toggleReceptionistButton)
+
+    const toggleOfficeManagerButton = screen.getByTestId("toggle-office-manager")
+    await userEvent.click(toggleOfficeManagerButton)
+
+    const saveButton = screen.getByRole("button", { name: /save changes/i })
+    await userEvent.click(saveButton)
+
+    await waitFor(() => {
+      const callArgs = mockUpdateUser.mock.calls[0]
+      expect(callArgs[0]).toEqual(
+        expect.objectContaining({
+          isReceptionist: true,
+          isOfficeManager: true,
+        })
+      )
+    })
+  })
+
+  it("should update all designate flags when toggled", async () => {
+    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+    render(
+      <EditUserModal
+        open={true}
+        onClose={vi.fn()}
+        user={mockStaffUser}
+        updateUser={mockUpdateUser}
+      />
+    )
+
+    const togglePesticideButton = screen.getByTestId("toggle-pesticide")
+    const toggleFinanceButton = screen.getByTestId("toggle-finance")
+    const toggleIta2Button = screen.getByTestId("toggle-ita2")
+
+    await userEvent.click(togglePesticideButton)
+    await userEvent.click(toggleFinanceButton)
+    await userEvent.click(toggleIta2Button)
+
+    const saveButton = screen.getByRole("button", { name: /save changes/i })
+    await userEvent.click(saveButton)
+
+    await waitFor(() => {
+      const callArgs = mockUpdateUser.mock.calls[0]
+      expect(callArgs[0]).toEqual(
+        expect.objectContaining({
+          isPesticideDesignate: true,
+          isFinanceDesignate: true,
+          isIta2Designate: true,
+        })
+      )
+    })
+  })
+
+  it("should pass previous user to updateUser callback", async () => {
+    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+    render(
+      <EditUserModal
+        open={true}
+        onClose={vi.fn()}
+        user={mockStaffUser}
+        updateUser={mockUpdateUser}
+      />
+    )
+
+    const saveButton = screen.getByRole("button", { name: /save changes/i })
+    await userEvent.click(saveButton)
+
+    await waitFor(() => {
+      const callArgs = mockUpdateUser.mock.calls[0]
+      expect(callArgs[1]).toEqual(mockStaffUser)
+    })
+  })
+
+  it("should preserve unchanged fields when updating", async () => {
+    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+    render(
+      <EditUserModal
+        open={true}
+        onClose={vi.fn()}
+        user={mockStaffUser}
+        updateUser={mockUpdateUser}
+      />
+    )
+
+    const changeRoleButton = screen.getByRole("button", { name: /change role/i })
+    await userEvent.click(changeRoleButton)
+
+    const saveButton = screen.getByRole("button", { name: /save changes/i })
+    await userEvent.click(saveButton)
+
+    await waitFor(() => {
+      const callArgs = mockUpdateUser.mock.calls[0]
+      const updatedUser = callArgs[0]
+      expect(updatedUser).toEqual(
+        expect.objectContaining({
+          username: mockStaffUser.username,
+          displayName: mockStaffUser.displayName,
+          officeId: mockStaffUser.officeId,
+          isReceptionist: mockStaffUser.isReceptionist,
+        })
+      )
+    })
+  })
+
+  it("should reinitialize form when user prop changes", () => {
+    const mockUpdateUser = vi.fn()
+    const newUser: StaffUser = {
+      ...mockStaffUser,
+      username: "jane.smith",
+      displayName: "Jane Smith",
+    }
+
+    const { rerender } = render(
+      <EditUserModal
+        open={true}
+        onClose={vi.fn()}
+        user={mockStaffUser}
+        updateUser={mockUpdateUser}
+      />
+    )
+
+    expect(screen.getByText(`Edit User: ${mockStaffUser.username}`)).toBeTruthy()
+
+    rerender(
+      <EditUserModal open={true} onClose={vi.fn()} user={newUser} updateUser={mockUpdateUser} />
+    )
+
+    expect(screen.getByText(`Edit User: ${newUser.username}`)).toBeTruthy()
+  })
+
+  it("should render modal with proper accessibility attributes", () => {
+    const mockUpdateUser = vi.fn()
+    render(
+      <EditUserModal
+        open={true}
+        onClose={vi.fn()}
+        user={mockStaffUser}
+        updateUser={mockUpdateUser}
+      />
+    )
+
+    const title = screen.getByText(`Edit User: ${mockStaffUser.username}`)
+    expect(title).toBeTruthy()
+
+    const cancelButton = screen.getByRole("button", { name: /cancel/i })
+    const saveButton = screen.getByRole("button", { name: /save changes/i })
+
+    expect(cancelButton).toBeTruthy()
+    expect(saveButton).toBeTruthy()
+  })
+})
