@@ -13,14 +13,14 @@ type UserInformationSectionProps = {
 export const UserInformationSection = ({ user }: UserInformationSectionProps) => (
   <div className="space-y-2 rounded-lg border border-border-light bg-background-light-gray p-4 shadow-sm">
     <h3 className="text-sm font-semibold text-typography-primary">User Information</h3>
-    <div className="grid grid-cols-3 gap-4 text-sm">
-      <div>
-        <p className="text-xs font-medium text-typography-secondary">GUID</p>
-        <p className="text-typography-primary">{user.guid}</p>
-      </div>
+    <div className="flex flex-row justify-between text-sm">
       <div>
         <p className="text-xs font-medium text-typography-secondary">Display Name</p>
         <p className="text-typography-primary">{user.displayName}</p>
+      </div>
+      <div>
+        <p className="text-xs font-medium text-typography-secondary">GUID</p>
+        <p className="text-typography-primary">{user.guid}</p>
       </div>
       <div>
         <p className="text-xs font-medium text-typography-secondary">Creation Date</p>
