@@ -10,10 +10,10 @@ import {
   Modal,
 } from "@/components/common/dialog"
 import type { Role, StaffUser } from "@/generated/prisma/client"
+import { useEditableRoles } from "@/hooks/useEditableRoles"
 import { PermissionsSection } from "./PermissionsSection"
 import { RoleAndAssignmentSection } from "./RoleAndAssignmentSection"
 import { UserInformationSection } from "./UserInformationSection"
-import { useEditUserAvailableRoles } from "./useEditUserAvailableRoles"
 
 type EditUserModalProps = {
   open: boolean
@@ -29,7 +29,7 @@ type EditUserModalProps = {
 export const EditUserModal = ({ open, onClose, user, updateUser }: EditUserModalProps) => {
   const [formData, setFormData] = useState<StaffUser | null>(null)
   const [previousUser, setPreviousUser] = useState<StaffUser | null>(null)
-  const availableRoles = useEditUserAvailableRoles()
+  const editableRoles = useEditableRoles()
 
   useEffect(() => {
     if (open && user) {
@@ -44,9 +44,13 @@ export const EditUserModal = ({ open, onClose, user, updateUser }: EditUserModal
 
   if (!user || !formData || !previousUser) return null
 
+  // Check if the user being edited has a higher role than the current user
+  const isUserHigherRole = !editableRoles.includes(user.role)
+  const isReadonly = isUserHigherRole
+
   const handleSave = async () => {
-    if (formData) {
-      await updateUser(formData, previousUser, availableRoles)
+    if (formData && !isReadonly) {
+      await updateUser(formData, previousUser, editableRoles)
       onClose()
     }
   }
@@ -59,6 +63,14 @@ export const EditUserModal = ({ open, onClose, user, updateUser }: EditUserModal
 
       <DialogBody>
         <form className="space-y-5">
+          {isReadonly && (
+            <div className="rounded-md border-l-4 border-l-red-600 bg-red-50 p-4">
+              <p className="text-sm font-medium text-red-800">
+                This user has a higher role than yours and cannot be edited.
+              </p>
+            </div>
+          )}
+
           <UserInformationSection user={user} />
 
           <div className="grid grid-cols-2 gap-6">
@@ -66,7 +78,8 @@ export const EditUserModal = ({ open, onClose, user, updateUser }: EditUserModal
               user={formData}
               onRoleChange={(role) => handleChange("role", role)}
               onOfficeIdChange={(officeId) => handleChange("officeId", officeId)}
-              availableRoles={availableRoles}
+              availableRoles={editableRoles}
+              disabled={isReadonly}
             />
             <PermissionsSection
               user={formData}
@@ -85,6 +98,7 @@ export const EditUserModal = ({ open, onClose, user, updateUser }: EditUserModal
               onIsIta2DesignateChange={(isIta2Designate) =>
                 handleChange("isIta2Designate", isIta2Designate)
               }
+              disabled={isReadonly}
             />
           </div>
         </form>
@@ -94,7 +108,7 @@ export const EditUserModal = ({ open, onClose, user, updateUser }: EditUserModal
         <button type="button" className="tertiary" onClick={onClose}>
           Cancel
         </button>
-        <button type="button" className="primary" onClick={handleSave}>
+        <button type="button" className="primary" onClick={handleSave} disabled={isReadonly}>
           Save Changes
         </button>
       </DialogActions>
