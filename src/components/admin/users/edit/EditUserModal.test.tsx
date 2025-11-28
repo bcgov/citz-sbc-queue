@@ -86,8 +86,8 @@ vi.mock("./PermissionsSection", () => ({
   ),
 }))
 
-vi.mock("./useEditUserAvailableRoles", () => ({
-  useEditUserAvailableRoles: vi.fn(() => ["CSR", "SCSR"]),
+vi.mock("@/hooks/useEditableRoles", () => ({
+  useEditableRoles: vi.fn(() => ["CSR", "SCSR"]),
 }))
 
 const mockStaffUser: StaffUser = {
@@ -451,5 +451,69 @@ describe("EditUserModal", () => {
 
     expect(cancelButton).toBeTruthy()
     expect(saveButton).toBeTruthy()
+  })
+
+  it("should display error banner and disable form when user role is higher than available roles", () => {
+    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+    const higherRoleUser: StaffUser = {
+      ...mockStaffUser,
+      role: "Administrator",
+    }
+
+    render(
+      <EditUserModal
+        open={true}
+        onClose={vi.fn()}
+        user={higherRoleUser}
+        updateUser={mockUpdateUser}
+      />
+    )
+
+    // Check for error banner
+    expect(
+      screen.getByText(/this user has a higher role than yours and cannot be edited/i)
+    ).toBeTruthy()
+  })
+
+  it("should disable save button when user role is higher than available roles", () => {
+    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+    const higherRoleUser: StaffUser = {
+      ...mockStaffUser,
+      role: "Administrator",
+    }
+
+    render(
+      <EditUserModal
+        open={true}
+        onClose={vi.fn()}
+        user={higherRoleUser}
+        updateUser={mockUpdateUser}
+      />
+    )
+
+    const saveButton = screen.getByRole("button", { name: /save changes/i })
+    expect(saveButton.hasAttribute("disabled")).toBe(true)
+  })
+
+  it("should not call updateUser when attempting to save with higher role user", async () => {
+    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+    const higherRoleUser: StaffUser = {
+      ...mockStaffUser,
+      role: "Administrator",
+    }
+
+    render(
+      <EditUserModal
+        open={true}
+        onClose={vi.fn()}
+        user={higherRoleUser}
+        updateUser={mockUpdateUser}
+      />
+    )
+
+    const saveButton = screen.getByRole("button", { name: /save changes/i })
+    await userEvent.click(saveButton)
+
+    expect(mockUpdateUser).not.toHaveBeenCalled()
   })
 })

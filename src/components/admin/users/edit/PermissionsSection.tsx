@@ -7,6 +7,7 @@ type PermissionsSectionProps = {
   onIsPesticideDesignateChange: (isPesticideDesignate: boolean) => void
   onIsFinanceDesignateChange: (isFinanceDesignate: boolean) => void
   onIsIta2DesignateChange: (isIta2Designate: boolean) => void
+  disabled?: boolean
 }
 
 /**
@@ -19,6 +20,7 @@ type PermissionsSectionProps = {
  * @property props.onIsPesticideDesignateChange - Callback when pesticide designate permission changes.
  * @property props.onIsFinanceDesignateChange - Callback when finance designate permission changes.
  * @property props.onIsIta2DesignateChange - Callback when ITA2 designate permission changes.
+ * @property props.disabled - Whether the section inputs are disabled.
  */
 export const PermissionsSection = ({
   user,
@@ -27,8 +29,11 @@ export const PermissionsSection = ({
   onIsPesticideDesignateChange,
   onIsFinanceDesignateChange,
   onIsIta2DesignateChange,
+  disabled,
 }: PermissionsSectionProps) => (
-  <div className="space-y-3 rounded-lg border border-border-light bg-background-light-gray p-4 shadow-sm">
+  <div
+    className={`space-y-3 rounded-lg border border-border-light bg-background-light-gray p-4 shadow-sm ${disabled ? "opacity-50" : ""}`}
+  >
     <h3 className="text-sm font-semibold text-typography-primary">Permissions</h3>
 
     <div className="space-y-2">
@@ -41,7 +46,8 @@ export const PermissionsSection = ({
           type="checkbox"
           checked={user.isReceptionist}
           onChange={(e) => onIsReceptionistChange(e.target.checked)}
-          className="h-4 w-4 rounded border-border-dark"
+          disabled={disabled}
+          className="h-4 w-4 rounded border-border-dark disabled:cursor-not-allowed"
         />
       </div>
 
@@ -54,7 +60,8 @@ export const PermissionsSection = ({
           type="checkbox"
           checked={user.isOfficeManager}
           onChange={(e) => onIsOfficeManagerChange(e.target.checked)}
-          className="h-4 w-4 rounded border-border-dark"
+          disabled={disabled}
+          className="h-4 w-4 rounded border-border-dark disabled:cursor-not-allowed"
         />
       </div>
 
@@ -70,7 +77,8 @@ export const PermissionsSection = ({
           type="checkbox"
           checked={user.isPesticideDesignate}
           onChange={(e) => onIsPesticideDesignateChange(e.target.checked)}
-          className="h-4 w-4 rounded border-border-dark"
+          disabled={disabled}
+          className="h-4 w-4 rounded border-border-dark disabled:cursor-not-allowed"
         />
       </div>
 
@@ -83,7 +91,8 @@ export const PermissionsSection = ({
           type="checkbox"
           checked={user.isFinanceDesignate}
           onChange={(e) => onIsFinanceDesignateChange(e.target.checked)}
-          className="h-4 w-4 rounded border-border-dark"
+          disabled={disabled}
+          className="h-4 w-4 rounded border-border-dark disabled:cursor-not-allowed"
         />
       </div>
 
@@ -96,7 +105,8 @@ export const PermissionsSection = ({
           type="checkbox"
           checked={user.isIta2Designate}
           onChange={(e) => onIsIta2DesignateChange(e.target.checked)}
-          className="h-4 w-4 rounded border-border-dark"
+          disabled={disabled}
+          className="h-4 w-4 rounded border-border-dark disabled:cursor-not-allowed"
         />
       </div>
     </div>
