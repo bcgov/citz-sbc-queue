@@ -2,13 +2,17 @@
 
 import { useState } from "react"
 import { type ColumnConfig, DataTable } from "@/components/common/datatable"
-import type { StaffUser } from "@/generated/prisma/client"
+import type { Role, StaffUser } from "@/generated/prisma/client"
 import { useDialog } from "@/hooks/useDialog/useDialog"
 import { EditUserModal } from "./edit/EditUserModal"
 
 export type UserTableProps = {
   users: StaffUser[]
-  updateUser: (user: Partial<StaffUser>, prevUser: Partial<StaffUser>) => Promise<void>
+  updateUser: (
+    user: Partial<StaffUser>,
+    prevUser: Partial<StaffUser>,
+    availableRoles: Role[]
+  ) => Promise<void>
 }
 
 export const UserTable = ({ users, updateUser }: UserTableProps) => {

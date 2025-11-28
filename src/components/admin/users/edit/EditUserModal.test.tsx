@@ -86,6 +86,10 @@ vi.mock("./PermissionsSection", () => ({
   ),
 }))
 
+vi.mock("./useEditUserAvailableRoles", () => ({
+  useEditUserAvailableRoles: vi.fn(() => ["CSR", "SCSR"]),
+}))
+
 const mockStaffUser: StaffUser = {
   guid: "550e8400-e29b-41d4-a716-446655440000",
   sub: "550e8400-e29b-41d4-a716-446655440000@azureidir",
@@ -216,7 +220,7 @@ describe("EditUserModal", () => {
     await userEvent.click(saveButton)
 
     await waitFor(() => {
-      expect(mockUpdateUser).toHaveBeenCalledWith(mockStaffUser, mockStaffUser)
+      expect(mockUpdateUser).toHaveBeenCalledWith(mockStaffUser, mockStaffUser, ["CSR", "SCSR"])
     })
   })
 
