@@ -162,5 +162,5 @@ The DataTable component includes:
 
 ## See Also
 
-- [ExampleDataTable](../examples/ExampleDataTable.tsx) - Complete working example
-- [useDataTable Hook](../../hooks/useDataTable/) - State management hook
+- [ExampleDataTable](../../examples/ExampleDataTable.tsx) - Complete working example
+- [useDataTable Hook](../../../hooks/useDataTable/useDataTable.ts) - State management hook
