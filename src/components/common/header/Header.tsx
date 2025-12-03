@@ -2,8 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { LoginButton, LogoutButton } from "@/components"
-import { useAuth } from "@/hooks"
+import { Loginout } from "@/components"
 import styles from "./Header.module.css"
 
 export const Header = () => {
@@ -23,10 +22,7 @@ export const Header = () => {
           </Link>
         </div>
 
-        <div className={styles.controls}>
-          {!useAuth().isAuthenticated && <LoginButton />}
-          {useAuth().isAuthenticated && <LogoutButton />}
-        </div>
+        <Loginout />
       </div>
     </header>
   )
