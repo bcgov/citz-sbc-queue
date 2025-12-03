@@ -32,7 +32,6 @@
   },
   "dependencies": {
     "@bcgov/bc-sans": "2.1.0",
-    "@bcgov/design-system-react-components": "0.5.2",
     "@headlessui/react": "2.2.7",
     "@heroicons/react": "2.2.0",
     "@tailwindcss/postcss": "4.1.11",
