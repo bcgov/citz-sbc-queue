@@ -18,6 +18,9 @@ COPY package.json ./
 # Install only production dependencies needed for build
 RUN npm i && npm cache clean --force
 
+# Generate prisma
+RUN npx prisma generate
+
 # Copy source code
 COPY . .
 
