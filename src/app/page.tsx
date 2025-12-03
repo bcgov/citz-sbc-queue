@@ -1,6 +1,6 @@
 import { Header, IsAuthenticated } from "@/components"
-import { ExampleDialog } from "@/components/ExampleDialog"
-import { ExampleModal } from "@/components/ExampleModal"
+import { ExampleDialog } from "@/components/examples/ExampleDialog"
+import { ExampleModal } from "@/components/examples/ExampleModal"
 
 export default function Home() {
   return (
