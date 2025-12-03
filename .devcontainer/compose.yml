@@ -3,8 +3,8 @@ services:
     tty: true
     init: true
     build:
-      context: ..
-      dockerfile: .devcontainer/Dockerfile
+      context: ../
+      dockerfile: Dockerfile
       args:
         NODE_TAG: 22-bullseye-slim
     volumes:
