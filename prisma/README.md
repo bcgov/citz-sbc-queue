@@ -42,7 +42,6 @@ model Appointment {
   id    Int     @id @default(autoincrement())
   title String
   date  DateTime
-
   @@schema("app")
 }
 ```
@@ -57,7 +56,6 @@ model LegacyAppointment {
   id    Int     @id @default(autoincrement())
   title String
   date  DateTime
-
   @@schema("public")
 }
 ```
