@@ -12,6 +12,9 @@ export const Navigation = ({ currentPath }: NavigationProps) => {
 
   const isActive = (href: string): boolean => {
     if (!pathname) return false
+    // Exact match for root path
+    if (href === "/") return pathname === "/"
+    // For non-root paths, match exact or nested routes
     return pathname === href || pathname.startsWith(`${href}/`)
   }
 
