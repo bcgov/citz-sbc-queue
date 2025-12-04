@@ -25,10 +25,10 @@ export const Navigation = () => {
               <Link
                 href={item.href}
                 className={
-                  "inline-flex items-center py-3 px-3 text-[var(--color-typography-primary)] no-underline font-medium transition-colors relative border-b-4 border-transparent " +
+                  "inline-flex items-center py-3 px-3 text-[var(--color-typography-primary)] no-underline font-medium transition-all relative border-b-4 " +
                   (isActive(item.href)
-                    ? "text-[var(--color-surface-primary)] border-b-[3px] border-[var(--color-gold)] font-bold"
-                    : "hover:text-[var(--color-surface-primary)]")
+                    ? "border-b-[var(--color-gold)] text-[var(--color-surface-primary)] font-bold"
+                    : "border-transparent hover:text-[var(--color-surface-primary)]")
                 }
                 aria-current={isActive(item.href) ? "page" : undefined}
               >
