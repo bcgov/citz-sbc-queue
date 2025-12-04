@@ -30,20 +30,20 @@
   transition: all 0.2s ease;
   border-bottom: 3px solid transparent;
   position: relative;
+}
 
-  &:hover {
-    color: var(--color-surface-primary);
-  }
+.navLink:hover {
+  color: var(--color-surface-primary);
+}
 
-  &:focus {
-    outline: 2px solid var(--color-border-active);
-    outline-offset: -2px;
-  }
+.navLink:focus {
+  outline: 2px solid var(--color-border-active);
+  outline-offset: -2px;
+}
 
-  &:active {
-    outline: 2px solid var(--color-border-active);
-    outline-offset: -2px;
-  }
+.navLink:active {
+  outline: 2px solid var(--color-border-active);
+  outline-offset: -2px;
 }
 
 .navLinkActive {

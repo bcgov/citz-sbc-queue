@@ -1,24 +1,25 @@
 import "@testing-library/jest-dom"
 import { render, screen } from "@testing-library/react"
 import * as navigation from "next/navigation"
-import { afterEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import * as hooks from "@/hooks"
 import Navigation from "./Navigation"
 
 vi.mock("next/navigation", () => ({
   usePathname: vi.fn(),
 }))
 
-vi.mock("@/components", async () => {
-  const actual = await vi.importActual("@/components")
-  return {
-    ...actual,
-    IsAuthenticated: vi.fn(({ children }) => children),
-  }
-})
-
 describe("Navigation", () => {
   afterEach(() => {
     vi.restoreAllMocks()
+  })
+
+  beforeEach(() => {
+    // Default: authenticated user with no special roles
+    vi.spyOn(hooks, "useAuth").mockReturnValue({
+      isAuthenticated: true,
+      hasRole: () => false,
+    } as unknown as ReturnType<typeof hooks.useAuth>)
   })
 
   it("renders all navigation items", () => {
@@ -26,12 +27,14 @@ describe("Navigation", () => {
 
     render(<Navigation />)
 
+    // Home and the standard links (Administration requires role and should be hidden by default)
+    expect(screen.getByText("Home")).toBeInTheDocument()
     expect(screen.getByText("Appointment Booking")).toBeInTheDocument()
     expect(screen.getByText("Queue")).toBeInTheDocument()
     expect(screen.getByText("Room Bookings")).toBeInTheDocument()
     expect(screen.getByText("Appointments")).toBeInTheDocument()
     expect(screen.getByText("Exam Inventory")).toBeInTheDocument()
-    expect(screen.getByText("Administration")).toBeInTheDocument()
+    expect(screen.queryByText("Administration")).toBeNull()
   })
 
   it("marks the current page as active", () => {
@@ -67,7 +70,7 @@ describe("Navigation", () => {
     vi.spyOn(navigation, "usePathname").mockReturnValue("/")
 
     render(<Navigation />)
-
+    expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute("href", "/")
     expect(screen.getByRole("link", { name: "Appointment Booking" })).toHaveAttribute(
       "href",
       "/appointments"
@@ -85,9 +88,47 @@ describe("Navigation", () => {
       "href",
       "/exam-inventory"
     )
-    expect(screen.getByRole("link", { name: "Administration" })).toHaveAttribute(
-      "href",
-      "/administration"
-    )
+    // Administration link is role-protected; not present by default
+    expect(screen.queryByRole("link", { name: "Administration" })).toBeNull()
+  })
+
+  it("shows administration when user has Administrator role", () => {
+    vi.spyOn(navigation, "usePathname").mockReturnValue("/administration")
+    vi.spyOn(hooks, "useAuth").mockReturnValue({
+      isAuthenticated: true,
+      hasRole: (r: string) => r === "Administrator",
+    } as unknown as ReturnType<typeof hooks.useAuth>)
+
+    render(<Navigation />)
+
+    const adminLink = screen.getByRole("link", { name: "Administration" })
+    expect(adminLink).toBeInTheDocument()
+    expect(adminLink).toHaveAttribute("href", "/administration")
+  })
+
+  it("hides links when not authenticated", () => {
+    vi.spyOn(navigation, "usePathname").mockReturnValue("/")
+    vi.spyOn(hooks, "useAuth").mockReturnValue({
+      isAuthenticated: false,
+      hasRole: () => false,
+    } as unknown as ReturnType<typeof hooks.useAuth>)
+
+    render(<Navigation />)
+
+    expect(screen.queryByText("Appointment Booking")).toBeNull()
+    expect(screen.queryByText("Queue")).toBeNull()
+  })
+
+  it("shows links when authenticated and no role required", () => {
+    vi.spyOn(navigation, "usePathname").mockReturnValue("/")
+    vi.spyOn(hooks, "useAuth").mockReturnValue({
+      isAuthenticated: true,
+      hasRole: () => false,
+    } as unknown as ReturnType<typeof hooks.useAuth>)
+
+    render(<Navigation />)
+
+    expect(screen.getByText("Appointment Booking")).toBeInTheDocument()
+    expect(screen.getByText("Queue")).toBeInTheDocument()
   })
 })
