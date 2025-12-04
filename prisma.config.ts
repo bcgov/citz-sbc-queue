@@ -9,6 +9,7 @@ export default defineConfig({
     path: path.join("prisma", "migrations"),
   },
   datasource: {
-      url: env('DATABASE_URL'),
+      // Use a dummy database URL if none is provided, so CI environments don't fail.
+      url: env('DATABASE_URL') ?? "postgresql://dummy:dummy@localhost:5432/dummy",
   }
 });
