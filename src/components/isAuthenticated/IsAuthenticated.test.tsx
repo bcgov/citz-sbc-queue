@@ -1,8 +1,6 @@
 import { render } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import * as hooks from "@/hooks"
-// Note: we avoid importing UseAuthReturn directly to ensure mocks use the runtime
-// return type. If you need the type elsewhere, import it explicitly.
 import { IsAuthenticated } from "./IsAuthenticated"
 
 describe("IsAuthenticated component", () => {
