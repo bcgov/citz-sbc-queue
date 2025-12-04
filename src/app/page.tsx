@@ -1,4 +1,4 @@
-import { Header, IsAuthenticated } from "@/components"
+import { Header, IsAuthenticated, Navigation } from "@/components"
 import { ExampleDialog } from "@/components/examples/ExampleDialog"
 import { ExampleModal } from "@/components/examples/ExampleModal"
 
@@ -14,6 +14,7 @@ export default function Home() {
             - gap 4 => 0.125rem * 4 = 0.5rem
     */ <>
       <Header />
+      <Navigation />
       <div className="grid grid-cols-8 min-h-screen m-8 p-8 gap-4">
         <IsAuthenticated hasRole="Administrator">
           <h1 className="text-typography-primary p-2">only Admins see this</h1>
