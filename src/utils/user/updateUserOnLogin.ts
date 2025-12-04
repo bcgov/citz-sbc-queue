@@ -1,5 +1,6 @@
 "use server"
 
+import type { Role } from "@/generated/prisma/enums"
 import { getStaffUsers } from "@/lib/prisma/users/getStaffUsers"
 import { getStagingStaffUsers } from "@/lib/prisma/users/getStagingStaffUsers"
 import { insertStaffUser } from "@/lib/prisma/users/insertStaffUser"
@@ -9,7 +10,8 @@ import type { IdirIdentityProvider } from "@/utils/auth/types"
 
 export const updateUserOnLogin = async (accessToken: string) => {
   const jwt = decodeJWT<IdirIdentityProvider>(accessToken)
-  const { sub, idir_user_guid, idir_username, display_name } = jwt
+  const { sub, idir_user_guid, idir_username, display_name, client_roles } = jwt
+  const userRole = (client_roles?.length ? client_roles[0] : "CSR") as Role
 
   // Check if user exists in the database
   const staffUsersWithMatchingSub = await getStaffUsers({ sub })
@@ -17,7 +19,10 @@ export const updateUserOnLogin = async (accessToken: string) => {
 
   if (staffUser) {
     // Update user
-    await updateStaffUser({ sub }, { username: idir_username, displayName: display_name })
+    await updateStaffUser(
+      { sub },
+      { username: idir_username, displayName: display_name, role: userRole }
+    )
   } else {
     // Check for legacy user in staging table
     const stagingUsers = await getStagingStaffUsers({ username: idir_username })
@@ -30,7 +35,7 @@ export const updateUserOnLogin = async (accessToken: string) => {
       csrId: stagingUser ? stagingUser.id : null,
       username: idir_username,
       displayName: display_name,
-      role: "CSR",
+      role: userRole,
       isActive: true,
       officeId: stagingUser ? stagingUser.officeId : null,
       counterId: stagingUser ? stagingUser.counterId : null,
