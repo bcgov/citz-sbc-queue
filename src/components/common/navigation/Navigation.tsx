@@ -1,13 +1,12 @@
+"use client"
+
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { IsAuthenticated } from "@/components"
 import { NAV_ITEMS } from "./navItems"
 
-type NavigationProps = {
-  currentPath?: string
-}
-
-export const Navigation = ({ currentPath }: NavigationProps) => {
-  const pathname = currentPath
+export const Navigation = () => {
+  const pathname = usePathname()
 
   const isActive = (href: string): boolean => {
     if (!pathname) return false

@@ -14,7 +14,7 @@ export default function Home() {
             - gap 4 => 0.125rem * 4 = 0.5rem
     */ <>
       <Header />
-      <Navigation currentPath="/" />
+      <Navigation />
       <div className="grid grid-cols-8 min-h-screen m-8 p-8 gap-4">
         <IsAuthenticated hasRole="Administrator">
           <h1 className="text-typography-primary p-2">only Admins see this</h1>
