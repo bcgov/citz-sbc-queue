@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { IsAuthenticated } from "@/components"
-import styles from "./Navigation.module.css"
 import { NAV_ITEMS } from "./navItems"
 
 type NavigationProps = {
@@ -19,14 +18,19 @@ export const Navigation = ({ currentPath }: NavigationProps) => {
   }
 
   return (
-    <nav className={styles.nav}>
-      <ul className={styles.navList}>
+    <nav className="w-full bg-white border-b border-gray-200">
+      <ul className="max-w-[1200px] mx-auto flex list-none p-0 gap-4 flex-wrap">
         {NAV_ITEMS.map((item) => (
-          <li key={item.href} className={styles.navItem}>
+          <li key={item.href} className="flex items-center">
             <IsAuthenticated hasRole={item.role}>
               <Link
                 href={item.href}
-                className={`${styles.navLink} ${isActive(item.href) ? styles.navLinkActive : ""}`}
+                className={
+                  "inline-flex items-center py-3 px-3 text-[var(--color-typography-primary)] no-underline font-medium transition-colors relative border-b-4 border-transparent " +
+                  (isActive(item.href)
+                    ? "text-[var(--color-surface-primary)] border-b-[3px] border-[var(--color-gold)] font-bold"
+                    : "hover:text-[var(--color-surface-primary)]")
+                }
                 aria-current={isActive(item.href) ? "page" : undefined}
               >
                 {item.label}
