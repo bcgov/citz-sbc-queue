@@ -2,8 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { LoginButton, LogoutButton } from "@/components"
-import { useAuth } from "@/hooks"
+import { Loginout } from "@/components"
 import styles from "./Header.module.css"
 
 export const Header = () => {
@@ -13,7 +12,7 @@ export const Header = () => {
         <div className={styles.logo}>
           <Link href="/" aria-label="BC Government home">
             <Image
-              src="/bcgov/BCID_H_RGB_pos.svg"
+              src="/bcgov/BCID_H_RGB_rev.svg"
               alt="BC Government logo"
               className={styles.logoImg}
               width={180}
@@ -23,10 +22,7 @@ export const Header = () => {
           </Link>
         </div>
 
-        <div className={styles.controls}>
-          {!useAuth().isAuthenticated && <LoginButton />}
-          {useAuth().isAuthenticated && <LogoutButton />}
-        </div>
+        <Loginout />
       </div>
     </header>
   )

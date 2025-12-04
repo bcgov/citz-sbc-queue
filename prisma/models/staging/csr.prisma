@@ -20,5 +20,5 @@ model CSR {
   ita2Designate         Int       @map("ita2_designate")
 
   @@map("csr")
-  @@schema("app")
+  @@schema("public")
 }
