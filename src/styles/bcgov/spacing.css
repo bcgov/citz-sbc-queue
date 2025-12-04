@@ -21,4 +21,9 @@ To see information on BC Gov Typography standards please see:
   --text-4xl: 2rem;
   --text-4xl--line-height: 3.375rem;
   --text-5xl: 2.25rem;
+  // radius variables can be used for border sizing
+  --radius-none: 0rem;
+  --radius-small: 2px;
+  --radius-medium: 4px;
+  --radius-large: 6px;
 }
