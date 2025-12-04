@@ -33,17 +33,19 @@ export type BaseTokenPayload<TProvider extends SSOIdentityProvider | unknown> = 
   at_hash?: string | undefined
   sid: string
   identity_provider: TProvider
-  email_verified: boolean
   preferred_username: string
   client_roles?: string[] | undefined
 }
 
 export type SSOIdirUser = BaseTokenPayload<IdirIdentityProvider> & {
-  idir_user_guid: string;
-  idir_username: string;
-  name: string;
-  display_name: string;
-  given_name: string;
-  family_name: string;
-  email: string;
-};
+  idir_user_guid: string
+  idir_username: string
+  name: string
+  display_name: string
+  given_name: string
+  family_name: string
+  email: string
+}
+
+export type TokenPayload<TProvider extends SSOIdentityProvider | unknown> =
+  TProvider extends IdirIdentityProvider ? SSOIdirUser : BaseTokenPayload<TProvider>
