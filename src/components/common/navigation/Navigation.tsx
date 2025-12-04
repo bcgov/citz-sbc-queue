@@ -1,7 +1,4 @@
-"use client"
-
 import Link from "next/link"
-import { usePathname } from "next/navigation"
 import { IsAuthenticated } from "@/components"
 import styles from "./Navigation.module.css"
 
@@ -21,8 +18,12 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Administration", href: "/administration", role: "Administrator" },
 ]
 
-export const Navigation = () => {
-  const pathname = usePathname()
+type NavigationProps = {
+  currentPath?: string
+}
+
+export const Navigation = ({ currentPath }: NavigationProps) => {
+  const pathname = currentPath
 
   const isActive = (href: string): boolean => {
     if (!pathname) return false
