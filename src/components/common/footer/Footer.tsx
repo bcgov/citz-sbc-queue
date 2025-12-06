@@ -1,7 +1,6 @@
 "use client"
 
 export const Footer = () => {
-  // suggested classes for the land acknowledgemetn
   const LandAcknowledgement = () => {
     const p = `The B.C. Public Service acknowledges the
         territories of First Nations around B.C. and is grateful to carry out
@@ -10,48 +9,76 @@ export const Footer = () => {
         Métis, and Inuit — respecting and acknowledging their distinct
         cultures, histories, rights, laws, and governments.`
 
-    //      <div className="flex flex-col items-center justify-around border-solid border-t-large border-b-large border-y-gold-600 bg-gray-950 p-xl m-none">
-
-    //         <div className="flex flex-col items-center text-typography-primary-invert text-sm max-w-1100px w-full justify-stretch">
-
     return (
-      <div className=" flex-col justify-around bg-gray-950">
+      <div className="w-full flex flex-col items-center justify-around border-y-(length:--border-width-lg) border-y-gold-600 bg-gray-950 p-xl">
         {/* above - bcds-footer--acknowledgement class */}
         {/* below - bcds-footer--acknowledgement-text class */}
-        <div className="">{p}</div>
+        <div className="w-full max-w-[1100px] flex flex-col justify-self-stretch items-center text-typography-primary-invert text-s">
+          {p}
+        </div>
       </div>
     )
   }
 
   const Links = () => {
+    const title = "More Info"
+    const links = [
+      { title: "Home", link: "https://www2.gov.bc.ca/gov/content/home" },
+      { title: "About gov.bc.ca", link: "https://www2.gov.bc.ca/gov/content/about-gov-bc-ca" },
+      {
+        title: "Accessibility",
+        link: "https://www2.gov.bc.ca//gov/content/home/accessible-government",
+      },
+      { title: "Privacy", link: "https://www2.gov.bc.ca//gov/content/home/privacy" },
+      { title: "Copyright", link: "https://www2.gov.bc.ca//gov/content/home/copyright" },
+      { title: "Disclaimer", link: "https://www2.gov.bc.ca//gov/content/home/disclaimer" },
+    ]
     return (
-      <div className="grid grid-cols-">
-        {/* above - bcds-footer--container-content class */}
-        <a href="https://www2.gov.bc.ca//gov/content/home/accessible-government">Accessibility</a>
-        <a href="https://www2.gov.bc.ca//gov/content/home/privacy">Privacy</a>
-        <a href="https://www2.gov.bc.ca//gov/content/home/copyright">Copyright</a>
-        <a href="https://www2.gov.bc.ca//gov/content/home/disclaimer">Disclaimer</a>
+      <div className="w-full flex flex-col flex-nowrap items-start justify-self-stretch justify-between gap-(--padding-xl)">
+        {/* above - bcds-footer--logo-links class */}
+        <figure className="w-full flex flex-col m-none">
+          {/** above bcds-footer--links */}
+          {/** below bcds-footer--links-title */}
+          <figcaption className="w-full block mb-(--padding-md) font-bold uppercase text-sm">
+            {title}
+          </figcaption>
+          <ul className="w-full grid grid-cols-4 auto-rows-auto gap-x-(--padding-xl) gap-y-(--padding-sm) list-none m-none p-none">
+            {Array.isArray(links) &&
+              links.map((element, index) => {
+                return (
+                  <li
+                    className="text-sm"
+                    key={`${element.title.toLowerCase().replace(/\s/g, "-")}-${index}`}
+                  >
+                    <a className="color-typography-primary hover:underline" href={element.link}>
+                      {element.title}
+                    </a>
+                  </li>
+                )
+              })}
+          </ul>
+        </figure>
       </div>
     )
   }
 
-  // Suggested formatting for the footer container
-  // flex flex-col items-center justify-around bg-[color:var(--surface-color-background-light-gray)] pt-[var(--layout-padding-xlarge)] pr-[var(--layout-padding-xlarge)] pb-[var(--layout-padding-xlarge)] pl-[var(--layout-padding-xlarge)];
-
-  // suggested formatting for the footer container and its contents
-  // flex flex-col items-stretch gap-[var(--layout-padding-xlarge)] max-w-[1100px] w-full
-
-  // suggested formatting for
+  const defaultCopyright = `© ${new Date().getUTCFullYear()} Government of British Columbia.`
+  //     <div className="flex flex-col fixed left-0 bottom-0 w-full items-center justify-around justify-self-stretch gap-(--padding-width-xl) bg-background-light-gray p-(--padding-width-xl)">
 
   return (
-    <div className="fixed left-0 bottom-0 w-full">
+    <div className="w-full flex flex-col justify-self-stretch fixed">
       {/* Above is bcds-footer class */}
       <LandAcknowledgement />
       {/* bcds-footer--container class */}
-      <div>
-        <Links />
+      <div className="flex flex-col items-center justify-around bg-background-light-gray p-xl">
+        {/* bcds-footer--container-content class */}
+        <div className="w-full max-w-[1100px] flex flex-col justify-self-stretch gap-(--padding-xl)">
+          <Links />
+          <hr className=" bg-border-dark  h-(--border-width-sm) m-none" />
+          {/* bcds-footer--copyright class */}
+          <div className="text-typography-secondary text-base m-none">{defaultCopyright}</div>
+        </div>
       </div>
-      <div>COPYRIGHT</div>
     </div>
   )
 }
