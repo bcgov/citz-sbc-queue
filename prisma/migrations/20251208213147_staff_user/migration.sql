@@ -27,23 +27,6 @@ CREATE TABLE "app"."staff_user" (
     CONSTRAINT "staff_user_pkey" PRIMARY KEY ("guid")
 );
 
--- CreateTable
-CREATE TABLE "app"."staging_staff_user" (
-    "id" SERIAL NOT NULL,
-    "username" VARCHAR(150) NOT NULL,
-    "office_id" INTEGER NOT NULL,
-    "counter_id" INTEGER,
-    "role" "app"."Role" NOT NULL,
-    "deleted_at" TIMESTAMP(6),
-    "is_receptionist" BOOLEAN NOT NULL DEFAULT false,
-    "is_office_manager" BOOLEAN NOT NULL DEFAULT false,
-    "is_pesticide_designate" BOOLEAN NOT NULL DEFAULT false,
-    "is_finance_designate" BOOLEAN NOT NULL DEFAULT false,
-    "is_ita2_designate" BOOLEAN NOT NULL DEFAULT false,
-
-    CONSTRAINT "staging_staff_user_pkey" PRIMARY KEY ("id")
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "staff_user_sub_key" ON "app"."staff_user"("sub");
 
@@ -52,6 +35,3 @@ CREATE UNIQUE INDEX "staff_user_csr_id_key" ON "app"."staff_user"("csr_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "staff_user_username_key" ON "app"."staff_user"("username");
-
--- CreateIndex
-CREATE UNIQUE INDEX "staging_staff_user_username_key" ON "app"."staging_staff_user"("username");
