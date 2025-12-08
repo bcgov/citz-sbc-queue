@@ -120,6 +120,9 @@ npm run db:studio
 # Create and apply a new migration
 npm run db:migrate -- --name <migration_name>
 
+# Reset database and clear migrations
+npm run db:reset
+
 # Generate/regenerate Prisma Client
 npm run db:generate
 
