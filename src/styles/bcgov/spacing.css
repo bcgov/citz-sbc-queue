@@ -21,4 +21,15 @@ To see information on BC Gov Typography standards please see:
   --text-4xl: 2rem;
   --text-4xl--line-height: 3.375rem;
   --text-5xl: 2.25rem;
+  /* Padding options. Enables classes like `p-sm`*/
+  --padding-xxs: 0.125rem;
+  --padding-xs: 0.25rem;
+  --padding-sm: 0.5rem;
+  --padding-md: 1rem;
+  --padding-lg: 1.5rem;
+  --padding-xl: 2rem;
+  /* Border width options. */
+  --border-width-sm: 1px;
+  --border-width-md: 2px;
+  --border-width-lg: 4px;
 }
