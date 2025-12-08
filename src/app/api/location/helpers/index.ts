@@ -1,0 +1,5 @@
+export { createLocation } from "./createLocation"
+export { deleteLocation } from "./deleteLocation"
+export { getAllLocations } from "./getAllLocations"
+export { getLocationByNumber } from "./getLocationByNumber"
+export { updateLocation } from "./updateLocation"
