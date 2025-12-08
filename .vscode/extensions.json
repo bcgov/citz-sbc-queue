@@ -1,6 +1,7 @@
 {
   "recommendations": [
     "biomejs.biome",
+    "prisma.prisma",
     "GitHub.copilot",
     "GitHub.copilot-chat",
     "github.vscode-github-actions",
