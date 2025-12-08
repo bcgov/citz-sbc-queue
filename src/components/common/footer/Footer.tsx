@@ -68,7 +68,7 @@ export const Footer = () => {
   const defaultCopyright = `© ${new Date().getUTCFullYear()} Government of British Columbia.`
 
   return (
-    <div className="w-full flex flex-col justify-self-stretch fixed">
+    <div className="w-full flex flex-col justify-self-stretch">
       {/* Above is bcds-footer class */}
       <LandAcknowledgement />
       {/* below - bcds-footer--container class */}
