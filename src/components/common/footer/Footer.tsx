@@ -42,6 +42,7 @@ export const Footer = () => {
           <figcaption className="w-full block mb-(--padding-md) font-bold uppercase text-sm">
             {title}
           </figcaption>
+          {/** below bcds-footer--links -> ul */}
           <ul className="w-full grid grid-cols-4 auto-rows-auto gap-x-(--padding-xl) gap-y-(--padding-sm) list-none m-none p-none">
             {Array.isArray(links) &&
               links.map((element, index) => {
@@ -50,6 +51,8 @@ export const Footer = () => {
                     className="text-sm"
                     key={`${element.title.toLowerCase().replace(/\s/g, "-")}-${index}`}
                   >
+                    {/** above bcds-footer--links -> ul -> li */}
+                    {/** below bcds-footer--links -> ul -> li -> a */}
                     <a className="color-typography-primary hover:underline" href={element.link}>
                       {element.title}
                     </a>
@@ -63,19 +66,19 @@ export const Footer = () => {
   }
 
   const defaultCopyright = `© ${new Date().getUTCFullYear()} Government of British Columbia.`
-  //     <div className="flex flex-col fixed left-0 bottom-0 w-full items-center justify-around justify-self-stretch gap-(--padding-width-xl) bg-background-light-gray p-(--padding-width-xl)">
 
   return (
     <div className="w-full flex flex-col justify-self-stretch fixed">
       {/* Above is bcds-footer class */}
       <LandAcknowledgement />
-      {/* bcds-footer--container class */}
+      {/* below - bcds-footer--container class */}
       <div className="flex flex-col items-center justify-around bg-background-light-gray p-xl">
-        {/* bcds-footer--container-content class */}
+        {/* below - bcds-footer--container-content class */}
         <div className="w-full max-w-[1100px] flex flex-col justify-self-stretch gap-(--padding-xl)">
           <Links />
+          {/** below bcds-footer--container-content -> hr */}
           <hr className=" bg-border-dark  h-(--border-width-sm) m-none" />
-          {/* bcds-footer--copyright class */}
+          {/* below - bcds-footer--copyright class */}
           <div className="text-typography-secondary text-base m-none">{defaultCopyright}</div>
         </div>
       </div>
