@@ -18,14 +18,17 @@ type Props = {
   open: boolean
   onClose: () => void
   user: StaffUser | null
+  updateUser: (user: Partial<StaffUser>, prevUser: Partial<StaffUser>) => Promise<void>
 }
 
-export const EditUserModal = ({ open, onClose, user }: Props) => {
+export const EditUserModal = ({ open, onClose, user, updateUser }: Props) => {
   const [formData, setFormData] = useState<StaffUser | null>(null)
+  const [previousUser, setPreviousUser] = useState<StaffUser | null>(null)
 
   useEffect(() => {
     if (open && user) {
       setFormData(user)
+      setPreviousUser(user)
     }
   }, [open, user])
 
@@ -33,7 +36,14 @@ export const EditUserModal = ({ open, onClose, user }: Props) => {
     setFormData((prev) => (prev ? { ...prev, [field]: value } : null))
   }
 
-  if (!user || !formData) return null
+  if (!user || !formData || !previousUser) return null
+
+  const handleSave = async () => {
+    if (formData) {
+      await updateUser(formData, previousUser)
+      onClose()
+    }
+  }
 
   return (
     <Modal open={open} onClose={onClose} size="lg">
@@ -77,7 +87,7 @@ export const EditUserModal = ({ open, onClose, user }: Props) => {
         <button type="button" className="tertiary" onClick={onClose}>
           Cancel
         </button>
-        <button type="button" className="primary" onClick={onClose}>
+        <button type="button" className="primary" onClick={handleSave}>
           Save Changes
         </button>
       </DialogActions>

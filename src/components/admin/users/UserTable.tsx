@@ -8,9 +8,10 @@ import { EditUserModal } from "./edit/EditUserModal"
 
 export type UserTableProps = {
   users: StaffUser[]
+  updateUser: (user: Partial<StaffUser>, prevUser: Partial<StaffUser>) => Promise<void>
 }
 
-export const UserTable = ({ users }: UserTableProps) => {
+export const UserTable = ({ users, updateUser }: UserTableProps) => {
   const {
     open: editUserModalOpen,
     openDialog: openEditUserModal,
@@ -79,7 +80,12 @@ export const UserTable = ({ users }: UserTableProps) => {
         emptyMessage="No users found."
         onRowClick={handleRowClick}
       />
-      <EditUserModal open={editUserModalOpen} onClose={closeEditUserModal} user={selectedUser} />
+      <EditUserModal
+        open={editUserModalOpen}
+        onClose={closeEditUserModal}
+        user={selectedUser}
+        updateUser={updateUser}
+      />
     </>
   )
 }
