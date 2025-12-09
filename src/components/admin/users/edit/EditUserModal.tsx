@@ -19,7 +19,7 @@ type EditUserModalProps = {
   open: boolean
   onClose: () => void
   user: StaffUser | null
-  updateStaffUserOnLogin: (
+  updateStaffUser: (
     user: Partial<StaffUser>,
     prevUser: Partial<StaffUser>,
     availableRoles: Role[]
@@ -31,7 +31,7 @@ export const EditUserModal = ({
   open,
   onClose,
   user,
-  updateStaffUserOnLogin,
+  updateStaffUser,
   revalidateTable,
 }: EditUserModalProps) => {
   const [formData, setFormData] = useState<StaffUser | null>(null)
@@ -57,7 +57,7 @@ export const EditUserModal = ({
 
   const handleSave = async () => {
     if (formData && !isReadonly) {
-      await updateStaffUserOnLogin(formData, previousUser, editableRoles)
+      await updateStaffUser(formData, previousUser, editableRoles)
       await revalidateTable()
       onClose()
     }

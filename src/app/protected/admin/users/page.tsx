@@ -1,7 +1,7 @@
 import { revalidatePath } from "next/cache"
 import { UserTable } from "@/components/admin/users/UserTable"
 import { getAllStaffUsers } from "@/lib/prisma/staff_user/getAllStaffUsers"
-import { updateStaffUserOnLogin } from "@/lib/prisma/staff_user/updateStaffUserOnLogin"
+import { updateStaffUser } from "@/lib/prisma/staff_user/updateStaffUser"
 
 export default async function Page() {
   const users = await getAllStaffUsers()
@@ -17,7 +17,7 @@ export default async function Page() {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Users</h1>
         <UserTable
           users={users}
-          updateStaffUserOnLogin={updateStaffUserOnLogin}
+          updateStaffUser={updateStaffUser}
           revalidateTable={revalidateTable}
         />
       </div>

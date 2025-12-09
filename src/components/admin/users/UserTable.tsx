@@ -8,7 +8,7 @@ import { EditUserModal } from "./edit/EditUserModal"
 
 export type UserTableProps = {
   users: StaffUser[]
-  updateStaffUserOnLogin: (
+  updateStaffUser: (
     user: Partial<StaffUser>,
     prevUser: Partial<StaffUser>,
     availableRoles: Role[]
@@ -16,7 +16,7 @@ export type UserTableProps = {
   revalidateTable: () => Promise<void>
 }
 
-export const UserTable = ({ users, updateStaffUserOnLogin, revalidateTable }: UserTableProps) => {
+export const UserTable = ({ users, updateStaffUser, revalidateTable }: UserTableProps) => {
   const {
     open: editUserModalOpen,
     openDialog: openEditUserModal,
@@ -89,7 +89,7 @@ export const UserTable = ({ users, updateStaffUserOnLogin, revalidateTable }: Us
         open={editUserModalOpen}
         onClose={closeEditUserModal}
         user={selectedUser}
-        updateStaffUserOnLogin={updateStaffUserOnLogin}
+        updateStaffUser={updateStaffUser}
         revalidateTable={revalidateTable}
       />
     </>

@@ -3,7 +3,7 @@ import type { Role, StaffUser } from "@/generated/prisma/client"
 import { prisma } from "@/utils/db/prisma"
 import { assignRole } from "@/utils/sso/assignRole"
 import { unassignRole } from "@/utils/sso/unassignRole"
-import { updateStaffUserOnLogin } from "./updateStaffUserOnLogin"
+import { updateStaffUser } from "./updateStaffUser"
 
 vi.mock("@/utils/db/prisma", () => ({
   prisma: {
@@ -15,7 +15,7 @@ vi.mock("@/utils/db/prisma", () => ({
 vi.mock("@/utils/sso/assignRole")
 vi.mock("@/utils/sso/unassignRole")
 
-describe("updateStaffUserOnLogin", () => {
+describe("updateStaffUser", () => {
   const mockStaffUser: StaffUser = {
     guid: "test-guid-123",
     sub: "test-sub-123",
@@ -64,7 +64,7 @@ describe("updateStaffUserOnLogin", () => {
 
     vi.mocked(prisma.staffUser.update).mockResolvedValueOnce(updatedUser)
 
-    const result = await updateStaffUserOnLogin(user, prevUser, availableRoles)
+    const result = await updateStaffUser(user, prevUser, availableRoles)
 
     expect(result).toEqual(updatedUser)
     expect(prisma.staffUser.update).toHaveBeenCalledWith({
@@ -95,7 +95,7 @@ describe("updateStaffUserOnLogin", () => {
     vi.mocked(unassignRole).mockResolvedValueOnce(undefined)
     vi.mocked(assignRole).mockResolvedValueOnce([])
 
-    const result = await updateStaffUserOnLogin(user, prevUser, availableRoles)
+    const result = await updateStaffUser(user, prevUser, availableRoles)
 
     expect(unassignRole).toHaveBeenCalledWith(mockStaffUser.sub, "CSR")
     expect(assignRole).toHaveBeenCalledWith(mockStaffUser.sub, "SDM")
@@ -116,7 +116,7 @@ describe("updateStaffUserOnLogin", () => {
 
     const availableRoles: Role[] = ["CSR"]
 
-    await expect(updateStaffUserOnLogin(user, prevUser, availableRoles)).rejects.toThrow(
+    await expect(updateStaffUser(user, prevUser, availableRoles)).rejects.toThrow(
       "You do not have permission to assign this role."
     )
 
@@ -131,7 +131,7 @@ describe("updateStaffUserOnLogin", () => {
     const prevUser = {}
     const availableRoles: Role[] = ["CSR"]
 
-    const result = await updateStaffUserOnLogin(user, prevUser, availableRoles)
+    const result = await updateStaffUser(user, prevUser, availableRoles)
 
     expect(result).toBeNull()
     expect(prisma.staffUser.update).not.toHaveBeenCalled()
@@ -145,7 +145,7 @@ describe("updateStaffUserOnLogin", () => {
     const prevUser = {}
     const availableRoles: Role[] = ["CSR"]
 
-    const result = await updateStaffUserOnLogin(user, prevUser, availableRoles)
+    const result = await updateStaffUser(user, prevUser, availableRoles)
 
     expect(result).toBeNull()
     expect(prisma.staffUser.update).not.toHaveBeenCalled()
@@ -168,7 +168,7 @@ describe("updateStaffUserOnLogin", () => {
 
     vi.mocked(prisma.staffUser.update).mockResolvedValueOnce(updatedUser)
 
-    await updateStaffUserOnLogin(user, prevUser, availableRoles)
+    await updateStaffUser(user, prevUser, availableRoles)
 
     expect(unassignRole).not.toHaveBeenCalled()
     expect(assignRole).not.toHaveBeenCalled()
@@ -191,7 +191,7 @@ describe("updateStaffUserOnLogin", () => {
 
     vi.mocked(prisma.staffUser.update).mockResolvedValueOnce(updatedUser)
 
-    await updateStaffUserOnLogin(user, prevUser, availableRoles)
+    await updateStaffUser(user, prevUser, availableRoles)
 
     expect(unassignRole).not.toHaveBeenCalled()
     expect(assignRole).not.toHaveBeenCalled()
