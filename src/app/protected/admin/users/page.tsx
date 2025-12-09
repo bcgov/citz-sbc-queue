@@ -3,6 +3,9 @@ import { UserTable } from "@/components/admin/users/UserTable"
 import { getAllStaffUsers } from "@/lib/prisma/staff_user/getAllStaffUsers"
 import { updateStaffUser } from "@/lib/prisma/staff_user/updateStaffUser"
 
+// This page should always be rendered dynamically to ensure fresh data
+export const dynamic = "force-dynamic"
+
 export default async function Page() {
   const users = await getAllStaffUsers()
 
