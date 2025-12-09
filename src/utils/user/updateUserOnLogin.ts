@@ -1,10 +1,10 @@
 "use server"
 
 import type { Role } from "@/generated/prisma/enums"
-import { getStaffUsers } from "@/lib/prisma/users/getStaffUsers"
-import { getStagingStaffUsers } from "@/lib/prisma/users/getStagingStaffUsers"
-import { insertStaffUser } from "@/lib/prisma/users/insertStaffUser"
-import { updateStaffUser } from "@/lib/prisma/users/updateStaffUser"
+import { getCSRByUsername } from "@/lib/prisma/legacy/csr/getCSRByUsername"
+import { getStaffUserBySub } from "@/lib/prisma/staff_user/getStaffUserBySub"
+import { insertStaffUser } from "@/lib/prisma/staff_user/insertStaffUser"
+import { updateStaffUser } from "@/lib/prisma/staff_user/updateStaffUser"
 import { decodeJWT } from "@/utils/auth/jwt/decodeJWT"
 import type { IdirIdentityProvider } from "@/utils/auth/types"
 
@@ -14,37 +14,42 @@ export const updateUserOnLogin = async (accessToken: string) => {
   const userRole = (client_roles?.length ? client_roles[0] : "CSR") as Role
 
   // Check if user exists in the database
-  const staffUsersWithMatchingSub = await getStaffUsers({ sub })
-  const staffUser = staffUsersWithMatchingSub.length > 0 ? staffUsersWithMatchingSub[0] : null
+  const staffUser = await getStaffUserBySub(sub)
 
   if (staffUser) {
     // Update user
     await updateStaffUser(
-      { sub },
-      { username: idir_username, displayName: display_name, role: userRole }
+      {
+        sub,
+        guid: idir_user_guid,
+        username: idir_username,
+        displayName: display_name,
+        role: userRole,
+      },
+      staffUser,
+      [userRole]
     )
   } else {
-    // Check for legacy user in staging table
-    const stagingUsers = await getStagingStaffUsers({ username: idir_username })
-    const stagingUser = stagingUsers.length > 0 ? stagingUsers[0] : null
+    // Check for legacy user in csr table
+    const csrUser = await getCSRByUsername(idir_username)
 
     // Create new user
     await insertStaffUser({
       sub,
       guid: idir_user_guid,
-      csrId: stagingUser ? stagingUser.id : null,
+      csrId: csrUser ? csrUser.id : null,
       username: idir_username,
       displayName: display_name,
       role: userRole,
       isActive: true,
-      officeId: stagingUser ? stagingUser.officeId : null,
-      counterId: stagingUser ? stagingUser.counterId : null,
-      deletedAt: stagingUser ? stagingUser.deletedAt : null,
-      isFinanceDesignate: stagingUser ? stagingUser.isFinanceDesignate : false,
-      isIta2Designate: stagingUser ? stagingUser.isIta2Designate : false,
-      isOfficeManager: stagingUser ? stagingUser.isOfficeManager : false,
-      isPesticideDesignate: stagingUser ? stagingUser.isPesticideDesignate : false,
-      isReceptionist: stagingUser ? stagingUser.isReceptionist : false,
+      officeId: csrUser ? csrUser.officeId : null,
+      counterId: csrUser ? csrUser.counterId : null,
+      deletedAt: csrUser ? csrUser.deletedAt : null,
+      isFinanceDesignate: csrUser ? csrUser.isFinanceDesignate : false,
+      isIta2Designate: csrUser ? csrUser.isIta2Designate : false,
+      isOfficeManager: csrUser ? csrUser.isOfficeManager : false,
+      isPesticideDesignate: csrUser ? csrUser.isPesticideDesignate : false,
+      isReceptionist: csrUser ? csrUser.isReceptionist : false,
     })
   }
 }
