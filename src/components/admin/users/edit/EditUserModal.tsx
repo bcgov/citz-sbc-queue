@@ -19,14 +19,21 @@ type EditUserModalProps = {
   open: boolean
   onClose: () => void
   user: StaffUser | null
-  updateUser: (
+  updateStaffUserOnLogin: (
     user: Partial<StaffUser>,
     prevUser: Partial<StaffUser>,
     availableRoles: Role[]
-  ) => Promise<void>
+  ) => Promise<StaffUser | null>
+  revalidateTable: () => Promise<void>
 }
 
-export const EditUserModal = ({ open, onClose, user, updateUser }: EditUserModalProps) => {
+export const EditUserModal = ({
+  open,
+  onClose,
+  user,
+  updateStaffUserOnLogin,
+  revalidateTable,
+}: EditUserModalProps) => {
   const [formData, setFormData] = useState<StaffUser | null>(null)
   const [previousUser, setPreviousUser] = useState<StaffUser | null>(null)
   const editableRoles = useEditableRoles()
@@ -38,19 +45,20 @@ export const EditUserModal = ({ open, onClose, user, updateUser }: EditUserModal
     }
   }, [open, user])
 
-  const handleChange = (field: keyof StaffUser, value: StaffUser[keyof StaffUser]) => {
-    setFormData((prev) => (prev ? { ...prev, [field]: value } : null))
-  }
-
   if (!user || !formData || !previousUser) return null
 
   // Check if the user being edited has a higher role than the current user
   const isUserHigherRole = !editableRoles.includes(user.role)
   const isReadonly = isUserHigherRole
 
+  const handleChange = (field: keyof StaffUser, value: StaffUser[keyof StaffUser]) => {
+    setFormData((prev) => (prev ? { ...prev, [field]: value } : null))
+  }
+
   const handleSave = async () => {
     if (formData && !isReadonly) {
-      await updateUser(formData, previousUser, editableRoles)
+      await updateStaffUserOnLogin(formData, previousUser, editableRoles)
+      await revalidateTable()
       onClose()
     }
   }

@@ -21,8 +21,8 @@ RUN npm i && npm cache clean --force
 # Copy all source files
 COPY . .
 
-# Generate prisma
-RUN npx prisma generate
+# Generate prisma (with dummy DATABASE_URL for CI build)
+RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma generate
 
 # Build the application
 RUN npm run build
