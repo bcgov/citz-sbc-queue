@@ -1,7 +1,6 @@
 export type Location = {
   name: string
-  // `number` is stored as a string (per requirements)
-  number: string
+  id: string
   timezone: string
   streetAddress: string
   mailAddress?: string
@@ -12,5 +11,5 @@ export type Location = {
 
 export type LocationList = Location[]
 
-export type CreateLocation = Omit<Location, "number"> & { number?: string }
-export type UpdateLocation = Partial<Omit<Location, "number">>
+export type CreateLocation = Omit<Location, "id"> & { id?: string }
+export type UpdateLocation = Partial<Omit<Location, "id">>

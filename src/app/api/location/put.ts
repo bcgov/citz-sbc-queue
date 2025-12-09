@@ -2,17 +2,17 @@ import { NextResponse } from "next/server"
 import { updateLocation } from "./helpers"
 import type { UpdateLocation } from "./types"
 
-// PUT /api/location?number=NNN - update an existing location
+// PUT /api/location?id=NNN - update an existing location
 export async function PUT(request: Request) {
   try {
     const url = new URL(request.url)
-    const number = url.searchParams.get("number")
-    if (!number)
-      return NextResponse.json({ success: false, error: "Number is required" }, { status: 400 })
+    const id = url.searchParams.get("id")
+    if (!id)
+      return NextResponse.json({ success: false, error: "id is required" }, { status: 400 })
 
     const updates = (await request.json()) as UpdateLocation
 
-    const updated = updateLocation(number, updates)
+    const updated = updateLocation(id, updates)
     if (!updated) return NextResponse.json({ success: false, error: "Not found" }, { status: 404 })
 
     return NextResponse.json({ success: true, data: updated }, { status: 200 })

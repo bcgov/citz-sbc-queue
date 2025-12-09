@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server"
-import { getAllLocations, getLocationByNumber } from "./helpers"
+import { getAllLocations, getLocationById } from "./helpers"
 
-// GET /api/location - list or get single by `number` query
+// GET /api/location - list or get single by `id` query
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url)
-    const number = url.searchParams.get("number")
+    const id = url.searchParams.get("id")
 
-    if (number) {
-      const loc = getLocationByNumber(number)
+    if (id) {
+      const loc = getLocationById(id)
       if (!loc) return NextResponse.json({ success: false, error: "Not found" }, { status: 404 })
       return NextResponse.json({ success: true, data: loc }, { status: 200 })
     }

@@ -15,17 +15,17 @@ export async function POST(request: Request) {
       )
     }
 
-    // If client didn't provide a number, auto-generate next numeric string
-    let number = payload.number
-    if (!number) {
+    // If client didn't provide a id, auto-generate next numeric string
+    let id = payload.id
+    if (!id) {
       const all = getAllLocations()
-      const max = all.reduce((acc, cur) => Math.max(acc, Number.parseInt(cur.number, 10) || 0), 0)
-      number = String(max + 1).padStart(3, "0")
+      const max = all.reduce((acc, cur) => Math.max(acc, Number.parseInt(cur.id, 10) || 0), 0)
+      id = String(max + 1).padStart(3, "0")
     }
 
     const toCreate: Location = {
       name: payload.name,
-      number,
+      id,
       timezone: payload.timezone,
       streetAddress: payload.streetAddress,
       mailAddress: payload.mailAddress ?? "",
