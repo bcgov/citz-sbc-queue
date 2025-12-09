@@ -8,7 +8,7 @@ CREATE TYPE "app"."Role" AS ENUM ('CSR', 'SCSR', 'SDM', 'Administrator');
 CREATE TABLE "app"."staff_user" (
     "guid" TEXT NOT NULL,
     "sub" VARCHAR(150) NOT NULL,
-    "csr_id" INTEGER,
+    "legacy_csr_id" INTEGER,
     "username" VARCHAR(150) NOT NULL,
     "display_name" VARCHAR(250) NOT NULL,
     "office_id" INTEGER NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE "app"."staff_user" (
 CREATE UNIQUE INDEX "staff_user_sub_key" ON "app"."staff_user"("sub");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "staff_user_csr_id_key" ON "app"."staff_user"("csr_id");
+CREATE UNIQUE INDEX "staff_user_legacy_csr_id_key" ON "app"."staff_user"("legacy_csr_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "staff_user_username_key" ON "app"."staff_user"("username");
