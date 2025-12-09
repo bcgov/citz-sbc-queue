@@ -13,7 +13,7 @@ export type UserTableProps = {
     prevUser: Partial<StaffUser>,
     availableRoles: Role[]
   ) => Promise<StaffUser | null>
-  revalidateTable: () => void
+  revalidateTable: () => Promise<void>
 }
 
 export const UserTable = ({ users, updateStaffUserOnLogin, revalidateTable }: UserTableProps) => {

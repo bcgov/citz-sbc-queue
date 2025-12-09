@@ -6,7 +6,7 @@ import { updateStaffUserOnLogin } from "@/lib/prisma/staff_user/updateStaffUserO
 export default async function Page() {
   const users = await getAllStaffUsers()
 
-  const revalidateTable = () => {
+  const revalidateTable = async () => {
     "use server"
     revalidatePath("/protected/admin/users")
   }

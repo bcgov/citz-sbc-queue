@@ -24,7 +24,7 @@ type EditUserModalProps = {
     prevUser: Partial<StaffUser>,
     availableRoles: Role[]
   ) => Promise<StaffUser | null>
-  revalidateTable: () => void
+  revalidateTable: () => Promise<void>
 }
 
 export const EditUserModal = ({
@@ -45,20 +45,20 @@ export const EditUserModal = ({
     }
   }, [open, user])
 
-  const handleChange = (field: keyof StaffUser, value: StaffUser[keyof StaffUser]) => {
-    setFormData((prev) => (prev ? { ...prev, [field]: value } : null))
-  }
-
   if (!user || !formData || !previousUser) return null
 
   // Check if the user being edited has a higher role than the current user
   const isUserHigherRole = !editableRoles.includes(user.role)
   const isReadonly = isUserHigherRole
 
+  const handleChange = (field: keyof StaffUser, value: StaffUser[keyof StaffUser]) => {
+    setFormData((prev) => (prev ? { ...prev, [field]: value } : null))
+  }
+
   const handleSave = async () => {
     if (formData && !isReadonly) {
       await updateStaffUserOnLogin(formData, previousUser, editableRoles)
-      revalidateTable()
+      await revalidateTable()
       onClose()
     }
   }
