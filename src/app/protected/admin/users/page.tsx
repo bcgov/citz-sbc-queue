@@ -1,8 +1,8 @@
 import { UserTable } from "@/components/admin/users/UserTable"
-import { getStaffUsers } from "@/lib/prisma/users/getStaffUsers"
+import { getAllStaffUsers } from "@/lib/prisma/staff_user/getAllStaffUsers"
 
 export default async function Page() {
-  const users = await getStaffUsers()
+  const users = await getAllStaffUsers()
 
   return (
     <div className="container mx-auto px-4 py-8">
