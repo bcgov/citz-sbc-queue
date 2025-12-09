@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache"
 import { UserTable } from "@/components/admin/users/UserTable"
-import type { StaffUser } from "@/generated/prisma/client"
+import type { Role, StaffUser } from "@/generated/prisma/client"
 import { getAllStaffUsers } from "@/lib/prisma/staff_user/getAllStaffUsers"
 import { updateStaffUser } from "@/lib/prisma/users/updateStaffUser"
 import { assignRole } from "@/utils/sso/assignRole"
@@ -9,11 +9,20 @@ import { unassignRole } from "@/utils/sso/unassignRole"
 export default async function Page() {
   const users = await getAllStaffUsers()
 
-  const updateUser = async (user: Partial<StaffUser>, prevUser: Partial<StaffUser>) => {
+  const updateUser = async (
+    user: Partial<StaffUser>,
+    prevUser: Partial<StaffUser>,
+    availableRoles: Role[]
+  ) => {
     "use server"
 
     const { guid, sub, ...data } = user
     if (!guid || !sub) return
+
+    // Only allow user to assign roles equal to or lower than their own role
+    if (user.role && !availableRoles.includes(user.role)) {
+      throw new Error("You do not have permission to assign this role.")
+    }
 
     // SSO Role Update
     if (user.role !== prevUser.role && user.role && prevUser.role) {
