@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import type { StaffUser } from "@/generated/prisma/client"
+import type { Role, StaffUser } from "@/generated/prisma/client"
 import { EditUserModal } from "./EditUserModal"
 
 // Mock child components
@@ -116,22 +116,31 @@ describe("EditUserModal", () => {
   })
 
   it("should render nothing when user is null", () => {
-    const mockUpdateUser = vi.fn()
+    const mockUpdateStaffUserOnLogin = vi.fn()
+    const mockRevalidateTable = vi.fn()
     const { container } = render(
-      <EditUserModal open={true} onClose={vi.fn()} user={null} updateUser={mockUpdateUser} />
+      <EditUserModal
+        open={true}
+        onClose={vi.fn()}
+        user={null}
+        updateStaffUserOnLogin={mockUpdateStaffUserOnLogin}
+        revalidateTable={mockRevalidateTable}
+      />
     )
 
     expect(container.firstChild).toBeNull()
   })
 
   it("should render nothing when modal is closed", () => {
-    const mockUpdateUser = vi.fn()
+    const mockUpdateStaffUserOnLogin = vi.fn()
+    const mockRevalidateTable = vi.fn()
     const { container } = render(
       <EditUserModal
         open={false}
         onClose={vi.fn()}
         user={mockStaffUser}
-        updateUser={mockUpdateUser}
+        updateStaffUserOnLogin={mockUpdateStaffUserOnLogin}
+        revalidateTable={mockRevalidateTable}
       />
     )
 
@@ -139,13 +148,15 @@ describe("EditUserModal", () => {
   })
 
   it("should render modal when open is true and user exists", () => {
-    const mockUpdateUser = vi.fn()
+    const mockUpdateStaffUserOnLogin = vi.fn()
+    const mockRevalidateTable = vi.fn()
     render(
       <EditUserModal
         open={true}
         onClose={vi.fn()}
         user={mockStaffUser}
-        updateUser={mockUpdateUser}
+        updateStaffUserOnLogin={mockUpdateStaffUserOnLogin}
+        revalidateTable={mockRevalidateTable}
       />
     )
 
@@ -153,13 +164,15 @@ describe("EditUserModal", () => {
   })
 
   it("should display all three sections when open", () => {
-    const mockUpdateUser = vi.fn()
+    const mockUpdateStaffUserOnLogin = vi.fn()
+    const mockRevalidateTable = vi.fn()
     render(
       <EditUserModal
         open={true}
         onClose={vi.fn()}
         user={mockStaffUser}
-        updateUser={mockUpdateUser}
+        updateStaffUserOnLogin={mockUpdateStaffUserOnLogin}
+        revalidateTable={mockRevalidateTable}
       />
     )
 
@@ -170,13 +183,15 @@ describe("EditUserModal", () => {
 
   it("should call onClose when close button is clicked", async () => {
     const mockOnClose = vi.fn()
-    const mockUpdateUser = vi.fn()
+    const mockUpdateStaffUserOnLogin = vi.fn()
+    const mockRevalidateTable = vi.fn()
     render(
       <EditUserModal
         open={true}
         onClose={mockOnClose}
         user={mockStaffUser}
-        updateUser={mockUpdateUser}
+        updateStaffUserOnLogin={mockUpdateStaffUserOnLogin}
+        revalidateTable={mockRevalidateTable}
       />
     )
 
@@ -188,13 +203,15 @@ describe("EditUserModal", () => {
 
   it("should call onClose when Cancel button is clicked", async () => {
     const mockOnClose = vi.fn()
-    const mockUpdateUser = vi.fn()
+    const mockUpdateStaffUserOnLogin = vi.fn()
+    const mockRevalidateTable = vi.fn()
     render(
       <EditUserModal
         open={true}
         onClose={mockOnClose}
         user={mockStaffUser}
-        updateUser={mockUpdateUser}
+        updateStaffUserOnLogin={mockUpdateStaffUserOnLogin}
+        revalidateTable={mockRevalidateTable}
       />
     )
 
@@ -204,15 +221,17 @@ describe("EditUserModal", () => {
     expect(mockOnClose).toHaveBeenCalledOnce()
   })
 
-  it("should call updateUser with updated data when Save Changes is clicked", async () => {
+  it("should call updateStaffUserOnLogin with updated data when Save Changes is clicked", async () => {
     const mockOnClose = vi.fn()
-    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+    const mockUpdateStaffUserOnLogin = vi.fn().mockResolvedValue(undefined)
+    const mockRevalidateTable = vi.fn()
     render(
       <EditUserModal
         open={true}
         onClose={mockOnClose}
         user={mockStaffUser}
-        updateUser={mockUpdateUser}
+        updateStaffUserOnLogin={mockUpdateStaffUserOnLogin}
+        revalidateTable={mockRevalidateTable}
       />
     )
 
@@ -220,19 +239,24 @@ describe("EditUserModal", () => {
     await userEvent.click(saveButton)
 
     await waitFor(() => {
-      expect(mockUpdateUser).toHaveBeenCalledWith(mockStaffUser, mockStaffUser, ["CSR", "SCSR"])
+      expect(mockUpdateStaffUserOnLogin).toHaveBeenCalledWith(mockStaffUser, mockStaffUser, [
+        "CSR",
+        "SCSR",
+      ])
     })
   })
 
   it("should call onClose after successful save", async () => {
     const mockOnClose = vi.fn()
-    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+    const mockUpdateStaffUserOnLogin = vi.fn().mockResolvedValue(undefined)
+    const mockRevalidateTable = vi.fn()
     render(
       <EditUserModal
         open={true}
         onClose={mockOnClose}
         user={mockStaffUser}
-        updateUser={mockUpdateUser}
+        updateStaffUserOnLogin={mockUpdateStaffUserOnLogin}
+        revalidateTable={mockRevalidateTable}
       />
     )
 
@@ -245,13 +269,15 @@ describe("EditUserModal", () => {
   })
 
   it("should update form data when role changes", async () => {
-    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+    const mockUpdateStaffUserOnLogin = vi.fn().mockResolvedValue(undefined)
+    const mockRevalidateTable = vi.fn()
     render(
       <EditUserModal
         open={true}
         onClose={vi.fn()}
         user={mockStaffUser}
-        updateUser={mockUpdateUser}
+        updateStaffUserOnLogin={mockUpdateStaffUserOnLogin}
+        revalidateTable={mockRevalidateTable}
       />
     )
 
@@ -262,19 +288,21 @@ describe("EditUserModal", () => {
     await userEvent.click(saveButton)
 
     await waitFor(() => {
-      const callArgs = mockUpdateUser.mock.calls[0]
+      const callArgs = mockUpdateStaffUserOnLogin.mock.calls[0]
       expect(callArgs[0]).toEqual(expect.objectContaining({ role: "Administrator" }))
     })
   })
 
   it("should update form data when office id changes", async () => {
-    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+    const mockUpdateStaffUserOnLogin = vi.fn().mockResolvedValue(undefined)
+    const mockRevalidateTable = vi.fn()
     render(
       <EditUserModal
         open={true}
         onClose={vi.fn()}
         user={mockStaffUser}
-        updateUser={mockUpdateUser}
+        updateStaffUserOnLogin={mockUpdateStaffUserOnLogin}
+        revalidateTable={mockRevalidateTable}
       />
     )
 
@@ -285,19 +313,21 @@ describe("EditUserModal", () => {
     await userEvent.click(saveButton)
 
     await waitFor(() => {
-      const callArgs = mockUpdateUser.mock.calls[0]
+      const callArgs = mockUpdateStaffUserOnLogin.mock.calls[0]
       expect(callArgs[0]).toEqual(expect.objectContaining({ officeId: 2 }))
     })
   })
 
   it("should update form data when permissions change", async () => {
-    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+    const mockUpdateStaffUserOnLogin = vi.fn().mockResolvedValue(undefined)
+    const mockRevalidateTable = vi.fn()
     render(
       <EditUserModal
         open={true}
         onClose={vi.fn()}
         user={mockStaffUser}
-        updateUser={mockUpdateUser}
+        updateStaffUserOnLogin={mockUpdateStaffUserOnLogin}
+        revalidateTable={mockRevalidateTable}
       />
     )
 
@@ -311,7 +341,7 @@ describe("EditUserModal", () => {
     await userEvent.click(saveButton)
 
     await waitFor(() => {
-      const callArgs = mockUpdateUser.mock.calls[0]
+      const callArgs = mockUpdateStaffUserOnLogin.mock.calls[0]
       expect(callArgs[0]).toEqual(
         expect.objectContaining({
           isReceptionist: true,
@@ -322,13 +352,15 @@ describe("EditUserModal", () => {
   })
 
   it("should update all designate flags when toggled", async () => {
-    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+    const mockUpdateStaffUserOnLogin = vi.fn().mockResolvedValue(undefined)
+    const mockRevalidateTable = vi.fn()
     render(
       <EditUserModal
         open={true}
         onClose={vi.fn()}
         user={mockStaffUser}
-        updateUser={mockUpdateUser}
+        updateStaffUserOnLogin={mockUpdateStaffUserOnLogin}
+        revalidateTable={mockRevalidateTable}
       />
     )
 
@@ -344,7 +376,7 @@ describe("EditUserModal", () => {
     await userEvent.click(saveButton)
 
     await waitFor(() => {
-      const callArgs = mockUpdateUser.mock.calls[0]
+      const callArgs = mockUpdateStaffUserOnLogin.mock.calls[0]
       expect(callArgs[0]).toEqual(
         expect.objectContaining({
           isPesticideDesignate: true,
@@ -355,14 +387,16 @@ describe("EditUserModal", () => {
     })
   })
 
-  it("should pass previous user to updateUser callback", async () => {
-    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+  it("should pass previous user to updateStaffUserOnLogin callback", async () => {
+    const mockUpdateStaffUserOnLogin = vi.fn().mockResolvedValue(undefined)
+    const mockRevalidateTable = vi.fn()
     render(
       <EditUserModal
         open={true}
         onClose={vi.fn()}
         user={mockStaffUser}
-        updateUser={mockUpdateUser}
+        updateStaffUserOnLogin={mockUpdateStaffUserOnLogin}
+        revalidateTable={mockRevalidateTable}
       />
     )
 
@@ -370,19 +404,21 @@ describe("EditUserModal", () => {
     await userEvent.click(saveButton)
 
     await waitFor(() => {
-      const callArgs = mockUpdateUser.mock.calls[0]
+      const callArgs = mockUpdateStaffUserOnLogin.mock.calls[0]
       expect(callArgs[1]).toEqual(mockStaffUser)
     })
   })
 
   it("should preserve unchanged fields when updating", async () => {
-    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+    const mockUpdateStaffUserOnLogin = vi.fn().mockResolvedValue(undefined)
+    const mockRevalidateTable = vi.fn()
     render(
       <EditUserModal
         open={true}
         onClose={vi.fn()}
         user={mockStaffUser}
-        updateUser={mockUpdateUser}
+        updateStaffUserOnLogin={mockUpdateStaffUserOnLogin}
+        revalidateTable={mockRevalidateTable}
       />
     )
 
@@ -393,7 +429,7 @@ describe("EditUserModal", () => {
     await userEvent.click(saveButton)
 
     await waitFor(() => {
-      const callArgs = mockUpdateUser.mock.calls[0]
+      const callArgs = mockUpdateStaffUserOnLogin.mock.calls[0]
       const updatedUser = callArgs[0]
       expect(updatedUser).toEqual(
         expect.objectContaining({
@@ -407,7 +443,8 @@ describe("EditUserModal", () => {
   })
 
   it("should reinitialize form when user prop changes", () => {
-    const mockUpdateUser = vi.fn()
+    const mockUpdateStaffUserOnLogin = vi.fn()
+    const mockRevalidateTable = vi.fn()
     const newUser: StaffUser = {
       ...mockStaffUser,
       username: "jane.smith",
@@ -419,27 +456,36 @@ describe("EditUserModal", () => {
         open={true}
         onClose={vi.fn()}
         user={mockStaffUser}
-        updateUser={mockUpdateUser}
+        updateStaffUserOnLogin={mockUpdateStaffUserOnLogin}
+        revalidateTable={mockRevalidateTable}
       />
     )
 
     expect(screen.getByText(`Edit User: ${mockStaffUser.username}`)).toBeTruthy()
 
     rerender(
-      <EditUserModal open={true} onClose={vi.fn()} user={newUser} updateUser={mockUpdateUser} />
+      <EditUserModal
+        open={true}
+        onClose={vi.fn()}
+        user={newUser}
+        updateStaffUserOnLogin={mockUpdateStaffUserOnLogin}
+        revalidateTable={mockRevalidateTable}
+      />
     )
 
     expect(screen.getByText(`Edit User: ${newUser.username}`)).toBeTruthy()
   })
 
   it("should render modal with proper accessibility attributes", () => {
-    const mockUpdateUser = vi.fn()
+    const mockUpdateStaffUserOnLogin = vi.fn()
+    const mockRevalidateTable = vi.fn()
     render(
       <EditUserModal
         open={true}
         onClose={vi.fn()}
         user={mockStaffUser}
-        updateUser={mockUpdateUser}
+        updateStaffUserOnLogin={mockUpdateStaffUserOnLogin}
+        revalidateTable={mockRevalidateTable}
       />
     )
 
@@ -454,10 +500,11 @@ describe("EditUserModal", () => {
   })
 
   it("should display error banner and disable form when user role is higher than available roles", () => {
-    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+    const mockUpdateStaffUserOnLogin = vi.fn().mockResolvedValue(undefined)
+    const mockRevalidateTable = vi.fn()
     const higherRoleUser: StaffUser = {
       ...mockStaffUser,
-      role: "Administrator",
+      role: "Administrator" as Role,
     }
 
     render(
@@ -465,7 +512,8 @@ describe("EditUserModal", () => {
         open={true}
         onClose={vi.fn()}
         user={higherRoleUser}
-        updateUser={mockUpdateUser}
+        updateStaffUserOnLogin={mockUpdateStaffUserOnLogin}
+        revalidateTable={mockRevalidateTable}
       />
     )
 
@@ -476,10 +524,11 @@ describe("EditUserModal", () => {
   })
 
   it("should disable save button when user role is higher than available roles", () => {
-    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+    const mockUpdateStaffUserOnLogin = vi.fn().mockResolvedValue(undefined)
+    const mockRevalidateTable = vi.fn()
     const higherRoleUser: StaffUser = {
       ...mockStaffUser,
-      role: "Administrator",
+      role: "Administrator" as Role,
     }
 
     render(
@@ -487,7 +536,8 @@ describe("EditUserModal", () => {
         open={true}
         onClose={vi.fn()}
         user={higherRoleUser}
-        updateUser={mockUpdateUser}
+        updateStaffUserOnLogin={mockUpdateStaffUserOnLogin}
+        revalidateTable={mockRevalidateTable}
       />
     )
 
@@ -495,11 +545,12 @@ describe("EditUserModal", () => {
     expect(saveButton.hasAttribute("disabled")).toBe(true)
   })
 
-  it("should not call updateUser when attempting to save with higher role user", async () => {
-    const mockUpdateUser = vi.fn().mockResolvedValue(undefined)
+  it("should not call updateStaffUserOnLogin when attempting to save with higher role user", async () => {
+    const mockUpdateStaffUserOnLogin = vi.fn().mockResolvedValue(undefined)
+    const mockRevalidateTable = vi.fn()
     const higherRoleUser: StaffUser = {
       ...mockStaffUser,
-      role: "Administrator",
+      role: "Administrator" as Role,
     }
 
     render(
@@ -507,13 +558,14 @@ describe("EditUserModal", () => {
         open={true}
         onClose={vi.fn()}
         user={higherRoleUser}
-        updateUser={mockUpdateUser}
+        updateStaffUserOnLogin={mockUpdateStaffUserOnLogin}
+        revalidateTable={mockRevalidateTable}
       />
     )
 
     const saveButton = screen.getByRole("button", { name: /save changes/i })
     await userEvent.click(saveButton)
 
-    expect(mockUpdateUser).not.toHaveBeenCalled()
+    expect(mockUpdateStaffUserOnLogin).not.toHaveBeenCalled()
   })
 })
