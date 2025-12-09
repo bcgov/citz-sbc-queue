@@ -7,6 +7,7 @@ export type Location = {
   phoneNumber?: string
   latitude: number
   longitude: number
+  legacy_office_number?: number
 }
 
 export type LocationList = Location[]
