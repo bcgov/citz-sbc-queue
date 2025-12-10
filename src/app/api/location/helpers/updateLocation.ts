@@ -1,12 +1,18 @@
-import { locations } from "../mockData"
+import { prisma } from "@/lib/prisma"
 import type { Location } from "../types"
 
-export function updateLocation(id: string, updates: Partial<Location>): Location | null {
-  const idx = locations.findIndex((l) => l.id === id)
-  if (idx === -1) return null
-  const updated = { ...locations[idx], ...updates }
-  // Ensure id doesn't change via updates
-  updated.id = locations[idx].id
-  locations[idx] = updated
-  return updated
+export async function updateLocation(
+  id: string,
+  updates: Partial<Location>
+): Promise<Location | null> {
+  const existing = await prisma.location.findUnique({
+    where: { id },
+  })
+  if (!existing || existing.deletedAt) return null
+
+  const updated = await prisma.location.update({
+    where: { id },
+    data: updates,
+  })
+  return updated as Location
 }

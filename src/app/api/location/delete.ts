@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server"
 import { deleteLocation } from "./helpers"
 
-// DELETE /api/location?id=NNN - delete a location
+// DELETE /api/location?id=UUID - soft delete a location
 export async function DELETE(request: Request) {
   try {
     const url = new URL(request.url)
     const id = url.searchParams.get("id")
-    if (!id)
-      return NextResponse.json({ success: false, error: "id is required" }, { status: 400 })
+    if (!id) return NextResponse.json({ success: false, error: "ID is required" }, { status: 400 })
 
-    const ok = deleteLocation(id)
+    const ok = await deleteLocation(id)
     if (!ok) return NextResponse.json({ success: false, error: "Not found" }, { status: 404 })
 
     return NextResponse.json({ success: true }, { status: 200 })

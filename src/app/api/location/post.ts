@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     // If client didn't provide a id, auto-generate next numeric string
     let id = payload.id
     if (!id) {
-      const all = getAllLocations()
+      const all = await getAllLocations()
       const max = all.reduce((acc, cur) => Math.max(acc, Number.parseInt(cur.id, 10) || 0), 0)
       id = String(max + 1).padStart(3, "0")
     }
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
       latitude: payload.latitude ?? 0,
       longitude: payload.longitude ?? 0,
     }
-    const created = createLocation(toCreate)
+    const created = await createLocation(toCreate)
     return NextResponse.json({ success: true, data: created }, { status: 201 })
   } catch (error) {
     console.error("/api/location POST error:", error)
