@@ -20,7 +20,7 @@ describe("getStaffUsers", () => {
       {
         sub: "550e8400-e29b-41d4-a716-446655440000@azureidir",
         guid: "550e8400-e29b-41d4-a716-446655440000",
-        csrId: 1,
+        legacyCsrId: 1,
         username: "user1",
         displayName: "User One",
         officeId: 1,
@@ -39,7 +39,7 @@ describe("getStaffUsers", () => {
       {
         sub: "550e8400-e29b-41d4-a716-446655440001@azureidir",
         guid: "550e8400-e29b-41d4-a716-446655440001",
-        csrId: 2,
+        legacyCsrId: 2,
         username: "user2",
         displayName: "User Two",
         officeId: 1,

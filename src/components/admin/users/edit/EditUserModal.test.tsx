@@ -93,7 +93,7 @@ vi.mock("@/hooks/useEditableRoles", () => ({
 const mockStaffUser: StaffUser = {
   guid: "550e8400-e29b-41d4-a716-446655440000",
   sub: "550e8400-e29b-41d4-a716-446655440000@azureidir",
-  csrId: 1,
+  legacyCsrId: 1,
   username: "john.doe",
   displayName: "John Doe",
   officeId: 1,
