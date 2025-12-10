@@ -25,6 +25,7 @@ type EditUserModalProps = {
     availableRoles: Role[]
   ) => Promise<StaffUser | null>
   revalidateTable: () => Promise<void>
+  openConfirmArchiveModal: () => void
 }
 
 export const EditUserModal = ({
@@ -33,6 +34,7 @@ export const EditUserModal = ({
   user,
   updateStaffUser,
   revalidateTable,
+  openConfirmArchiveModal,
 }: EditUserModalProps) => {
   const [formData, setFormData] = useState<StaffUser | null>(null)
   const [previousUser, setPreviousUser] = useState<StaffUser | null>(null)
@@ -49,7 +51,8 @@ export const EditUserModal = ({
 
   // Check if the user being edited has a higher role than the current user
   const isUserHigherRole = !editableRoles.includes(user.role)
-  const isReadonly = isUserHigherRole
+  const isArchived = user.deletedAt !== null
+  const isReadonly = isUserHigherRole || isArchived
 
   const handleChange = (field: keyof StaffUser, value: StaffUser[keyof StaffUser]) => {
     setFormData((prev) => (prev ? { ...prev, [field]: value } : null))
@@ -63,6 +66,11 @@ export const EditUserModal = ({
     }
   }
 
+  const handleOpenArchive = () => {
+    openConfirmArchiveModal()
+    onClose()
+  }
+
   return (
     <Modal open={open} onClose={onClose} size="lg">
       <DialogHeader trailing={<CloseButton onClick={onClose} />}>
@@ -72,10 +80,17 @@ export const EditUserModal = ({
       <DialogBody>
         <form className="space-y-5">
           {isReadonly && (
-            <div className="rounded-md border-l-4 border-l-red-600 bg-red-50 p-4">
-              <p className="text-sm font-medium text-red-800">
-                This user has a higher role than yours and cannot be edited.
-              </p>
+            <div className="flex flex-col gap-1 rounded-md border-l-4 border-l-red-600 bg-red-50 p-4">
+              {isUserHigherRole && (
+                <p className="text-sm font-medium text-red-800">
+                  This user has a higher role than yours and cannot be edited.
+                </p>
+              )}
+              {isArchived && (
+                <p className="text-sm font-medium text-red-800">
+                  This user is archived and cannot be edited.
+                </p>
+              )}
             </div>
           )}
 
@@ -115,6 +130,14 @@ export const EditUserModal = ({
       <DialogActions>
         <button type="button" className="tertiary" onClick={onClose}>
           Cancel
+        </button>
+        <button
+          type="button"
+          className="secondary danger"
+          onClick={handleOpenArchive}
+          disabled={isReadonly && !isArchived}
+        >
+          {isArchived ? "Unarchive" : "Archive"}
         </button>
         <button type="button" className="primary" onClick={handleSave} disabled={isReadonly}>
           Save Changes

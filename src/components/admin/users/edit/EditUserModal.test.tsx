@@ -118,6 +118,7 @@ describe("EditUserModal", () => {
   it("should render nothing when user is null", () => {
     const mockupdateStaffUser = vi.fn()
     const mockRevalidateTable = vi.fn()
+    const mockOpenConfirmArchiveModal = vi.fn()
     const { container } = render(
       <EditUserModal
         open={true}
@@ -125,6 +126,7 @@ describe("EditUserModal", () => {
         user={null}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        openConfirmArchiveModal={mockOpenConfirmArchiveModal}
       />
     )
 
@@ -134,6 +136,7 @@ describe("EditUserModal", () => {
   it("should render nothing when modal is closed", () => {
     const mockupdateStaffUser = vi.fn()
     const mockRevalidateTable = vi.fn()
+    const mockOpenConfirmArchiveModal = vi.fn()
     const { container } = render(
       <EditUserModal
         open={false}
@@ -141,6 +144,7 @@ describe("EditUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        openConfirmArchiveModal={mockOpenConfirmArchiveModal}
       />
     )
 
@@ -150,6 +154,7 @@ describe("EditUserModal", () => {
   it("should render modal when open is true and user exists", () => {
     const mockupdateStaffUser = vi.fn()
     const mockRevalidateTable = vi.fn()
+    const mockOpenConfirmArchiveModal = vi.fn()
     render(
       <EditUserModal
         open={true}
@@ -157,6 +162,7 @@ describe("EditUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        openConfirmArchiveModal={mockOpenConfirmArchiveModal}
       />
     )
 
@@ -166,6 +172,7 @@ describe("EditUserModal", () => {
   it("should display all three sections when open", () => {
     const mockupdateStaffUser = vi.fn()
     const mockRevalidateTable = vi.fn()
+    const mockOpenConfirmArchiveModal = vi.fn()
     render(
       <EditUserModal
         open={true}
@@ -173,6 +180,7 @@ describe("EditUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        openConfirmArchiveModal={mockOpenConfirmArchiveModal}
       />
     )
 
@@ -185,6 +193,7 @@ describe("EditUserModal", () => {
     const mockOnClose = vi.fn()
     const mockupdateStaffUser = vi.fn()
     const mockRevalidateTable = vi.fn()
+    const mockOpenConfirmArchiveModal = vi.fn()
     render(
       <EditUserModal
         open={true}
@@ -192,6 +201,7 @@ describe("EditUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        openConfirmArchiveModal={mockOpenConfirmArchiveModal}
       />
     )
 
@@ -205,6 +215,7 @@ describe("EditUserModal", () => {
     const mockOnClose = vi.fn()
     const mockupdateStaffUser = vi.fn()
     const mockRevalidateTable = vi.fn()
+    const mockOpenConfirmArchiveModal = vi.fn()
     render(
       <EditUserModal
         open={true}
@@ -212,6 +223,7 @@ describe("EditUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        openConfirmArchiveModal={mockOpenConfirmArchiveModal}
       />
     )
 
@@ -225,6 +237,7 @@ describe("EditUserModal", () => {
     const mockOnClose = vi.fn()
     const mockupdateStaffUser = vi.fn().mockResolvedValue(undefined)
     const mockRevalidateTable = vi.fn()
+    const mockOpenConfirmArchiveModal = vi.fn()
     render(
       <EditUserModal
         open={true}
@@ -232,6 +245,7 @@ describe("EditUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        openConfirmArchiveModal={mockOpenConfirmArchiveModal}
       />
     )
 
@@ -250,6 +264,7 @@ describe("EditUserModal", () => {
     const mockOnClose = vi.fn()
     const mockupdateStaffUser = vi.fn().mockResolvedValue(undefined)
     const mockRevalidateTable = vi.fn()
+    const mockOpenConfirmArchiveModal = vi.fn()
     render(
       <EditUserModal
         open={true}
@@ -257,6 +272,7 @@ describe("EditUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        openConfirmArchiveModal={mockOpenConfirmArchiveModal}
       />
     )
 
@@ -271,6 +287,7 @@ describe("EditUserModal", () => {
   it("should update form data when role changes", async () => {
     const mockupdateStaffUser = vi.fn().mockResolvedValue(undefined)
     const mockRevalidateTable = vi.fn()
+    const mockOpenConfirmArchiveModal = vi.fn()
     render(
       <EditUserModal
         open={true}
@@ -278,6 +295,7 @@ describe("EditUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        openConfirmArchiveModal={mockOpenConfirmArchiveModal}
       />
     )
 
@@ -296,6 +314,7 @@ describe("EditUserModal", () => {
   it("should update form data when office id changes", async () => {
     const mockupdateStaffUser = vi.fn().mockResolvedValue(undefined)
     const mockRevalidateTable = vi.fn()
+    const mockOpenConfirmArchiveModal = vi.fn()
     render(
       <EditUserModal
         open={true}
@@ -303,6 +322,7 @@ describe("EditUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        openConfirmArchiveModal={mockOpenConfirmArchiveModal}
       />
     )
 
@@ -321,6 +341,7 @@ describe("EditUserModal", () => {
   it("should update form data when permissions change", async () => {
     const mockupdateStaffUser = vi.fn().mockResolvedValue(undefined)
     const mockRevalidateTable = vi.fn()
+    const mockOpenConfirmArchiveModal = vi.fn()
     render(
       <EditUserModal
         open={true}
@@ -328,6 +349,7 @@ describe("EditUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        openConfirmArchiveModal={mockOpenConfirmArchiveModal}
       />
     )
 
@@ -354,6 +376,7 @@ describe("EditUserModal", () => {
   it("should update all designate flags when toggled", async () => {
     const mockupdateStaffUser = vi.fn().mockResolvedValue(undefined)
     const mockRevalidateTable = vi.fn()
+    const mockOpenConfirmArchiveModal = vi.fn()
     render(
       <EditUserModal
         open={true}
@@ -361,6 +384,7 @@ describe("EditUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        openConfirmArchiveModal={mockOpenConfirmArchiveModal}
       />
     )
 
@@ -390,6 +414,7 @@ describe("EditUserModal", () => {
   it("should pass previous user to updateStaffUser callback", async () => {
     const mockupdateStaffUser = vi.fn().mockResolvedValue(undefined)
     const mockRevalidateTable = vi.fn()
+    const mockOpenConfirmArchiveModal = vi.fn()
     render(
       <EditUserModal
         open={true}
@@ -397,6 +422,7 @@ describe("EditUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        openConfirmArchiveModal={mockOpenConfirmArchiveModal}
       />
     )
 
@@ -412,6 +438,7 @@ describe("EditUserModal", () => {
   it("should preserve unchanged fields when updating", async () => {
     const mockupdateStaffUser = vi.fn().mockResolvedValue(undefined)
     const mockRevalidateTable = vi.fn()
+    const mockOpenConfirmArchiveModal = vi.fn()
     render(
       <EditUserModal
         open={true}
@@ -419,6 +446,7 @@ describe("EditUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        openConfirmArchiveModal={mockOpenConfirmArchiveModal}
       />
     )
 
@@ -445,6 +473,7 @@ describe("EditUserModal", () => {
   it("should reinitialize form when user prop changes", () => {
     const mockupdateStaffUser = vi.fn()
     const mockRevalidateTable = vi.fn()
+    const mockOpenConfirmArchiveModal = vi.fn()
     const newUser: StaffUser = {
       ...mockStaffUser,
       username: "jane.smith",
@@ -458,6 +487,7 @@ describe("EditUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        openConfirmArchiveModal={mockOpenConfirmArchiveModal}
       />
     )
 
@@ -470,6 +500,7 @@ describe("EditUserModal", () => {
         user={newUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        openConfirmArchiveModal={mockOpenConfirmArchiveModal}
       />
     )
 
@@ -479,6 +510,7 @@ describe("EditUserModal", () => {
   it("should render modal with proper accessibility attributes", () => {
     const mockupdateStaffUser = vi.fn()
     const mockRevalidateTable = vi.fn()
+    const mockOpenConfirmArchiveModal = vi.fn()
     render(
       <EditUserModal
         open={true}
@@ -486,6 +518,7 @@ describe("EditUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        openConfirmArchiveModal={mockOpenConfirmArchiveModal}
       />
     )
 
@@ -502,6 +535,7 @@ describe("EditUserModal", () => {
   it("should display error banner and disable form when user role is higher than available roles", () => {
     const mockupdateStaffUser = vi.fn().mockResolvedValue(undefined)
     const mockRevalidateTable = vi.fn()
+    const mockOpenConfirmArchiveModal = vi.fn()
     const higherRoleUser: StaffUser = {
       ...mockStaffUser,
       role: "Administrator" as Role,
@@ -514,6 +548,7 @@ describe("EditUserModal", () => {
         user={higherRoleUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        openConfirmArchiveModal={mockOpenConfirmArchiveModal}
       />
     )
 
@@ -526,6 +561,7 @@ describe("EditUserModal", () => {
   it("should disable save button when user role is higher than available roles", () => {
     const mockupdateStaffUser = vi.fn().mockResolvedValue(undefined)
     const mockRevalidateTable = vi.fn()
+    const mockOpenConfirmArchiveModal = vi.fn()
     const higherRoleUser: StaffUser = {
       ...mockStaffUser,
       role: "Administrator" as Role,
@@ -538,6 +574,7 @@ describe("EditUserModal", () => {
         user={higherRoleUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        openConfirmArchiveModal={mockOpenConfirmArchiveModal}
       />
     )
 
@@ -548,6 +585,7 @@ describe("EditUserModal", () => {
   it("should not call updateStaffUser when attempting to save with higher role user", async () => {
     const mockupdateStaffUser = vi.fn().mockResolvedValue(undefined)
     const mockRevalidateTable = vi.fn()
+    const mockOpenConfirmArchiveModal = vi.fn()
     const higherRoleUser: StaffUser = {
       ...mockStaffUser,
       role: "Administrator" as Role,
@@ -560,6 +598,7 @@ describe("EditUserModal", () => {
         user={higherRoleUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        openConfirmArchiveModal={mockOpenConfirmArchiveModal}
       />
     )
 

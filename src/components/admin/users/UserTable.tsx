@@ -4,6 +4,7 @@ import { useState } from "react"
 import { type ColumnConfig, DataTable } from "@/components/common/datatable"
 import type { Role, StaffUser } from "@/generated/prisma/client"
 import { useDialog } from "@/hooks/useDialog/useDialog"
+import { ConfirmArchiveModal } from "./edit/ConfirmArchiveModal"
 import { EditUserModal } from "./edit/EditUserModal"
 
 export type UserTableProps = {
@@ -22,6 +23,12 @@ export const UserTable = ({ users, updateStaffUser, revalidateTable }: UserTable
     openDialog: openEditUserModal,
     closeDialog: closeEditUserModal,
   } = useDialog()
+  const {
+    open: confirmArchiveModalOpen,
+    openDialog: openConfirmArchiveModal,
+    closeDialog: closeConfirmArchiveModal,
+  } = useDialog()
+
   const [selectedUser, setSelectedUser] = useState<StaffUser | null>(null)
 
   const columns: ColumnConfig<StaffUser>[] = [
@@ -88,6 +95,14 @@ export const UserTable = ({ users, updateStaffUser, revalidateTable }: UserTable
       <EditUserModal
         open={editUserModalOpen}
         onClose={closeEditUserModal}
+        user={selectedUser}
+        updateStaffUser={updateStaffUser}
+        revalidateTable={revalidateTable}
+        openConfirmArchiveModal={openConfirmArchiveModal}
+      />
+      <ConfirmArchiveModal
+        open={confirmArchiveModalOpen}
+        onClose={closeConfirmArchiveModal}
         user={selectedUser}
         updateStaffUser={updateStaffUser}
         revalidateTable={revalidateTable}
