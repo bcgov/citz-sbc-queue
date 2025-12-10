@@ -2,14 +2,14 @@
 
 import { useCallback, useMemo } from "react"
 
-type Props = {
+type SwitchProps = {
   checked: boolean
   onChange: (checked: boolean) => void
   disabled?: boolean
   className?: string
 }
 
-export const Switch = ({ checked, onChange, disabled = false, className }: Props) => {
+export const Switch = ({ checked, onChange, disabled = false, className }: SwitchProps) => {
   const handleToggle = useCallback(() => {
     if (disabled) {
       return
