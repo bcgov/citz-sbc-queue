@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { updateLocation } from "./helpers"
+import { updateLocation } from "@/utils/location"
 import type { UpdateLocation } from "./types"
 
 // PUT /api/location?id=NNN - update an existing location
