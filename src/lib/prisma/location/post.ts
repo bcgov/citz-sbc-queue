@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
+import type { CreateLocation, Location } from "@/app/api/location/types"
 import { createLocation, getAllLocations } from "@/utils/location"
-import type { CreateLocation, Location } from "./types"
 
 // POST /api/location - create a new location
 export async function POST(request: Request) {

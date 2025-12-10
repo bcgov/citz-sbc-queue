@@ -1,4 +1,4 @@
-export { GET } from "./get"
-export { POST } from "./post"
-export { PUT } from "./put"
-export { DELETE } from "./delete"
+export { DELETE } from "@/lib/prisma/location/delete"
+export { GET } from "@/lib/prisma/location/get"
+export { POST } from "@/lib/prisma/location/post"
+export { PUT } from "@/lib/prisma/location/put"
