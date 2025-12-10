@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { type ColumnConfig, DataTable } from "@/components/common/datatable"
+import { Switch } from "@/components/common/switch/Switch"
 import type { Role, StaffUser } from "@/generated/prisma/client"
 import { useDialog } from "@/hooks/useDialog/useDialog"
 import { ConfirmArchiveModal } from "./edit/ConfirmArchiveModal"
@@ -30,6 +31,7 @@ export const UserTable = ({ users, updateStaffUser, revalidateTable }: UserTable
   } = useDialog()
 
   const [selectedUser, setSelectedUser] = useState<StaffUser | null>(null)
+  const [showArchived, setShowArchived] = useState<boolean>(false)
 
   const columns: ColumnConfig<StaffUser>[] = [
     {
@@ -75,10 +77,16 @@ export const UserTable = ({ users, updateStaffUser, revalidateTable }: UserTable
     openEditUserModal()
   }
 
+  const usersToShow = showArchived ? users : users.filter((user) => user.deletedAt === null)
+
   return (
     <>
+      <div className="flex justify-end mb-3">
+        <h3 className="mr-2 self-center text-sm font-medium text-gray-700">Show Archived</h3>
+        <Switch checked={showArchived} onChange={setShowArchived} />
+      </div>
       <DataTable
-        data={users}
+        data={usersToShow}
         columns={columns}
         search={{
           enabled: true,
