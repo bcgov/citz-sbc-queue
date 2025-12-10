@@ -1,8 +1,14 @@
-import { locations } from "../mockData"
+import { prisma } from "@/lib/prisma"
 
-export function deleteLocation(id: string): boolean {
-  const idx = locations.findIndex((l) => l.id === id)
-  if (idx === -1) return false
-  locations.splice(idx, 1)
+export async function deleteLocation(id: string): Promise<boolean> {
+  const existing = await prisma.location.findUnique({
+    where: { id },
+  })
+  if (!existing || existing.deletedAt) return false
+
+  await prisma.location.update({
+    where: { id },
+    data: { deletedAt: new Date() },
+  })
   return true
 }

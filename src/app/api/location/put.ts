@@ -7,12 +7,11 @@ export async function PUT(request: Request) {
   try {
     const url = new URL(request.url)
     const id = url.searchParams.get("id")
-    if (!id)
-      return NextResponse.json({ success: false, error: "id is required" }, { status: 400 })
+    if (!id) return NextResponse.json({ success: false, error: "id is required" }, { status: 400 })
 
     const updates = (await request.json()) as UpdateLocation
 
-    const updated = updateLocation(id, updates)
+    const updated = await updateLocation(id, updates)
     if (!updated) return NextResponse.json({ success: false, error: "Not found" }, { status: 404 })
 
     return NextResponse.json({ success: true, data: updated }, { status: 200 })

@@ -1,12 +1,9 @@
-import { locations } from "../mockData"
+import { prisma } from "@/lib/prisma"
 import type { Location } from "../types"
 
-export function createLocation(location: Location): Location {
-  // Ensure unique id
-  const exists = locations.find((l) => l.id === location.id)
-  if (exists) {
-    throw new Error("Location with that id already exists")
-  }
-  locations.push(location)
-  return location
+export async function createLocation(location: Location): Promise<Location> {
+  const created = await prisma.location.create({
+    data: location,
+  })
+  return created as Location
 }

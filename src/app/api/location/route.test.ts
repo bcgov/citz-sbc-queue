@@ -142,7 +142,7 @@ describe("/api/location route handlers", () => {
     const res = await DELETE({ url: "http://localhost/api/location" } as unknown as Request)
     const body = await res.json()
     expect(res.status).toBe(400)
-    expect(body).toEqual({ success: false, error: "id is required" })
+    expect(body).toEqual({ success: false, error: "ID is required" })
   })
 
   it("DELETE not found returns 404", async () => {
