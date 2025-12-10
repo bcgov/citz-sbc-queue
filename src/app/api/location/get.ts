@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getAllLocations, getLocationById } from "./helpers"
+import { getAllLocations, getLocationById } from "@/utils/location"
 
 // GET /api/location - list or get single by `id` query
 export async function GET(request: Request) {

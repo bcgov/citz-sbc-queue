@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { deleteLocation } from "./helpers"
+import { deleteLocation } from "@/utils/location"
 
 // DELETE /api/location?id=UUID - soft delete a location
 export async function DELETE(request: Request) {

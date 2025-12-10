@@ -1,5 +1,5 @@
+import type { Location } from "@/app/api/location/types"
 import { prisma } from "@/lib/prisma"
-import type { Location } from "../types"
 
 export async function getLocationById(id: string): Promise<Location | null> {
   const location = await prisma.location.findUnique({

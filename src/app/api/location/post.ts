@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { createLocation, getAllLocations } from "./helpers"
+import { createLocation, getAllLocations } from "@/utils/location"
 import type { CreateLocation, Location } from "./types"
 
 // POST /api/location - create a new location
