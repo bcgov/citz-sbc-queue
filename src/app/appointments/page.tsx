@@ -1,11 +1,7 @@
 export default async function Page() {
   return (
     <div className="">
-      <div className="">
-        <header className="my-8">
-          <h1 className="font-bold text-gray-900 mb-2">Appointments</h1>
-        </header>
-      </div>
+      <h1 className="font-bold text-gray-900 my-xl">Appointments</h1>
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
           <h3> Lorem ipsum </h3>

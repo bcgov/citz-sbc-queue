@@ -47,13 +47,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${BCSans.variable} font-sans`}>
         <AuthProvider />
-        <main className="min-h-screen max-h-screen grid grid-cols-12 gap-4">
-          <header className="col-span-full">
+        <main className="min-h-screen max-h-screen grid grid-cols-12 grid-rows-fr auto-rows-max gap-4">
+          <header className="col-span-full h-auto">
             <Header />
             <Navigation />
           </header>
-          <div className="col-span-8 col-start-3">{children}</div>
-          <footer className="sticky top-[100vh] col-span-full">
+          <div className="grow col-span-8 col-start-3">{children}</div>
+          <footer className="sticky top-[100vh] col-span-full h-auto">
             <Footer />
           </footer>
         </main>
