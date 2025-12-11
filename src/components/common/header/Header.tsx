@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
 import { Loginout, SvgBcLogo } from "@/components"
 
@@ -12,14 +11,6 @@ export const Header = () => {
       <div className="flex flex-row grow max-w-[1200px] justify-between items-center gap-(--length-padding-md)">
         <div className="flex max-h-[65px] h-[65px] max-w-[129px] w-[129px]">
           <Link href="/" title="BC Government home" className="flex w-full h-full">
-            {/* <Image
-              src="/bcgov/BCID_H_RGB_pos.svg"
-              alt="BC Government logo"
-              className="flex items-center"
-              width={180}
-              height={56}
-              fetchPriority="high"
-            /> */}
             <SvgBcLogo />
           </Link>
         </div>

@@ -1,10 +1,10 @@
-// This logo is available as a plain SVG at src/assets/BCID_H_rgb_pos.svg
+// This logo is available as a plain SVG at public/bcgov/BCID_H_rgb_pos.svg
 
 export const SvgBcLogo = () => {
-  const goldFill = "fill-gold stroke-none" // clas-3
-  const blueFill = "fill-blue stroke-none" //cls-1
-  const whiteFill = "fill-background-default stroke-none" // cls-2
-  const noFill = "fill-none stroke-none" // cls-4
+  const goldFill = "fill-gold-800 stroke-none"
+  const blueFill = "fill-blue stroke-none"
+  const whiteFill = "fill-background-default stroke-none"
+  const noFill = "fill-none stroke-none"
 
   return (
     <svg
