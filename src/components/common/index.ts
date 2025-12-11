@@ -1,5 +1,6 @@
 export * from "./dialog"
 export * from "./footer"
 export * from "./header"
+export * from "./icons"
 export * from "./loginout"
 export * from "./navigation"
