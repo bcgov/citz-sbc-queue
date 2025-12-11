@@ -64,6 +64,8 @@ model LegacyAppointment {
 
 ### Running Migrations
 
+**NOTE**: Run commands in dev container workspace terminal. Many commands will fail if run locally.
+
 All migrations are stored in `prisma/migrations/` and apply to both schemas:
 
 ```bash
@@ -117,6 +119,8 @@ npm run db:studio
 - **`prisma/models/staging/*.prisma`** – Public schema (staging) models
 
 ## Common Commands
+
+**NOTE**: Run commands in dev container workspace terminal. Many commands will fail if run locally.
 
 ```bash
 # Create and apply a new migration
