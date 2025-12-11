@@ -1,24 +1,17 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
-import { Loginout } from "@/components"
-import styles from "./Header.module.css"
+import { Loginout, SvgBcLogo } from "@/components"
 
 export const Header = () => {
   return (
-    <header className={styles.header}>
-      <div className={styles.inner}>
-        <div className={styles.logo}>
-          <Link href="/" aria-label="BC Government home">
-            <Image
-              src="/bcgov/BCID_H_RGB_pos.svg"
-              alt="BC Government logo"
-              className={styles.logoImg}
-              width={180}
-              height={56}
-              fetchPriority="high"
-            />
+    <header className="flex flex-row w-full min-h-[65px] h-[65px] justify-center border-b-sm border-b-border-light px-md">
+      {/** Above is bcds-header class */}
+      {/** below is bcds-header--container class */}
+      <div className="flex flex-row grow max-w-[1200px] justify-between items-center">
+        <div className="flex max-h-[65px] h-[65px] max-w-[129px] w-[129px]">
+          <Link href="/" title="BC Government home" className="flex w-full h-full">
+            <SvgBcLogo />
           </Link>
         </div>
 
