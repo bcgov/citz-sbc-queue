@@ -1,14 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import { type ColumnConfig, DataTable } from "@/components/common/datatable"
+import { DataTable } from "@/components/common/datatable"
 import { Switch } from "@/components/common/switch/Switch"
 import type { Role, StaffUser } from "@/generated/prisma/client"
 import { useDialog } from "@/hooks/useDialog/useDialog"
-import { ConfirmArchiveModal } from "./edit/ConfirmArchiveModal"
-import { EditUserModal } from "./edit/EditUserModal"
+import { ConfirmArchiveModal } from "../ConfirmArchiveModal"
+import { EditStaffUserModal } from "../EditStaffUserModal"
+import { columns } from "./columns"
 
-export type UserTableProps = {
+export type StaffUserTableProps = {
   users: StaffUser[]
   updateStaffUser: (
     user: Partial<StaffUser>,
@@ -18,7 +19,11 @@ export type UserTableProps = {
   revalidateTable: () => Promise<void>
 }
 
-export const UserTable = ({ users, updateStaffUser, revalidateTable }: UserTableProps) => {
+export const StaffUserTable = ({
+  users,
+  updateStaffUser,
+  revalidateTable,
+}: StaffUserTableProps) => {
   const {
     open: editUserModalOpen,
     openDialog: openEditUserModal,
@@ -32,45 +37,6 @@ export const UserTable = ({ users, updateStaffUser, revalidateTable }: UserTable
 
   const [selectedUser, setSelectedUser] = useState<StaffUser | null>(null)
   const [showArchived, setShowArchived] = useState<boolean>(false)
-
-  const columns: ColumnConfig<StaffUser>[] = [
-    {
-      key: "displayName",
-      label: "Name",
-      sortable: true,
-      searchable: true,
-    },
-    {
-      key: "username",
-      label: "Username",
-      sortable: true,
-      searchable: true,
-    },
-    {
-      key: "role",
-      label: "Role",
-      searchable: true,
-    },
-    {
-      key: "createdAt",
-      label: "Created",
-      sortable: true,
-      render: (value): string => {
-        if (value instanceof Date) {
-          return value.toLocaleDateString(undefined, {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })
-        }
-        return new Date(value as string).toLocaleDateString(undefined, {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        })
-      },
-    },
-  ]
 
   const handleRowClick = (user: StaffUser) => {
     setSelectedUser(user)
@@ -100,7 +66,7 @@ export const UserTable = ({ users, updateStaffUser, revalidateTable }: UserTable
         emptyMessage="No users found."
         onRowClick={handleRowClick}
       />
-      <EditUserModal
+      <EditStaffUserModal
         open={editUserModalOpen}
         onClose={closeEditUserModal}
         user={selectedUser}
