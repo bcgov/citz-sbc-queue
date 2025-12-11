@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { Loginout, SvgBcLogo } from "@/components"
 
@@ -14,6 +15,7 @@ export const Header = () => {
             {/* <Image
               src="/bcgov/BCID_H_RGB_pos.svg"
               alt="BC Government logo"
+              className="flex items-center"
               width={180}
               height={56}
               fetchPriority="high"
