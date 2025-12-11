@@ -11,11 +11,11 @@ import {
 } from "@/components/common/dialog"
 import type { Role, StaffUser } from "@/generated/prisma/client"
 import { useEditableRoles } from "@/hooks/useEditableRoles"
-import { PermissionsSection } from "./PermissionsSection"
-import { RoleAndAssignmentSection } from "./RoleAndAssignmentSection"
-import { UserInformationSection } from "./UserInformationSection"
+import { PermissionsSection } from "./sections/PermissionsSection"
+import { RoleAndAssignmentSection } from "./sections/RoleAndAssignmentSection"
+import { UserInformationSection } from "./sections/UserInformationSection"
 
-type EditUserModalProps = {
+type EditStaffUserModalProps = {
   open: boolean
   onClose: () => void
   user: StaffUser | null
@@ -27,13 +27,13 @@ type EditUserModalProps = {
   revalidateTable: () => Promise<void>
 }
 
-export const EditUserModal = ({
+export const EditStaffUserModal = ({
   open,
   onClose,
   user,
   updateStaffUser,
   revalidateTable,
-}: EditUserModalProps) => {
+}: EditStaffUserModalProps) => {
   const [formData, setFormData] = useState<StaffUser | null>(null)
   const [previousUser, setPreviousUser] = useState<StaffUser | null>(null)
   const editableRoles = useEditableRoles()
