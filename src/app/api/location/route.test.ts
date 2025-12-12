@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-// Mock the helpers module that's used by the route handlers
-vi.mock("./helpers", () => {
+// Mock the location utils module that's used by the route handlers
+vi.mock("@/utils/location", () => {
   return {
     getAllLocations: vi.fn(),
     getLocationById: vi.fn(),
@@ -11,7 +11,7 @@ vi.mock("./helpers", () => {
   }
 })
 
-import * as helpers from "./helpers"
+import * as helpers from "@/utils/location"
 import { DELETE, GET, POST, PUT } from "./route"
 
 describe("/api/location route handlers", () => {
@@ -142,7 +142,7 @@ describe("/api/location route handlers", () => {
     const res = await DELETE({ url: "http://localhost/api/location" } as unknown as Request)
     const body = await res.json()
     expect(res.status).toBe(400)
-    expect(body).toEqual({ success: false, error: "id is required" })
+    expect(body).toEqual({ success: false, error: "ID is required" })
   })
 
   it("DELETE not found returns 404", async () => {
