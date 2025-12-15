@@ -1,0 +1,8 @@
+enum Role {
+  CSR
+  SCSR
+  SDM
+  Administrator
+
+  @@schema("app")
+}

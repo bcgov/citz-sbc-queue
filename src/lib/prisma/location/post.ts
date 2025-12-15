@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
-import { createLocation, getAllLocations } from "./helpers"
-import type { CreateLocation, Location } from "./types"
+import type { CreateLocation, Location } from "@/app/api/location/types"
+import { createLocation, getAllLocations } from "@/utils"
 
 // POST /api/location - create a new location
 export async function POST(request: Request) {
@@ -15,17 +15,17 @@ export async function POST(request: Request) {
       )
     }
 
-    // If client didn't provide a number, auto-generate next numeric string
-    let number = payload.number
-    if (!number) {
-      const all = getAllLocations()
-      const max = all.reduce((acc, cur) => Math.max(acc, Number.parseInt(cur.number, 10) || 0), 0)
-      number = String(max + 1).padStart(3, "0")
+    // If client didn't provide a id, auto-generate next numeric string
+    let id = payload.id
+    if (!id) {
+      const all = await getAllLocations()
+      const max = all.reduce((acc, cur) => Math.max(acc, Number.parseInt(cur.id, 10) || 0), 0)
+      id = String(max + 1).padStart(3, "0")
     }
 
     const toCreate: Location = {
       name: payload.name,
-      number,
+      id,
       timezone: payload.timezone,
       streetAddress: payload.streetAddress,
       mailAddress: payload.mailAddress ?? "",
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
       latitude: payload.latitude ?? 0,
       longitude: payload.longitude ?? 0,
     }
-    const created = createLocation(toCreate)
+    const created = await createLocation(toCreate)
     return NextResponse.json({ success: true, data: created }, { status: 201 })
   } catch (error) {
     console.error("/api/location POST error:", error)

@@ -27,7 +27,6 @@
     "test:e2e:headed": "playwright test --headed",
     "playwright:install": "playwright install",
     "clean": "rm -rf .next out build dist coverage test-results playwright-report",
-    "postinstall": "playwright install-deps",
     "check-licenses": "tsx scripts/check-licenses.ts",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",

@@ -34,16 +34,16 @@ export const Footer = () => {
       { title: "Disclaimer", link: "https://www2.gov.bc.ca//gov/content/home/disclaimer" },
     ]
     return (
-      <div className="w-full flex flex-col flex-nowrap items-start justify-self-stretch justify-between gap-(--padding-xl)">
+      <div className="w-full flex flex-col flex-nowrap items-start justify-self-stretch justify-between gap-xl">
         {/* above - bcds-footer--logo-links class */}
         <figure className="w-full flex flex-col m-none">
           {/** above bcds-footer--links */}
           {/** below bcds-footer--links-title */}
-          <figcaption className="w-full block mb-(--padding-md) font-bold uppercase text-sm">
+          <figcaption className="w-full block mb-md font-bold uppercase text-sm">
             {title}
           </figcaption>
           {/** below bcds-footer--links -> ul */}
-          <ul className="w-full grid grid-cols-4 auto-rows-auto gap-x-(--padding-xl) gap-y-(--padding-sm) list-none m-none p-none">
+          <ul className="w-full grid grid-cols-4 auto-rows-auto gap-x-xl gap-y-sm list-none m-none p-none">
             {Array.isArray(links) &&
               links.map((element, index) => {
                 return (
@@ -74,7 +74,7 @@ export const Footer = () => {
       {/* below - bcds-footer--container class */}
       <div className="flex flex-col items-center justify-around bg-background-light-gray p-xl">
         {/* below - bcds-footer--container-content class */}
-        <div className="w-full max-w-[1100px] flex flex-col justify-self-stretch gap-(--padding-xl)">
+        <div className="w-full max-w-[1100px] flex flex-col justify-self-stretch gap-xl">
           <Links />
           {/** below bcds-footer--container-content -> hr */}
           <hr className=" bg-border-dark  h-(--border-width-sm) m-none" />
