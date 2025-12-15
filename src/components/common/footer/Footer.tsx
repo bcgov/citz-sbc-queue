@@ -10,10 +10,10 @@ export const Footer = () => {
         cultures, histories, rights, laws, and governments.`
 
     return (
-      <div className="w-full flex flex-col items-center justify-around border-y-(length:--border-width-lg) border-y-gold-600 bg-gray-950 p-xl">
+      <div className="w-full flex flex-col items-center justify-around border-y-lg border-y-gold-600 bg-gray-950 md:max-xl:py-xl sm:px-md">
         {/* above - bcds-footer--acknowledgement class */}
         {/* below - bcds-footer--acknowledgement-text class */}
-        <div className="w-full max-w-[1100px] flex flex-col justify-self-stretch items-center text-typography-primary-invert text-s">
+        <div className="w-full max-w-[1100px] flex flex-col justify-self-stretch items-center text-typography-primary-invert text-sm">
           {p}
         </div>
       </div>
@@ -43,7 +43,7 @@ export const Footer = () => {
             {title}
           </figcaption>
           {/** below bcds-footer--links -> ul */}
-          <ul className="w-full grid grid-cols-4 auto-rows-auto gap-x-xl gap-y-sm list-none m-none p-none">
+          <ul className="w-full grid md:grid-cols-4 sm:grid-cols-2 auto-rows-auto gap-x-xl gap-y-sm list-none m-none p-none">
             {Array.isArray(links) &&
               links.map((element, index) => {
                 return (
