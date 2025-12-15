@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import type { UpdateLocation } from "@/app/api/location/types"
-import { updateLocation } from "@/utils/location"
+import { updateLocation } from "@/utils"
 
 // PUT /api/location?id=NNN - update an existing location
 export async function PUT(request: Request) {

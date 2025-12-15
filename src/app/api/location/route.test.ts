@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock the location utils module that's used by the route handlers
-vi.mock("@/utils/location", () => {
+vi.mock("@/utils", () => {
   return {
     getAllLocations: vi.fn(),
     getLocationById: vi.fn(),
@@ -11,7 +11,7 @@ vi.mock("@/utils/location", () => {
   }
 })
 
-import * as helpers from "@/utils/location"
+import * as helpers from "@/utils"
 import { DELETE, GET, POST, PUT } from "./route"
 
 describe("/api/location route handlers", () => {
