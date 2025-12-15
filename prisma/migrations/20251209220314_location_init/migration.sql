@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "app"."locations" (
+CREATE TABLE "app"."location" (
     "id" TEXT NOT NULL,
     "name" VARCHAR(250) NOT NULL,
     "timezone" VARCHAR(50) NOT NULL,
@@ -13,8 +13,8 @@ CREATE TABLE "app"."locations" (
     "created_at" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(6) NOT NULL,
 
-    CONSTRAINT "locations_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "location_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "locations_legacy_office_number_key" ON "app"."locations"("legacy_office_number");
+CREATE UNIQUE INDEX "location_legacy_office_number_key" ON "app"."location"("legacy_office_number");
