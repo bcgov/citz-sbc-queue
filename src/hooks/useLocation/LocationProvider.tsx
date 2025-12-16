@@ -12,7 +12,7 @@ type LocationContextValue = {
   refreshLocations: () => Promise<void>
 }
 
-const defaultTestOffice: Location = {
+export const DEFAULT_TEST_OFFICE: Location = {
   id: "test-location",
   name: "Test Office",
   legacyOfficeNumber: 999,
@@ -27,7 +27,7 @@ const defaultTestOffice: Location = {
 const LocationContext = createContext<LocationContextValue | undefined>(undefined)
 
 export function LocationProvider({ children }: { children: ReactNode }) {
-  const [location, setLocationState] = useState<Location | null>(defaultTestOffice)
+  const [location, setLocationState] = useState<Location | null>(DEFAULT_TEST_OFFICE)
   const [locations, setLocations] = useState<Location[] | null>(null)
 
   const setLocation = useCallback((loc: Location) => {
