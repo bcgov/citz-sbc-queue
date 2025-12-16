@@ -9,7 +9,9 @@ export function useLocation() {
   const ctx = useLocationContext()
   const { hasRole } = useAuth()
 
-  const canEdit = hasRole("Administrator")
+  const canCreate = hasRole("Administrator")
+  const canDelete = hasRole("Administrator")
+  const canUpdate = hasRole("Administrator") || hasRole("SDM")
 
   // local loading state for convenience in components
   const [loading, setLoading] = useState(false)
@@ -39,7 +41,7 @@ export function useLocation() {
 
   const createLocation = useCallback(
     async (payload: CreateLocation) => {
-      if (!canEdit) throw new Error("Unauthorized")
+      if (!canCreate) throw new Error("Unauthorized")
       setLoading(true)
       setError(null)
       try {
@@ -56,12 +58,12 @@ export function useLocation() {
         setLoading(false)
       }
     },
-    [canEdit, ctx]
+    [canCreate, ctx]
   )
 
   const updateLocation = useCallback(
     async (id: string, updates: UpdateLocation) => {
-      if (!canEdit) throw new Error("Unauthorized")
+      if (!canUpdate) throw new Error("Unauthorized")
       setLoading(true)
       setError(null)
       try {
@@ -78,12 +80,12 @@ export function useLocation() {
         setLoading(false)
       }
     },
-    [canEdit, ctx]
+    [canUpdate, ctx]
   )
 
   const deleteLocation = useCallback(
     async (id: string) => {
-      if (!canEdit) throw new Error("Unauthorized")
+      if (!canDelete) throw new Error("Unauthorized")
       setLoading(true)
       setError(null)
       try {
@@ -101,7 +103,7 @@ export function useLocation() {
         setLoading(false)
       }
     },
-    [canEdit, ctx]
+    [canDelete, ctx]
   )
 
   const setCurrentLocation = useCallback(
@@ -120,7 +122,9 @@ export function useLocation() {
     createLocation,
     updateLocation,
     deleteLocation,
-    canEdit,
+    canCreate,
+    canUpdate,
+    canDelete,
     loading,
     error,
   }
