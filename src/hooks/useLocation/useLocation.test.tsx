@@ -1,8 +1,8 @@
 import { act, renderHook } from "@testing-library/react"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import type { Location } from "@/app/api/location/types"
 
-// Provide a deterministic DEFAULT_TEST_OFFICE for tests
+// Provide a deterministic test office for tests (not used as a runtime default)
 const TEST_OFFICE: Location = {
   id: "test-location",
   name: "Test Office",
@@ -15,17 +15,24 @@ const TEST_OFFICE: Location = {
   longitude: -123.0,
 }
 
-// Mock the location provider module to return a predictable context
+// Create mutable mocks that tests can update per-case
+let locationMock: Location | null = TEST_OFFICE
+let setLocationMock = vi.fn()
+const refreshLocationsMock = vi.fn().mockResolvedValue([] as unknown as Location[] | null)
+
+// Mock the location provider module to return a predictable, controllable context
 vi.mock("./LocationProvider", async () => {
   const actual = await vi.importActual<typeof import("./LocationProvider")>("./LocationProvider")
   return {
     ...actual,
     useLocationContext: () => ({
-      location: TEST_OFFICE,
-      setLocation: vi.fn(),
+      get location() {
+        return locationMock
+      },
+      setLocation: setLocationMock,
       loadLocationByNumber: vi.fn(),
       locations: [],
-      refreshLocations: vi.fn().mockResolvedValue(undefined),
+      refreshLocations: refreshLocationsMock,
     }),
   }
 })
@@ -81,6 +88,8 @@ describe("useLocation authorization", () => {
         name: "X",
         timezone: "TZ",
         streetAddress: "S",
+        latitude: 49.0,
+        longitude: -123.0,
       })
       expect(created.id).toBe("1")
 
@@ -90,6 +99,24 @@ describe("useLocation authorization", () => {
       const deleted = await result.current.deleteLocation("1")
       expect(deleted).toBe(true)
     })
+  })
+
+  it("defaults to first location from the server when no current location is set", async () => {
+    const first = { id: "L1", name: "First" }
+    const second = { id: "L2", name: "Second" }
+
+    // make the context initially have no location and have a spy for setLocation
+    locationMock = null
+    setLocationMock = vi.fn()
+    refreshLocationsMock.mockResolvedValueOnce([first as any, second as any])
+
+    // Render the hook which will trigger the init effect
+    renderHook(() => useLocation())
+
+    // wait a tick so the effect can run
+    await Promise.resolve()
+
+    expect(setLocationMock).toHaveBeenCalledWith(first)
   })
 
   it("SDM can update but cannot create or delete", async () => {
@@ -122,7 +149,13 @@ describe("useLocation authorization", () => {
 
       // create should throw
       await expect(async () => {
-        await result.current.createLocation({ name: "X", timezone: "TZ", streetAddress: "S" })
+        await result.current.createLocation({
+          name: "X",
+          timezone: "TZ",
+          streetAddress: "S",
+          latitude: 49.0,
+          longitude: -123.0,
+        })
       }).rejects.toThrow(/Unauthorized/)
 
       // delete should throw
@@ -142,7 +175,13 @@ describe("useLocation authorization", () => {
 
     await act(async () => {
       await expect(async () => {
-        await result.current.createLocation({ name: "X", timezone: "TZ", streetAddress: "S" })
+        await result.current.createLocation({
+          name: "X",
+          timezone: "TZ",
+          streetAddress: "S",
+          latitude: 49.0,
+          longitude: -123.0,
+        })
       }).rejects.toThrow(/Unauthorized/)
 
       await expect(async () => {

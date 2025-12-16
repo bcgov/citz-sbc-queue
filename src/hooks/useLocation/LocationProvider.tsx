@@ -6,31 +6,24 @@ import type { Location } from "@/app/api/location/types"
 
 type LocationContextValue = {
   location: Location | null
-  setLocation: (loc: Location) => void
+  /** Set the current location; pass `null` to clear the selection */
+  setLocation: (loc: Location | null) => void
   loadLocationByNumber: (number: string) => Promise<void>
   locations: Location[] | null
-  refreshLocations: () => Promise<void>
-}
-
-export const DEFAULT_TEST_OFFICE: Location = {
-  id: "test-location",
-  name: "Test Office",
-  legacyOfficeNumber: 999,
-  timezone: "America/Vancouver",
-  streetAddress: "1 Test Lane, Testville, BC T0T 0T0",
-  mailAddress: "",
-  phoneNumber: "250-555-0999",
-  latitude: 49.0,
-  longitude: -123.0,
+  /**
+   * Refresh the list of locations from the server and return the array of
+   * locations when available, otherwise returns null.
+   */
+  refreshLocations: () => Promise<Location[] | null>
 }
 
 const LocationContext = createContext<LocationContextValue | undefined>(undefined)
 
 export function LocationProvider({ children }: { children: ReactNode }) {
-  const [location, setLocationState] = useState<Location | null>(DEFAULT_TEST_OFFICE)
+  const [location, setLocationState] = useState<Location | null>(null)
   const [locations, setLocations] = useState<Location[] | null>(null)
 
-  const setLocation = useCallback((loc: Location) => {
+  const setLocation = useCallback((loc: Location | null) => {
     setLocationState(loc)
   }, [])
 
@@ -50,17 +43,21 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const refreshLocations = useCallback(async () => {
+  const refreshLocations = useCallback(async (): Promise<Location[] | null> => {
     try {
       const res = await fetch(`/api/location`)
-      if (!res.ok) return
+      if (!res.ok) return null
       const body = await res.json()
       if (body?.success && Array.isArray(body.data)) {
-        setLocations(body.data as Location[])
+        const locs = body.data as Location[]
+        setLocations(locs)
+        return locs
       }
+      return null
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("refreshLocations error", err)
+      return null
     }
   }, [])
 
