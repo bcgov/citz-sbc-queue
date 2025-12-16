@@ -13,8 +13,9 @@ type LocationContextValue = {
 }
 
 const defaultTestOffice: Location = {
+  id: "test-location",
   name: "Test Office",
-  number: "999",
+  legacyOfficeNumber: 999,
   timezone: "America/Vancouver",
   streetAddress: "1 Test Lane, Testville, BC T0T 0T0",
   mailAddress: "",
