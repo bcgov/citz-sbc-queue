@@ -1,12 +1,11 @@
 import { Header, Navigation } from "@/components"
 import { Footer } from "@/components/common/footer"
+import { ExampleCurrentLocation } from "@/components/examples/ExampleCurrentLocation"
 import { ExampleDialog } from "@/components/examples/ExampleDialog"
 import { ExampleModal } from "@/components/examples/ExampleModal"
-import { useCurrentLocation, CurrentLocationProvider } from "@/hooks"
+import { CurrentLocationProvider } from "@/hooks/useLocation"
 
 export default function Home() {
-  const currentLocation = useCurrentLocation()
-  console.log("Current Location:", currentLocation)
   return (
     <CurrentLocationProvider>
       <Header />
@@ -22,6 +21,7 @@ export default function Home() {
             <p className="text-xl">TEST</p>
             <div className="self-center text-h4">Some body content here </div>
             <div className="col-span-8 flex justify-between items-center gap-2 mx-auto">
+              <ExampleCurrentLocation />
               <ExampleModal />
               <ExampleDialog />
             </div>
