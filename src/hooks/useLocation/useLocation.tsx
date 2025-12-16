@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react"
 import type { CreateLocation, Location, UpdateLocation } from "@/app/api/location/types"
-import { useAuth } from "@/hooks/useAuth/useAuth"
+import * as api from "./api"
 import { useLocationContext } from "./LocationProvider"
+import { useLocationPermissions } from "./permissions"
 
 /**
  * Hook that provides location data and CRUD operations.
@@ -41,11 +42,8 @@ import { useLocationContext } from "./LocationProvider"
  */
 export function useLocation() {
   const ctx = useLocationContext()
-  const { hasRole } = useAuth()
 
-  const canCreate = hasRole("Administrator")
-  const canDelete = hasRole("Administrator")
-  const canUpdate = hasRole("Administrator") || hasRole("SDM")
+  const { canCreate, canUpdate, canDelete } = useLocationPermissions()
 
   // local loading state for convenience in components
   const [loading, setLoading] = useState(false)
@@ -88,21 +86,18 @@ export function useLocation() {
     }
   }, [ctx])
 
+  // Thin wrappers that delegate to the API helpers and keep state handling in
+  // the hook concise. Errors thrown by the API helpers are propagated.
+
   const createLocation = useCallback(
     async (payload: CreateLocation) => {
       if (!canCreate) throw new Error("Unauthorized")
       setLoading(true)
       setError(null)
       try {
-        const res = await fetch("/api/location", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        })
-        const body = await res.json()
-        if (!res.ok) throw new Error(body?.error || "Failed to create")
+        const created = await api.apiCreateLocation(payload)
         await ctx.refreshLocations()
-        return body.data as Location
+        return created
       } finally {
         setLoading(false)
       }
@@ -116,15 +111,9 @@ export function useLocation() {
       setLoading(true)
       setError(null)
       try {
-        const res = await fetch(`/api/location?id=${encodeURIComponent(id)}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(updates),
-        })
-        const body = await res.json()
-        if (!res.ok) throw new Error(body?.error || "Failed to update")
+        const updated = await api.apiUpdateLocation(id, updates)
         await ctx.refreshLocations()
-        return body.data as Location
+        return updated
       } finally {
         setLoading(false)
       }
@@ -138,11 +127,7 @@ export function useLocation() {
       setLoading(true)
       setError(null)
       try {
-        const res = await fetch(`/api/location?id=${encodeURIComponent(id)}`, {
-          method: "DELETE",
-        })
-        const body = await res.json()
-        if (!res.ok) throw new Error(body?.error || "Failed to delete")
+        await api.apiDeleteLocation(id)
 
         // if we deleted the current location, try to reset to the first
         // available location from the server; if none exist leave it null.
@@ -164,12 +149,7 @@ export function useLocation() {
     [canDelete, ctx]
   )
 
-  const setCurrentLocation = useCallback(
-    (loc: Location) => {
-      ctx.setLocation(loc)
-    },
-    [ctx]
-  )
+  const setCurrentLocation = useCallback((loc: Location | null) => ctx.setLocation(loc), [ctx])
 
   return {
     locations: ctx.locations,
