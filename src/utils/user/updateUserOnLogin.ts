@@ -37,19 +37,19 @@ export const updateUserOnLogin = async (accessToken: string) => {
     await insertStaffUser({
       sub,
       guid: idir_user_guid,
-      csrId: csrUser ? csrUser.id : null,
+      legacyCsrId: csrUser ? csrUser.csrId : null,
       username: idir_username,
       displayName: display_name,
       role: userRole,
       isActive: true,
       officeId: csrUser ? csrUser.officeId : null,
       counterId: csrUser ? csrUser.counterId : null,
-      deletedAt: csrUser ? csrUser.deletedAt : null,
-      isFinanceDesignate: csrUser ? csrUser.isFinanceDesignate : false,
-      isIta2Designate: csrUser ? csrUser.isIta2Designate : false,
-      isOfficeManager: csrUser ? csrUser.isOfficeManager : false,
-      isPesticideDesignate: csrUser ? csrUser.isPesticideDesignate : false,
-      isReceptionist: csrUser ? csrUser.isReceptionist : false,
+      deletedAt: csrUser ? csrUser.deleted : null,
+      isFinanceDesignate: csrUser ? csrUser.financeDesignate === 0 : false,
+      isIta2Designate: csrUser ? csrUser.ita2Designate === 0 : false,
+      isOfficeManager: csrUser ? csrUser.officeManager === 0 : false,
+      isPesticideDesignate: csrUser ? csrUser.pesticideDesignate === 0 : false,
+      isReceptionist: csrUser ? csrUser.receptionistInd === 0 : false,
     })
   }
 }
