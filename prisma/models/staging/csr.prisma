@@ -1,0 +1,20 @@
+model CSR {
+  csrId                Int       @id @default(autoincrement()) @map("csr_id")
+  username             String    @unique @db.VarChar(150) // IDIR username
+
+  officeId             Int       @map("office_id")
+  counterId            Int?      @map("counter_id")
+  roleId               Int       @map("role_id")
+  csrStateId           Int       @map("csr_state_id")
+
+  deleted              DateTime? @db.Timestamp(6) @map("deleted_at")
+
+  receptionistInd      Int       @map("receptionist_ind")
+  officeManager        Int       @default(0) @map("office_manager")
+  pesticideDesignate   Int       @default(0) @map("pesticide_designate")
+  financeDesignate     Int       @default(0) @map("finance_designate")
+  ita2Designate        Int       @default(0) @map("ita2_designate")
+
+  @@map("csr")
+  @@schema("public")
+}
