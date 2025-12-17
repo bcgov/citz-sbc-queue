@@ -1,10 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { type ColumnConfig, DataTable } from "@/components/common/datatable"
+import { DataTable } from "@/components/common/datatable"
 import type { Role, StaffUser } from "@/generated/prisma/client"
 import { useDialog } from "@/hooks/useDialog/useDialog"
-import { EditUserModal } from "./edit/EditUserModal"
+import { EditUserModal } from "../edit/EditUserModal"
+import { columns } from "./columns"
 
 export type UserTableProps = {
   users: StaffUser[]
@@ -16,52 +17,13 @@ export type UserTableProps = {
   revalidateTable: () => Promise<void>
 }
 
-export const UserTable = ({ users, updateStaffUser, revalidateTable }: UserTableProps) => {
+export const StaffUserTable = ({ users, updateStaffUser, revalidateTable }: UserTableProps) => {
   const {
     open: editUserModalOpen,
     openDialog: openEditUserModal,
     closeDialog: closeEditUserModal,
   } = useDialog()
   const [selectedUser, setSelectedUser] = useState<StaffUser | null>(null)
-
-  const columns: ColumnConfig<StaffUser>[] = [
-    {
-      key: "displayName",
-      label: "Name",
-      sortable: true,
-      searchable: true,
-    },
-    {
-      key: "username",
-      label: "Username",
-      sortable: true,
-      searchable: true,
-    },
-    {
-      key: "role",
-      label: "Role",
-      searchable: true,
-    },
-    {
-      key: "createdAt",
-      label: "Created",
-      sortable: true,
-      render: (value): string => {
-        if (value instanceof Date) {
-          return value.toLocaleDateString(undefined, {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })
-        }
-        return new Date(value as string).toLocaleDateString(undefined, {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        })
-      },
-    },
-  ]
 
   const handleRowClick = (user: StaffUser) => {
     setSelectedUser(user)
