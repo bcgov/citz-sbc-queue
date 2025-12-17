@@ -4,7 +4,7 @@ import { useState } from "react"
 import { DataTable } from "@/components/common/datatable"
 import type { Role, StaffUser } from "@/generated/prisma/client"
 import { useDialog } from "@/hooks/useDialog/useDialog"
-import { EditUserModal } from "../edit/EditUserModal"
+import { EditStaffUserModal } from "../EditStaffUserModal"
 import { columns } from "./columns"
 
 export type UserTableProps = {
@@ -47,7 +47,7 @@ export const StaffUserTable = ({ users, updateStaffUser, revalidateTable }: User
         emptyMessage="No users found."
         onRowClick={handleRowClick}
       />
-      <EditUserModal
+      <EditStaffUserModal
         open={editUserModalOpen}
         onClose={closeEditUserModal}
         user={selectedUser}

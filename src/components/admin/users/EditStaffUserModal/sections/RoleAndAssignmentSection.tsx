@@ -39,7 +39,7 @@ export const RoleAndAssignmentSection = ({
           <select
             id="role"
             value={user.role}
-            onChange={(e) => onRoleChange(e.target.value as StaffUser["role"])}
+            onChange={(e) => onRoleChange(e.target.value as Role)}
             disabled={disabled}
             className="mt-1 block w-full rounded-md border border-border-dark px-2 py-1 text-xs text-typography-primary disabled:cursor-not-allowed disabled:bg-gray-100"
           >

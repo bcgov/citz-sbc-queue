@@ -2,16 +2,16 @@ import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import type { Role, StaffUser } from "@/generated/prisma/client"
-import { EditUserModal } from "./EditUserModal"
+import { EditStaffUserModal } from "./EditStaffUserModal"
 
 // Mock child components
-vi.mock("./UserInformationSection", () => ({
+vi.mock("./sections/UserInformationSection", () => ({
   UserInformationSection: ({ user }: { user: StaffUser | null }) => (
     <div data-testid="user-info-section">User Info: {user?.username}</div>
   ),
 }))
 
-vi.mock("./RoleAndAssignmentSection", () => ({
+vi.mock("./sections/RoleAndAssignmentSection", () => ({
   RoleAndAssignmentSection: ({
     onRoleChange,
     onOfficeIdChange,
@@ -30,7 +30,7 @@ vi.mock("./RoleAndAssignmentSection", () => ({
   ),
 }))
 
-vi.mock("./PermissionsSection", () => ({
+vi.mock("./sections/PermissionsSection", () => ({
   PermissionsSection: ({
     user,
     onIsReceptionistChange,
@@ -93,7 +93,7 @@ vi.mock("@/hooks/useEditableRoles", () => ({
 const mockStaffUser: StaffUser = {
   guid: "550e8400-e29b-41d4-a716-446655440000",
   sub: "550e8400-e29b-41d4-a716-446655440000@azureidir",
-  csrId: 1,
+  legacyCsrId: 1,
   username: "john.doe",
   displayName: "John Doe",
   officeId: 1,
@@ -110,7 +110,7 @@ const mockStaffUser: StaffUser = {
   isIta2Designate: false,
 }
 
-describe("EditUserModal", () => {
+describe("EditStaffUserModal", () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -119,7 +119,7 @@ describe("EditUserModal", () => {
     const mockupdateStaffUser = vi.fn()
     const mockRevalidateTable = vi.fn()
     const { container } = render(
-      <EditUserModal
+      <EditStaffUserModal
         open={true}
         onClose={vi.fn()}
         user={null}
@@ -135,7 +135,7 @@ describe("EditUserModal", () => {
     const mockupdateStaffUser = vi.fn()
     const mockRevalidateTable = vi.fn()
     const { container } = render(
-      <EditUserModal
+      <EditStaffUserModal
         open={false}
         onClose={vi.fn()}
         user={mockStaffUser}
@@ -151,7 +151,7 @@ describe("EditUserModal", () => {
     const mockupdateStaffUser = vi.fn()
     const mockRevalidateTable = vi.fn()
     render(
-      <EditUserModal
+      <EditStaffUserModal
         open={true}
         onClose={vi.fn()}
         user={mockStaffUser}
@@ -167,7 +167,7 @@ describe("EditUserModal", () => {
     const mockupdateStaffUser = vi.fn()
     const mockRevalidateTable = vi.fn()
     render(
-      <EditUserModal
+      <EditStaffUserModal
         open={true}
         onClose={vi.fn()}
         user={mockStaffUser}
@@ -186,7 +186,7 @@ describe("EditUserModal", () => {
     const mockupdateStaffUser = vi.fn()
     const mockRevalidateTable = vi.fn()
     render(
-      <EditUserModal
+      <EditStaffUserModal
         open={true}
         onClose={mockOnClose}
         user={mockStaffUser}
@@ -206,7 +206,7 @@ describe("EditUserModal", () => {
     const mockupdateStaffUser = vi.fn()
     const mockRevalidateTable = vi.fn()
     render(
-      <EditUserModal
+      <EditStaffUserModal
         open={true}
         onClose={mockOnClose}
         user={mockStaffUser}
@@ -226,7 +226,7 @@ describe("EditUserModal", () => {
     const mockupdateStaffUser = vi.fn().mockResolvedValue(undefined)
     const mockRevalidateTable = vi.fn()
     render(
-      <EditUserModal
+      <EditStaffUserModal
         open={true}
         onClose={mockOnClose}
         user={mockStaffUser}
@@ -251,7 +251,7 @@ describe("EditUserModal", () => {
     const mockupdateStaffUser = vi.fn().mockResolvedValue(undefined)
     const mockRevalidateTable = vi.fn()
     render(
-      <EditUserModal
+      <EditStaffUserModal
         open={true}
         onClose={mockOnClose}
         user={mockStaffUser}
@@ -272,7 +272,7 @@ describe("EditUserModal", () => {
     const mockupdateStaffUser = vi.fn().mockResolvedValue(undefined)
     const mockRevalidateTable = vi.fn()
     render(
-      <EditUserModal
+      <EditStaffUserModal
         open={true}
         onClose={vi.fn()}
         user={mockStaffUser}
@@ -297,7 +297,7 @@ describe("EditUserModal", () => {
     const mockupdateStaffUser = vi.fn().mockResolvedValue(undefined)
     const mockRevalidateTable = vi.fn()
     render(
-      <EditUserModal
+      <EditStaffUserModal
         open={true}
         onClose={vi.fn()}
         user={mockStaffUser}
@@ -322,7 +322,7 @@ describe("EditUserModal", () => {
     const mockupdateStaffUser = vi.fn().mockResolvedValue(undefined)
     const mockRevalidateTable = vi.fn()
     render(
-      <EditUserModal
+      <EditStaffUserModal
         open={true}
         onClose={vi.fn()}
         user={mockStaffUser}
@@ -355,7 +355,7 @@ describe("EditUserModal", () => {
     const mockupdateStaffUser = vi.fn().mockResolvedValue(undefined)
     const mockRevalidateTable = vi.fn()
     render(
-      <EditUserModal
+      <EditStaffUserModal
         open={true}
         onClose={vi.fn()}
         user={mockStaffUser}
@@ -391,7 +391,7 @@ describe("EditUserModal", () => {
     const mockupdateStaffUser = vi.fn().mockResolvedValue(undefined)
     const mockRevalidateTable = vi.fn()
     render(
-      <EditUserModal
+      <EditStaffUserModal
         open={true}
         onClose={vi.fn()}
         user={mockStaffUser}
@@ -413,7 +413,7 @@ describe("EditUserModal", () => {
     const mockupdateStaffUser = vi.fn().mockResolvedValue(undefined)
     const mockRevalidateTable = vi.fn()
     render(
-      <EditUserModal
+      <EditStaffUserModal
         open={true}
         onClose={vi.fn()}
         user={mockStaffUser}
@@ -452,7 +452,7 @@ describe("EditUserModal", () => {
     }
 
     const { rerender } = render(
-      <EditUserModal
+      <EditStaffUserModal
         open={true}
         onClose={vi.fn()}
         user={mockStaffUser}
@@ -464,7 +464,7 @@ describe("EditUserModal", () => {
     expect(screen.getByText(`Edit User: ${mockStaffUser.username}`)).toBeTruthy()
 
     rerender(
-      <EditUserModal
+      <EditStaffUserModal
         open={true}
         onClose={vi.fn()}
         user={newUser}
@@ -480,7 +480,7 @@ describe("EditUserModal", () => {
     const mockupdateStaffUser = vi.fn()
     const mockRevalidateTable = vi.fn()
     render(
-      <EditUserModal
+      <EditStaffUserModal
         open={true}
         onClose={vi.fn()}
         user={mockStaffUser}
@@ -508,7 +508,7 @@ describe("EditUserModal", () => {
     }
 
     render(
-      <EditUserModal
+      <EditStaffUserModal
         open={true}
         onClose={vi.fn()}
         user={higherRoleUser}
@@ -532,7 +532,7 @@ describe("EditUserModal", () => {
     }
 
     render(
-      <EditUserModal
+      <EditStaffUserModal
         open={true}
         onClose={vi.fn()}
         user={higherRoleUser}
@@ -554,7 +554,7 @@ describe("EditUserModal", () => {
     }
 
     render(
-      <EditUserModal
+      <EditStaffUserModal
         open={true}
         onClose={vi.fn()}
         user={higherRoleUser}
