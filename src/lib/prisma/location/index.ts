@@ -1,4 +1,4 @@
-export { deleteLocation } from "./delete"
-export { getAllLocations, getLocationById } from "./get"
-export { createLocation } from "./post"
-export { updateLocation } from "./put"
+export { createLocation } from "./create"
+export { getAllLocations, getLocationById } from "./read"
+export { deleteLocation } from "./remove"
+export { updateLocation } from "./update"
