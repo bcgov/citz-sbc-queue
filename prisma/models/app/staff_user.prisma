@@ -5,7 +5,10 @@ model StaffUser {
   username             String    @unique @db.VarChar(150) // IDIR username
   displayName          String    @db.VarChar(250) @map("display_name") // IDIR display name
 
-  officeId             Int       @map("office_id")
+  // Current location for the user (replaces legacy officeId)
+  locationId           String?   @map("location_id")
+  location             Location? @relation(fields: [locationId], references: [id])
+
   counterId            Int?      @map("counter_id")
   role                 Role
   isActive             Boolean   @default(false) @map("is_active")
