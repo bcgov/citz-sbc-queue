@@ -1,19 +1,18 @@
-import { NextResponse } from "next/server"
-import { deleteLocation } from "@/utils"
+"use server"
 
-// DELETE /api/location?id=UUID - soft delete a location
-export async function DELETE(request: Request) {
-  try {
-    const url = new URL(request.url)
-    const id = url.searchParams.get("id")
-    if (!id) return NextResponse.json({ success: false, error: "ID is required" }, { status: 400 })
+import { prisma } from "@/utils/db/prisma"
 
-    const ok = await deleteLocation(id)
-    if (!ok) return NextResponse.json({ success: false, error: "Not found" }, { status: 404 })
+export async function deleteLocation(id: string): Promise<boolean> {
+  const existing = await prisma.location.findUnique({
+    where: { id },
+  })
 
-    return NextResponse.json({ success: true }, { status: 200 })
-  } catch (error) {
-    console.error("/api/location DELETE error:", error)
-    return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 })
-  }
+  if (!existing || existing.deletedAt) return false
+
+  await prisma.location.update({
+    where: { id },
+    data: { deletedAt: new Date() },
+  })
+
+  return true
 }
