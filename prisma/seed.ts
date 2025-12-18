@@ -1,26 +1,25 @@
-import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "@/generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg"
+import { PrismaClient } from "@/generated/prisma/client"
 
 /**
  * Database seed script for initial data population.
  * Run with: npm run db:seed
  */
 
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
-const prisma = new PrismaClient({ adapter });
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL }, { schema: "app" })
+const prisma = new PrismaClient({ adapter })
 
 async function main() {
-  console.log("🌱 Starting database seeding...");
+  console.log("🌱 Starting database seeding...")
 
   try {
     // ============================================
     // Seed app schema models
     // ============================================
-    console.log("📦 Seeding app schema...");
+    console.log("📦 Seeding app schema...")
 
     const locations = [
       {
-        id: "001",
         legacyOfficeNumber: 999,
         name: "Test Office",
         timezone: "America/Dawson_Creek",
@@ -31,7 +30,6 @@ async function main() {
         longitude: -123.377106,
       },
       {
-        id: "002",
         legacyOfficeNumber: 94,
         name: "Victoria",
         timezone: "America/Vancouver",
@@ -42,7 +40,6 @@ async function main() {
         longitude: -123.377106,
       },
       {
-        id: "003",
         legacyOfficeNumber: 701,
         name: "Citz_IMB_Victoria",
         timezone: "America/Vancouver",
@@ -52,21 +49,21 @@ async function main() {
         latitude: 48.458359,
         longitude: -123.377106,
       },
-    ];
+    ]
 
     await prisma.location.createMany({
       data: locations,
       skipDuplicates: true,
-    });
-    console.log(`✅ Seeded ${locations.length} locations`);
+    })
+    console.log(`✅ Seeded ${locations.length} locations`)
 
-    console.log("✅ Database seeding completed successfully!");
+    console.log("✅ Database seeding completed successfully!")
   } catch (error) {
-    console.error("❌ Seeding failed:", error);
-    process.exit(1);
+    console.error("❌ Seeding failed:", error)
+    process.exit(1)
   } finally {
-    await prisma.$disconnect();
+    await prisma.$disconnect()
   }
 }
 
-main();
+main()

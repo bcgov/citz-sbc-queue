@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma"
+import { prisma } from "@/utils/db/prisma"
 
 export async function deleteLocation(id: string): Promise<boolean> {
   const existing = await prisma.location.findUnique({
