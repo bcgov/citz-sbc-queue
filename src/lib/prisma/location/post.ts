@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server"
-import type { CreateLocation, Location } from "@/app/api/location/types"
-import { createLocation, getAllLocations } from "@/utils"
+import type { Prisma } from "@/generated/prisma/client"
+import { createLocation } from "@/utils"
 
 // POST /api/location - create a new location
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const payload = body as CreateLocation
+    const payload = body as Partial<Prisma.LocationCreateInput>
 
     if (!payload.name || !payload.timezone || !payload.streetAddress) {
       return NextResponse.json(
@@ -15,23 +15,15 @@ export async function POST(request: Request) {
       )
     }
 
-    // If client didn't provide a id, auto-generate next numeric string
-    let id = payload.id
-    if (!id) {
-      const all = await getAllLocations()
-      const max = all.reduce((acc, cur) => Math.max(acc, Number.parseInt(cur.id, 10) || 0), 0)
-      id = String(max + 1).padStart(3, "0")
-    }
-
-    const toCreate: Location = {
+    const toCreate: Prisma.LocationCreateInput = {
       name: payload.name,
-      id,
       timezone: payload.timezone,
       streetAddress: payload.streetAddress,
-      mailAddress: payload.mailAddress ?? "",
-      phoneNumber: payload.phoneNumber ?? "",
+      mailAddress: payload.mailAddress ?? null,
+      phoneNumber: payload.phoneNumber ?? null,
       latitude: payload.latitude ?? 0,
       longitude: payload.longitude ?? 0,
+      legacyOfficeNumber: payload.legacyOfficeNumber ?? null,
     }
     const created = await createLocation(toCreate)
     return NextResponse.json({ success: true, data: created }, { status: 201 })

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import type { UpdateLocation } from "@/app/api/location/types"
+import type { Prisma } from "@/generated/prisma/client"
 import { updateLocation } from "@/utils"
 
 // PUT /api/location?id=NNN - update an existing location
@@ -9,7 +9,7 @@ export async function PUT(request: Request) {
     const id = url.searchParams.get("id")
     if (!id) return NextResponse.json({ success: false, error: "id is required" }, { status: 400 })
 
-    const updates = (await request.json()) as UpdateLocation
+    const updates = (await request.json()) as Prisma.LocationUpdateInput
 
     const updated = await updateLocation(id, updates)
     if (!updated) return NextResponse.json({ success: false, error: "Not found" }, { status: 404 })

@@ -1,9 +1,9 @@
-import type { Location } from "@/app/api/location/types"
-import { prisma } from "@/lib/prisma"
+import type { Location, Prisma } from "@/generated/prisma/client"
+import { prisma } from "@/utils/db/prisma"
 
 export async function updateLocation(
   id: string,
-  updates: Partial<Location>
+  updates: Prisma.LocationUpdateInput
 ): Promise<Location | null> {
   const existing = await prisma.location.findUnique({
     where: { id },
@@ -14,5 +14,5 @@ export async function updateLocation(
     where: { id },
     data: updates,
   })
-  return updated as Location
+  return updated
 }

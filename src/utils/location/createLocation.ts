@@ -1,9 +1,9 @@
-import type { Location } from "@/app/api/location/types"
-import { prisma } from "@/lib/prisma"
+import type { Location, Prisma } from "@/generated/prisma/client"
+import { prisma } from "@/utils/db/prisma"
 
-export async function createLocation(location: Location): Promise<Location> {
+export async function createLocation(location: Prisma.LocationCreateInput): Promise<Location> {
   const created = await prisma.location.create({
     data: location,
   })
-  return created as Location
+  return created
 }
