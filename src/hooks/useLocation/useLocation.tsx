@@ -49,30 +49,10 @@ export function useLocation() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    // On mount, refresh the list of locations and set the current location to
-    // the first available location. Do not set a local default — if the server
-    // returns no locations, leave `currentLocation` null so the UI can handle
-    // the 'no data' case explicitly.
-    let cancelled = false
-
-    const init = async () => {
-      const locs = await ctx.refreshLocations()
-      if (cancelled) return
-
-      // Only set initial location if none is already set.
-      if (!ctx.location && locs && locs.length > 0) {
-        ctx.setLocation(locs[0])
-      }
-    }
-
-    void init()
-    return () => {
-      cancelled = true
-    }
-    // intentionally run once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  // NOTE: The initial refresh and default-selection is handled by
+  // `LocationProvider` so the hook stays focused on exposing operations and
+  // permissions. This keeps the hook very small and easy to test.
+  // (No effect here.)
 
   const refresh = useCallback(async () => {
     setLoading(true)

@@ -1,7 +1,7 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { createContext, useCallback, useContext, useState } from "react"
+import { createContext, useCallback, useContext, useEffect, useState } from "react"
 import type { Location } from "@/app/api/location/types"
 
 type LocationContextValue = {
@@ -60,6 +60,26 @@ export function LocationProvider({ children }: { children: ReactNode }) {
       return null
     }
   }, [])
+
+  // On mount, refresh available locations and set the current location to
+  // the first server-provided location if no location is selected yet.
+  // The provider is the natural place for this logic so hooks using the
+  // context can remain minimal and focused on UI concerns.
+  // A cancellation flag prevents state updates after unmount.
+  useEffect(() => {
+    let cancelled = false
+    const init = async () => {
+      const locs = await refreshLocations()
+      if (cancelled) return
+      if (!location && locs && locs.length > 0) {
+        setLocationState(locs[0])
+      }
+    }
+    void init()
+    return () => {
+      cancelled = true
+    }
+  }, [refreshLocations, location])
 
   const value: LocationContextValue = {
     location,

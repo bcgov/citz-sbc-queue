@@ -113,10 +113,11 @@ describe("useLocation authorization", () => {
     // Render the hook which will trigger the init effect
     renderHook(() => useLocation())
 
-    // wait a tick so the effect can run
+    // The provider is responsible for initial selection; the hook should not
+    // perform the initial default selection itself.
     await Promise.resolve()
 
-    expect(setLocationMock).toHaveBeenCalledWith(first)
+    expect(setLocationMock).not.toHaveBeenCalled()
   })
 
   it("SDM can update but cannot create or delete", async () => {
