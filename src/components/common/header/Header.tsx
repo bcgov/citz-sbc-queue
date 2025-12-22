@@ -52,7 +52,7 @@ export const Header = () => {
           <BCGovLogo />
           <div className="flex flex-row  justify-around gap-sm px-sm items-center">
             {/** Display navagation as a hamburger icon button on mobile devices */}
-            <div className="contents md:hidden ">
+            <div className="contents md:hidden " data-testid="hamburgerNav-parent">
               <HamburgerNav />
             </div>
             <Loginout />
