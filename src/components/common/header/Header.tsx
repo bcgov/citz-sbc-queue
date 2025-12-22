@@ -17,19 +17,6 @@ export const Header = () => {
     setShowNavList(false)
   }, [pathname])
 
-  // Close nav if escape is pressed
-  useEffect(() => {
-    const closeMenu = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setShowNavList(false)
-      }
-    }
-    window.addEventListener("keydown", closeMenu)
-    return () => {
-      window.removeEventListener("keydown", closeMenu)
-    }
-  }, [])
-
   const HamburgerNav = () => {
     const toggleNavList = () => {
       setShowNavList(!showNavList)
@@ -80,13 +67,13 @@ export const Header = () => {
       <Transition
         show={showNavList}
         enter="transition ease duration-500 transform"
-        enterFrom="transform scale-95 opacity-0 -max-h-0"
+        enterFrom="transform scale-75 opacity-0 -max-h-0"
         enterTo="transform scale-100 opacity-100 -max-h-[53px]"
         leave="transition ease duration-500 transform"
         leaveFrom="transform scale-100 opacity-100 -max-h-[53px]"
-        leaveTo="transform scale-95 opacity-0 max-h-0"
+        leaveTo="transform scale-75 opacity-0 max-h-0"
       >
-        <div className="transition-all duration-500 overflow-hidden">
+        <div className="transition-all overflow-hidden">
           <Navigation />
         </div>
       </Transition>
