@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next"
+import type { Metadata } from "next"
 import "../styles/globals.css"
 import localFont from "next/font/local"
 import { AuthProvider } from "@/components/auth/AuthProvider"
