@@ -66,14 +66,15 @@ export const Header = () => {
       {/** Show list navigation when hamburger button is selected */}
       <Transition
         show={showNavList}
-        enter="transition ease duration-500 transform"
-        enterFrom="transform scale-75 opacity-0 -max-h-0"
-        enterTo="transform scale-100 opacity-100 -max-h-[53px]"
-        leave="transition ease duration-500 transform"
-        leaveFrom="transform scale-100 opacity-100 -max-h-[53px]"
-        leaveTo="transform scale-75 opacity-0 max-h-0"
+        enter="duration-500" // Open speed
+        enterFrom="transform max-h-0" // Starting point on opening
+        enterTo="transform max-h-[300px]" // End point on opening
+        leave="duration-300" // Closing speed
+        leaveFrom="transform max-h-[300px]" // Starting point on closing
+        leaveTo="transform max-h-0" // End point on closing
       >
-        <div className="transition-all overflow-hidden">
+        {/** Apply this class to all elements in the Transition */}
+        <div className="transition-all ease-in-out overflow-hidden">
           <Navigation />
         </div>
       </Transition>
