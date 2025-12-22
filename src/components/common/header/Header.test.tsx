@@ -33,7 +33,8 @@ describe("Header", () => {
     window.innerWidth = 639
     window.dispatchEvent(new Event("resize"))
     render(<Header />)
-    expect(screen.getByRole("button", { name: /show navigation items/i })).toBeInTheDocument()
+    const hamburgerParent = screen.getByTestId("hamburgerNav-parent")
+    expect(hamburgerParent.className).toMatch(/contents/)
   })
 
   it("does not show hamburger icon button when not in mobile", () => {
