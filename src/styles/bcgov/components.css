@@ -14,6 +14,15 @@
   button.small {
     padding: 4px 16px;
   }
+  button.icon {
+    display: flex;
+    padding: 0px;
+    align-items: center;
+    justify-content: space-around;
+    height: 32px;
+    width: 32px;
+    min-width: 32px;
+  }
 
   /* ==========================
      Visual variants

@@ -17,18 +17,18 @@ export const Navigation = () => {
   }
 
   return (
-    <nav className="w-full bg-white border-b border-gray-200">
-      <ul className="max-w-[1200px] mx-auto flex list-none p-0 gap-4 flex-wrap">
+    <nav className="border-b border-gray-200">
+      <ul className="max-w-[1200px] mx-auto flex gap-4 flex-wrap">
         {NAV_ITEMS.map((item) => (
           <li key={item.href} className="flex items-center">
             <IsAuthenticated hasRole={item.role}>
               <Link
                 href={item.href}
                 className={
-                  "inline-flex items-center py-3 px-3 text-[var(--color-typography-primary)] no-underline font-medium transition-all relative border-b-4 " +
+                  "inline-flex items-center p-3 border-b-4 " +
                   (isActive(item.href)
-                    ? "border-b-[var(--color-gold)] text-[var(--color-surface-primary)] font-bold"
-                    : "border-transparent hover:text-[var(--color-surface-primary)]")
+                    ? "border-b-gold text-surface-primary font-bold"
+                    : "border-transparent hover:text-surface-primary")
                 }
                 aria-current={isActive(item.href) ? "page" : undefined}
               >

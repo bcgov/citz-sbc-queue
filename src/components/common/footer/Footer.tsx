@@ -10,10 +10,10 @@ export const Footer = () => {
         cultures, histories, rights, laws, and governments.`
 
     return (
-      <div className="w-full flex flex-col items-center justify-around border-y-(length:--border-width-lg) border-y-gold-600 bg-gray-950 p-xl">
+      <div className="w-full flex flex-col items-center justify-around border-y-lg border-y-gold-600 bg-gray-950 px-md py-lg md:p-xl">
         {/* above - bcds-footer--acknowledgement class */}
         {/* below - bcds-footer--acknowledgement-text class */}
-        <div className="w-full max-w-[1100px] flex flex-col justify-self-stretch items-center text-typography-primary-invert text-s">
+        <div className="w-full max-w-[1100px] flex flex-col justify-self-stretch items-center text-typography-primary-invert text-sm">
           {p}
         </div>
       </div>
@@ -34,21 +34,21 @@ export const Footer = () => {
       { title: "Disclaimer", link: "https://www2.gov.bc.ca//gov/content/home/disclaimer" },
     ]
     return (
-      <div className="w-full flex flex-col flex-nowrap items-start justify-self-stretch justify-between gap-xl">
+      <div className="w-full flex flex-col flex-nowrap items-start justify-self-stretch justify-between md:gap-xl">
         {/* above - bcds-footer--logo-links class */}
         <figure className="w-full flex flex-col m-none">
           {/** above bcds-footer--links */}
           {/** below bcds-footer--links-title */}
-          <figcaption className="w-full block mb-md font-bold uppercase text-sm">
+          <figcaption className="w-full block my-md font-bold uppercase text-sm">
             {title}
           </figcaption>
           {/** below bcds-footer--links -> ul */}
-          <ul className="w-full grid grid-cols-4 auto-rows-auto gap-x-xl gap-y-sm list-none m-none p-none">
+          <ul className="w-full grid grid-cols-2 md:grid-cols-4 auto-rows-auto md:gap-x-xl md:gap-y-sm list-none m-none p-none">
             {Array.isArray(links) &&
               links.map((element, index) => {
                 return (
                   <li
-                    className="text-sm"
+                    className="text-sm mb-md"
                     key={`${element.title.toLowerCase().replace(/\s/g, "-")}-${index}`}
                   >
                     {/** above bcds-footer--links -> ul -> li */}
@@ -72,9 +72,9 @@ export const Footer = () => {
       {/* Above is bcds-footer class */}
       <LandAcknowledgement />
       {/* below - bcds-footer--container class */}
-      <div className="flex flex-col items-center justify-around bg-background-light-gray p-xl">
+      <div className="flex flex-col items-center justify-around bg-background-light-gray p-md pb-lg md:p-xl">
         {/* below - bcds-footer--container-content class */}
-        <div className="w-full max-w-[1100px] flex flex-col justify-self-stretch gap-xl">
+        <div className="w-full max-w-[1100px] flex flex-col justify-self-stretch gap-md md:gap-xl">
           <Links />
           {/** below bcds-footer--container-content -> hr */}
           <hr className=" bg-border-dark  h-(--border-width-sm) m-none" />
