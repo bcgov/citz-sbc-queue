@@ -19,7 +19,7 @@ describe("updateStaffUser", () => {
   const mockStaffUser: StaffUser = {
     guid: "test-guid-123",
     sub: "test-sub-123",
-    csrId: 5,
+    legacyCsrId: 5,
     username: "test.user",
     displayName: "Test User",
     officeId: 1,

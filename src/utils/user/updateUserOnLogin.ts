@@ -7,6 +7,7 @@ import { insertStaffUser } from "@/lib/prisma/staff_user/insertStaffUser"
 import { updateStaffUser } from "@/lib/prisma/staff_user/updateStaffUser"
 import { decodeJWT } from "@/utils/auth/jwt/decodeJWT"
 import type { IdirIdentityProvider } from "@/utils/auth/types"
+import { assignNewRoleFromCSR } from "./assignNewRoleFromCSR"
 
 export const updateUserOnLogin = async (accessToken: string) => {
   const jwt = decodeJWT<IdirIdentityProvider>(accessToken)
@@ -33,6 +34,9 @@ export const updateUserOnLogin = async (accessToken: string) => {
     // Check for legacy user in csr table
     const csrUser = await getCSRByUsername(idir_username)
 
+    // Get new role
+    const newRole = await assignNewRoleFromCSR(sub, csrUser?.roleId ?? null)
+
     // Create new user
     await insertStaffUser({
       sub,
@@ -40,16 +44,16 @@ export const updateUserOnLogin = async (accessToken: string) => {
       legacyCsrId: csrUser ? csrUser.csrId : null,
       username: idir_username,
       displayName: display_name,
-      role: userRole,
+      role: newRole,
       isActive: true,
       officeId: csrUser ? csrUser.officeId : null,
       counterId: csrUser ? csrUser.counterId : null,
       deletedAt: csrUser ? csrUser.deleted : null,
-      isFinanceDesignate: csrUser ? csrUser.financeDesignate === 0 : false,
-      isIta2Designate: csrUser ? csrUser.ita2Designate === 0 : false,
-      isOfficeManager: csrUser ? csrUser.officeManager === 0 : false,
-      isPesticideDesignate: csrUser ? csrUser.pesticideDesignate === 0 : false,
-      isReceptionist: csrUser ? csrUser.receptionistInd === 0 : false,
+      isFinanceDesignate: csrUser ? csrUser.financeDesignate === 1 : false,
+      isIta2Designate: csrUser ? csrUser.ita2Designate === 1 : false,
+      isOfficeManager: csrUser ? csrUser.officeManager === 1 : false,
+      isPesticideDesignate: csrUser ? csrUser.pesticideDesignate === 1 : false,
+      isReceptionist: csrUser ? csrUser.receptionistInd === 1 : false,
     })
   }
 }

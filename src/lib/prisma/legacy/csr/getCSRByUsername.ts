@@ -9,6 +9,9 @@ import { legacyPrisma } from "@/utils/db/prisma"
  * @returns Promise resolving to a CSR object or null if not found
  */
 export const getCSRByUsername = async (username: string): Promise<CSR | null> => {
-  const csr = await legacyPrisma.csr.findUnique({ where: { username } })
+  const normalized = username.toLowerCase()
+  const csr = await legacyPrisma.cSR.findFirst({
+    where: { username: { equals: normalized, mode: "insensitive" } },
+  })
   return csr
 }
