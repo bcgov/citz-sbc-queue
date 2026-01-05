@@ -47,7 +47,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${BCSans.variable} font-sans`}>
         <AuthProvider />
-        <div className="min-h-screen max-h-screen min-w-screen max-w-screen grid md:grid-cols-12 grid-cols-4 grid-rows-fr auto-rows-max gap-4">
+        <div className="h-screen w-screen overflow-x-hidden grid md:grid-cols-12 grid-cols-4 grid-rows-fr auto-rows-max gap-4">
           <header className="col-span-full max-h-auto md:max-h-[118px] bg-background-default">
             <Header />
           </header>
