@@ -9,7 +9,7 @@ import {
   DialogTitle,
   Modal,
 } from "@/components/common/dialog"
-import type { Role, StaffUser } from "@/generated/prisma/client"
+import type { Location, Role, StaffUser } from "@/generated/prisma/client"
 import { useEditableRoles } from "@/hooks/useEditableRoles"
 import { PermissionsSection } from "./sections/PermissionsSection"
 import { RoleAndAssignmentSection } from "./sections/RoleAndAssignmentSection"
@@ -19,6 +19,7 @@ type EditStaffUserModalProps = {
   open: boolean
   onClose: () => void
   user: StaffUser | null
+  offices: Location[]
   updateStaffUser: (
     user: Partial<StaffUser>,
     prevUser: Partial<StaffUser>,
@@ -31,6 +32,7 @@ export const EditStaffUserModal = ({
   open,
   onClose,
   user,
+  offices,
   updateStaffUser,
   revalidateTable,
 }: EditStaffUserModalProps) => {
@@ -84,8 +86,9 @@ export const EditStaffUserModal = ({
           <div className="grid grid-cols-2 gap-6">
             <RoleAndAssignmentSection
               user={formData}
+              offices={offices}
               onRoleChange={(role) => handleChange("role", role)}
-              onOfficeIdChange={(officeId) => handleChange("officeId", officeId)}
+              onLocationIdChange={(locationId) => handleChange("locationId", locationId)}
               availableRoles={editableRoles}
               disabled={isReadonly}
             />

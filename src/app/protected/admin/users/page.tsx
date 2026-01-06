@@ -1,5 +1,6 @@
 import { revalidatePath } from "next/cache"
 import { StaffUserTable } from "@/components/admin/users/StaffUserTable"
+import { getAllLocations } from "@/lib/prisma/location"
 import { getAllStaffUsers } from "@/lib/prisma/staff_user/getAllStaffUsers"
 import { updateStaffUser } from "@/lib/prisma/staff_user/updateStaffUser"
 
@@ -8,6 +9,7 @@ export const dynamic = "force-dynamic"
 
 export default async function Page() {
   const users = await getAllStaffUsers()
+  const offices = await getAllLocations()
 
   const revalidateTable = async () => {
     "use server"
@@ -15,15 +17,14 @@ export default async function Page() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Users</h1>
-        <StaffUserTable
-          users={users}
-          updateStaffUser={updateStaffUser}
-          revalidateTable={revalidateTable}
-        />
-      </div>
+    <div>
+      <h1 className="text-3xl font-bold text-gray-900 mb-2">Users</h1>
+      <StaffUserTable
+        users={users}
+        offices={offices}
+        updateStaffUser={updateStaffUser}
+        revalidateTable={revalidateTable}
+      />
     </div>
   )
 }

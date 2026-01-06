@@ -1,13 +1,9 @@
-import { PrismaPg } from "@prisma/adapter-pg"
-import { PrismaClient } from "@/generated/prisma/client"
+import { prisma } from "@/utils/db/prisma"
 
 /**
  * Database seed script for initial data population.
  * Run with: npm run db:seed
  */
-
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL }, { schema: "app" })
-const prisma = new PrismaClient({ adapter })
 
 async function main() {
   console.log("🌱 Starting database seeding...")
