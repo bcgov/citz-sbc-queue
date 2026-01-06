@@ -51,7 +51,9 @@ export default function RootLayout({
           <header className="col-span-full max-h-auto md:max-h-[118px] bg-background-default">
             <Header />
           </header>
-          <main className="md:col-span-8 md:col-start-3 col-span-full">{children}</main>
+          <main className="grid md:col-span-8 md:col-start-3 col-span-full">
+            <div className="grid p-sm m-sm gap-sm md:m-xl md:p-lg justify-around">{children}</div>
+          </main>
           <footer className="sticky top-[100vh] col-span-full h-auto">
             <Footer />
           </footer>
