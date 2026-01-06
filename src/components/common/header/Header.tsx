@@ -6,6 +6,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Loginout, SvgBcLogo } from "@/components"
+import { useAuth } from "@/hooks"
 import { Navigation } from "./navigation"
 
 export const Header = () => {
@@ -52,9 +53,11 @@ export const Header = () => {
           <BCGovLogo />
           <div className="flex flex-row  justify-around gap-sm px-sm items-center">
             {/** Display navagation as a hamburger icon button on mobile devices */}
-            <div className="contents md:hidden " data-testid="hamburgerNav-parent">
-              <HamburgerNav />
-            </div>
+            {useAuth().isAuthenticated && (
+              <div className="contents md:hidden " data-testid="hamburgerNav-parent">
+                <HamburgerNav />
+              </div>
+            )}
             <Loginout />
           </div>
         </div>
