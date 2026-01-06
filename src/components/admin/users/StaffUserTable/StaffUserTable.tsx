@@ -2,13 +2,14 @@
 
 import { useState } from "react"
 import { DataTable } from "@/components/common/datatable"
-import type { Role, StaffUser } from "@/generated/prisma/client"
+import type { Location, Role, StaffUser } from "@/generated/prisma/client"
 import { useDialog } from "@/hooks/useDialog/useDialog"
 import { EditStaffUserModal } from "../EditStaffUserModal"
 import { columns } from "./columns"
 
 export type UserTableProps = {
   users: StaffUser[]
+  offices: Location[]
   updateStaffUser: (
     user: Partial<StaffUser>,
     prevUser: Partial<StaffUser>,
@@ -17,7 +18,12 @@ export type UserTableProps = {
   revalidateTable: () => Promise<void>
 }
 
-export const StaffUserTable = ({ users, updateStaffUser, revalidateTable }: UserTableProps) => {
+export const StaffUserTable = ({
+  users,
+  offices,
+  updateStaffUser,
+  revalidateTable,
+}: UserTableProps) => {
   const {
     open: editUserModalOpen,
     openDialog: openEditUserModal,
@@ -51,6 +57,7 @@ export const StaffUserTable = ({ users, updateStaffUser, revalidateTable }: User
         open={editUserModalOpen}
         onClose={closeEditUserModal}
         user={selectedUser}
+        offices={offices}
         updateStaffUser={updateStaffUser}
         revalidateTable={revalidateTable}
       />

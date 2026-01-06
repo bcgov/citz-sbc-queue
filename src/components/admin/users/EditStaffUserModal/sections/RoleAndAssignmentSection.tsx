@@ -1,9 +1,10 @@
-import type { Role, StaffUser } from "@/generated/prisma/client"
+import type { Location, Role, StaffUser } from "@/generated/prisma/client"
 
 type RoleAndAssignmentSectionProps = {
   user: StaffUser
+  offices: Location[]
   onRoleChange: (role: StaffUser["role"]) => void
-  onOfficeIdChange: (officeId: number) => void
+  onLocationIdChange: (locationId: string) => void
   availableRoles: Role[]
   disabled?: boolean
 }
@@ -20,11 +21,19 @@ type RoleAndAssignmentSectionProps = {
  */
 export const RoleAndAssignmentSection = ({
   user,
+  offices,
   onRoleChange,
-  onOfficeIdChange,
+  onLocationIdChange,
   availableRoles,
   disabled,
 }: RoleAndAssignmentSectionProps) => {
+  const officeOptions = offices.map((office) => (
+    <option key={office.id} value={office.id}>
+      {office.name}
+      {office.legacyOfficeNumber ? ` (No. ${office.legacyOfficeNumber})` : ""}
+    </option>
+  ))
+
   return (
     <div
       className={`space-y-3 rounded-lg border border-border-light bg-background-light-gray p-4 shadow-sm ${disabled ? "opacity-50" : ""}`}
@@ -52,17 +61,17 @@ export const RoleAndAssignmentSection = ({
         </div>
 
         <div>
-          <label htmlFor="officeId" className="block text-xs font-medium text-typography-primary">
+          <label htmlFor="locationId" className="block text-xs font-medium text-typography-primary">
             Office
           </label>
           <select
-            id="officeId"
-            value={user.officeId}
-            onChange={(e) => onOfficeIdChange(Number(e.target.value))}
+            id="locationId"
+            value={user.locationId ?? undefined}
+            onChange={(e) => onLocationIdChange(e.target.value)}
             disabled={disabled}
             className="mt-1 block w-full rounded-md border border-border-dark px-2 py-1 text-xs text-typography-primary disabled:cursor-not-allowed disabled:bg-gray-100"
           >
-            <option value="">Select an office</option>
+            {officeOptions}
           </select>
         </div>
       </div>

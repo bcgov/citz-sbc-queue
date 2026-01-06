@@ -25,6 +25,9 @@ export const updateStaffUser = async (
     throw new Error("You do not have permission to assign this role.")
   }
 
+  const staffUser = await prisma.staffUser.update({ where: { guid }, data })
+  if (!staffUser) return null
+
   // SSO Role Update
   if (user.role !== prevUser.role && user.role && prevUser.role) {
     // Remove previous role
@@ -33,6 +36,5 @@ export const updateStaffUser = async (
     await assignRole(sub, user.role)
   }
 
-  const staffUser = await prisma.staffUser.update({ where: { guid }, data })
   return staffUser
 }
