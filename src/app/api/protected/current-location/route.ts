@@ -7,8 +7,7 @@ import type {
   UpdateCurrentLocationRequest,
   UpdateCurrentLocationResponse,
 } from "@/utils/location/types"
-import { getStaffUserByGuid } from "@/utils/staffUser"
-import { updateStaffUserLocation } from "@/utils/staffUser"
+import { getStaffUserByGuid, updateStaffUserLocation } from "@/utils/staffUser"
 
 export async function GET(request: NextRequest) {
   try {
