@@ -22,7 +22,7 @@ describe("updateStaffUser", () => {
     legacyCsrId: 5,
     username: "test.user",
     displayName: "Test User",
-    officeId: 1,
+    locationId: "11111111-1111-1111-1111-111111111111",
     counterId: null,
     role: "CSR" as Role,
     isActive: true,
@@ -69,7 +69,7 @@ describe("updateStaffUser", () => {
     expect(result).toEqual(updatedUser)
     expect(prisma.staffUser.update).toHaveBeenCalledWith({
       where: { guid: mockStaffUser.guid },
-      data: { displayName: "Updated Name" },
+      data: expect.objectContaining({ displayName: "Updated Name", updatedAt: expect.any(Date) }),
     })
   })
 

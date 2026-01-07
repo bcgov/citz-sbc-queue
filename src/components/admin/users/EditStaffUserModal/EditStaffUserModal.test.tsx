@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import type { Role, StaffUser } from "@/generated/prisma/client"
+import type { Location, Role, StaffUser } from "@/generated/prisma/client"
 import { EditStaffUserModal } from "./EditStaffUserModal"
 
 // Mock child components
@@ -13,75 +13,119 @@ vi.mock("./sections/UserInformationSection", () => ({
 
 vi.mock("./sections/RoleAndAssignmentSection", () => ({
   RoleAndAssignmentSection: ({
-    onRoleChange,
-    onOfficeIdChange,
+    setFormData,
+    availableRoles,
+    disabled,
   }: {
-    onRoleChange: (role: string) => void
-    onOfficeIdChange: (officeId: number) => void
+    user: StaffUser | null
+    offices: Location[]
+    setFormData: (fn: (u: StaffUser) => StaffUser) => void
+    availableRoles: Role[]
+    disabled?: boolean
   }) => (
     <div data-testid="role-assignment-section">
-      <button type="button" onClick={() => onRoleChange("Administrator")}>
+      <button
+        type="button"
+        onClick={() =>
+          setFormData((prev: StaffUser) => ({ ...prev, role: "Administrator" }) as StaffUser)
+        }
+      >
         Change Role
       </button>
-      <button type="button" onClick={() => onOfficeIdChange(2)}>
+      <button
+        type="button"
+        onClick={() =>
+          setFormData(
+            (prev: StaffUser) =>
+              ({
+                ...prev,
+                locationId: "22222222-2222-2222-2222-222222222222",
+              }) as StaffUser
+          )
+        }
+      >
         Change Office
       </button>
+      <div data-testid="available-roles">{availableRoles.join(",")}</div>
+      <div data-testid="disabled-flag">{disabled ? "true" : "false"}</div>
     </div>
   ),
 }))
 
 vi.mock("./sections/PermissionsSection", () => ({
   PermissionsSection: ({
-    user,
-    onIsReceptionistChange,
-    onIsOfficeManagerChange,
-    onIsPesticideDesignateChange,
-    onIsFinanceDesignateChange,
-    onIsIta2DesignateChange,
+    setFormData,
+    disabled,
   }: {
-    user: StaffUser
-    onIsReceptionistChange: (value: boolean) => void
-    onIsOfficeManagerChange: (value: boolean) => void
-    onIsPesticideDesignateChange: (value: boolean) => void
-    onIsFinanceDesignateChange: (value: boolean) => void
-    onIsIta2DesignateChange: (value: boolean) => void
+    user: StaffUser | null
+    setFormData: (fn: (u: StaffUser) => StaffUser) => void
+    disabled?: boolean
   }) => (
     <div data-testid="permissions-section">
       <button
         type="button"
-        onClick={() => onIsReceptionistChange(!user.isReceptionist)}
+        onClick={() =>
+          setFormData(
+            (prev: StaffUser) => ({ ...prev, isReceptionist: !prev.isReceptionist }) as StaffUser
+          )
+        }
         data-testid="toggle-receptionist"
       >
         Toggle Receptionist
       </button>
       <button
         type="button"
-        onClick={() => onIsOfficeManagerChange(!user.isOfficeManager)}
+        onClick={() =>
+          setFormData(
+            (prev: StaffUser) => ({ ...prev, isOfficeManager: !prev.isOfficeManager }) as StaffUser
+          )
+        }
         data-testid="toggle-office-manager"
       >
         Toggle Office Manager
       </button>
       <button
         type="button"
-        onClick={() => onIsPesticideDesignateChange(!user.isPesticideDesignate)}
+        onClick={() =>
+          setFormData(
+            (prev: StaffUser) =>
+              ({
+                ...prev,
+                isPesticideDesignate: !prev.isPesticideDesignate,
+              }) as StaffUser
+          )
+        }
         data-testid="toggle-pesticide"
       >
         Toggle Pesticide
       </button>
       <button
         type="button"
-        onClick={() => onIsFinanceDesignateChange(!user.isFinanceDesignate)}
+        onClick={() =>
+          setFormData(
+            (prev: StaffUser) =>
+              ({
+                ...prev,
+                isFinanceDesignate: !prev.isFinanceDesignate,
+              }) as StaffUser
+          )
+        }
         data-testid="toggle-finance"
       >
         Toggle Finance
       </button>
       <button
         type="button"
-        onClick={() => onIsIta2DesignateChange(!user.isIta2Designate)}
+        onClick={() =>
+          setFormData(
+            (prev: StaffUser) => ({ ...prev, isIta2Designate: !prev.isIta2Designate }) as StaffUser
+          )
+        }
         data-testid="toggle-ita2"
       >
         Toggle ITA2
       </button>
+      <div data-testid="disabled-flag">{disabled ? "true" : "false"}</div>
     </div>
   ),
 }))
@@ -96,7 +140,7 @@ const mockStaffUser: StaffUser = {
   legacyCsrId: 1,
   username: "john.doe",
   displayName: "John Doe",
-  officeId: 1,
+  locationId: "11111111-1111-1111-1111-111111111111",
   counterId: 1,
   role: "CSR",
   isActive: true,
@@ -109,6 +153,37 @@ const mockStaffUser: StaffUser = {
   isFinanceDesignate: false,
   isIta2Designate: false,
 }
+
+const mockOffices: Location[] = [
+  {
+    id: "11111111-1111-1111-1111-111111111111",
+    name: "Main Office",
+    timezone: "UTC",
+    streetAddress: "123 Main St",
+    mailAddress: null,
+    phoneNumber: null,
+    latitude: 0,
+    longitude: 0,
+    legacyOfficeNumber: null,
+    deletedAt: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "22222222-2222-2222-2222-222222222222",
+    name: "Branch Office",
+    timezone: "UTC",
+    streetAddress: "456 Branch Ave",
+    mailAddress: null,
+    phoneNumber: null,
+    latitude: 0,
+    longitude: 0,
+    legacyOfficeNumber: null,
+    deletedAt: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+]
 
 describe("EditStaffUserModal", () => {
   beforeEach(() => {
@@ -125,6 +200,7 @@ describe("EditStaffUserModal", () => {
         user={null}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        offices={mockOffices}
       />
     )
 
@@ -141,6 +217,7 @@ describe("EditStaffUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        offices={mockOffices}
       />
     )
 
@@ -157,6 +234,7 @@ describe("EditStaffUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        offices={mockOffices}
       />
     )
 
@@ -173,6 +251,7 @@ describe("EditStaffUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        offices={mockOffices}
       />
     )
 
@@ -192,6 +271,7 @@ describe("EditStaffUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        offices={mockOffices}
       />
     )
 
@@ -212,6 +292,7 @@ describe("EditStaffUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        offices={mockOffices}
       />
     )
 
@@ -232,6 +313,7 @@ describe("EditStaffUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        offices={mockOffices}
       />
     )
 
@@ -257,6 +339,7 @@ describe("EditStaffUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        offices={mockOffices}
       />
     )
 
@@ -278,6 +361,7 @@ describe("EditStaffUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        offices={mockOffices}
       />
     )
 
@@ -303,6 +387,7 @@ describe("EditStaffUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        offices={mockOffices}
       />
     )
 
@@ -314,7 +399,9 @@ describe("EditStaffUserModal", () => {
 
     await waitFor(() => {
       const callArgs = mockupdateStaffUser.mock.calls[0]
-      expect(callArgs[0]).toEqual(expect.objectContaining({ officeId: 2 }))
+      expect(callArgs[0]).toEqual(
+        expect.objectContaining({ locationId: "22222222-2222-2222-2222-222222222222" })
+      )
     })
   })
 
@@ -328,6 +415,7 @@ describe("EditStaffUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        offices={mockOffices}
       />
     )
 
@@ -361,6 +449,7 @@ describe("EditStaffUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        offices={mockOffices}
       />
     )
 
@@ -397,6 +486,7 @@ describe("EditStaffUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        offices={mockOffices}
       />
     )
 
@@ -419,6 +509,7 @@ describe("EditStaffUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        offices={mockOffices}
       />
     )
 
@@ -435,7 +526,7 @@ describe("EditStaffUserModal", () => {
         expect.objectContaining({
           username: mockStaffUser.username,
           displayName: mockStaffUser.displayName,
-          officeId: mockStaffUser.officeId,
+          locationId: mockStaffUser.locationId,
           isReceptionist: mockStaffUser.isReceptionist,
         })
       )
@@ -458,6 +549,7 @@ describe("EditStaffUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        offices={mockOffices}
       />
     )
 
@@ -470,6 +562,7 @@ describe("EditStaffUserModal", () => {
         user={newUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        offices={mockOffices}
       />
     )
 
@@ -486,6 +579,7 @@ describe("EditStaffUserModal", () => {
         user={mockStaffUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        offices={mockOffices}
       />
     )
 
@@ -514,6 +608,7 @@ describe("EditStaffUserModal", () => {
         user={higherRoleUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        offices={mockOffices}
       />
     )
 
@@ -538,6 +633,7 @@ describe("EditStaffUserModal", () => {
         user={higherRoleUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        offices={mockOffices}
       />
     )
 
@@ -560,6 +656,7 @@ describe("EditStaffUserModal", () => {
         user={higherRoleUser}
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
+        offices={mockOffices}
       />
     )
 
