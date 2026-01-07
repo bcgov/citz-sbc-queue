@@ -50,12 +50,7 @@ export const EditStaffUserModal = ({
   if (!user || !formData || !previousUser) return null
 
   // Check if the user being edited has a higher role than the current user
-  const isUserHigherRole = !editableRoles.includes(user.role)
-  const isReadonly = isUserHigherRole
-
-  const handleChange = (field: keyof StaffUser, value: StaffUser[keyof StaffUser]) => {
-    setFormData((prev) => (prev ? { ...prev, [field]: value } : null))
-  }
+  const isReadonly = !editableRoles.includes(user.role)
 
   const handleSave = async () => {
     if (formData && !isReadonly) {
@@ -87,30 +82,11 @@ export const EditStaffUserModal = ({
             <RoleAndAssignmentSection
               user={formData}
               offices={offices}
-              onRoleChange={(role) => handleChange("role", role)}
-              onLocationIdChange={(locationId) => handleChange("locationId", locationId)}
+              setFormData={setFormData}
               availableRoles={editableRoles}
               disabled={isReadonly}
             />
-            <PermissionsSection
-              user={formData}
-              onIsReceptionistChange={(isReceptionist) =>
-                handleChange("isReceptionist", isReceptionist)
-              }
-              onIsOfficeManagerChange={(isOfficeManager) =>
-                handleChange("isOfficeManager", isOfficeManager)
-              }
-              onIsPesticideDesignateChange={(isPesticideDesignate) =>
-                handleChange("isPesticideDesignate", isPesticideDesignate)
-              }
-              onIsFinanceDesignateChange={(isFinanceDesignate) =>
-                handleChange("isFinanceDesignate", isFinanceDesignate)
-              }
-              onIsIta2DesignateChange={(isIta2Designate) =>
-                handleChange("isIta2Designate", isIta2Designate)
-              }
-              disabled={isReadonly}
-            />
+            <PermissionsSection user={formData} setFormData={setFormData} disabled={isReadonly} />
           </div>
         </form>
       </DialogBody>

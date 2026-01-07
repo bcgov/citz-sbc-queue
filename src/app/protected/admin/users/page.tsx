@@ -17,8 +17,8 @@ export default async function Page() {
   }
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Users</h1>
+    <div className="space-y-sm">
+      <h2>Users</h2>
       <StaffUserTable
         users={users}
         offices={offices}

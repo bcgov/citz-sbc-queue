@@ -1,4 +1,5 @@
 import type { StaffUser } from "@/generated/prisma/client"
+import { Section } from "./common/Section.tsx"
 
 type UserInformationSectionProps = {
   user: StaffUser
@@ -11,8 +12,7 @@ type UserInformationSectionProps = {
  * @property props.user - The staff user whose information is being displayed.
  */
 export const UserInformationSection = ({ user }: UserInformationSectionProps) => (
-  <div className="space-y-2 rounded-lg border border-border-light bg-background-light-gray p-4 shadow-sm">
-    <h3 className="text-sm font-semibold text-typography-primary">User Information</h3>
+  <Section title="User Information" disabled={false}>
     <div className="flex flex-row justify-between text-sm">
       <div>
         <p className="text-xs font-medium text-typography-secondary">Display Name</p>
@@ -33,5 +33,5 @@ export const UserInformationSection = ({ user }: UserInformationSectionProps) =>
         </p>
       </div>
     </div>
-  </div>
+  </Section>
 )

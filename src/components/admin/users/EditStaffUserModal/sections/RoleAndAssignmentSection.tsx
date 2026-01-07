@@ -1,10 +1,12 @@
+import type { Dispatch, SetStateAction } from "react"
 import type { Location, Role, StaffUser } from "@/generated/prisma/client"
+import { Section } from "./common/Section.tsx"
+import { SelectInput } from "./common/SelectInput.tsx"
 
 type RoleAndAssignmentSectionProps = {
   user: StaffUser
   offices: Location[]
-  onRoleChange: (role: StaffUser["role"]) => void
-  onLocationIdChange: (locationId: string) => void
+  setFormData: Dispatch<SetStateAction<StaffUser | null>>
   availableRoles: Role[]
   disabled?: boolean
 }
@@ -14,67 +16,41 @@ type RoleAndAssignmentSectionProps = {
  *
  * @param props - The properties object.
  * @property props.user - The staff user whose role and assignment are being edited.
- * @property props.onRoleChange - Callback when role changes.
- * @property props.onOfficeIdChange - Callback when office ID changes.
+ * @property props.setFormData - Function to update the form data state.
  * @property props.availableRoles - List of roles that can be assigned.
  * @property props.disabled - Whether the section inputs are disabled.
  */
 export const RoleAndAssignmentSection = ({
   user,
   offices,
-  onRoleChange,
-  onLocationIdChange,
+  setFormData,
   availableRoles,
   disabled,
 }: RoleAndAssignmentSectionProps) => {
-  const officeOptions = offices.map((office) => (
-    <option key={office.id} value={office.id}>
-      {office.name}
-      {office.legacyOfficeNumber ? ` (No. ${office.legacyOfficeNumber})` : ""}
-    </option>
-  ))
-
   return (
-    <div
-      className={`space-y-3 rounded-lg border border-border-light bg-background-light-gray p-4 shadow-sm ${disabled ? "opacity-50" : ""}`}
-    >
-      <h3 className="text-sm font-semibold text-typography-primary">Role & Assignment</h3>
+    <Section title="Role and Assignment" disabled={disabled ?? false}>
+      <SelectInput
+        id="role"
+        label="Role"
+        value={user.role}
+        onChange={(value) => setFormData((prev) => prev && { ...prev, role: value as Role })}
+        disabled={disabled ?? false}
+        options={availableRoles.map((role) => ({ value: role, label: role }))}
+      />
 
-      <div className="space-y-3">
-        <div>
-          <label htmlFor="role" className="block text-xs font-medium text-typography-primary">
-            Role
-          </label>
-          <select
-            id="role"
-            value={user.role}
-            onChange={(e) => onRoleChange(e.target.value as Role)}
-            disabled={disabled}
-            className="mt-1 block w-full rounded-md border border-border-dark px-2 py-1 text-xs text-typography-primary disabled:cursor-not-allowed disabled:bg-gray-100"
-          >
-            {availableRoles.map((role) => (
-              <option key={role} value={role}>
-                {role}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="locationId" className="block text-xs font-medium text-typography-primary">
-            Office
-          </label>
-          <select
-            id="locationId"
-            value={user.locationId ?? undefined}
-            onChange={(e) => onLocationIdChange(e.target.value)}
-            disabled={disabled}
-            className="mt-1 block w-full rounded-md border border-border-dark px-2 py-1 text-xs text-typography-primary disabled:cursor-not-allowed disabled:bg-gray-100"
-          >
-            {officeOptions}
-          </select>
-        </div>
-      </div>
-    </div>
+      <SelectInput
+        id="locationId"
+        label="Office"
+        value={user.locationId ?? undefined}
+        onChange={(value) => setFormData((prev) => prev && { ...prev, locationId: value })}
+        disabled={disabled ?? false}
+        options={offices.map((office) => ({
+          value: office.id,
+          label: office.legacyOfficeNumber
+            ? `${office.name} (No. ${office.legacyOfficeNumber})`
+            : office.name,
+        }))}
+      />
+    </Section>
   )
 }
