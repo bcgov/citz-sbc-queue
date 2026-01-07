@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from "react"
 import type { StaffUser } from "@/generated/prisma/client"
-import { CheckboxInput } from "./common/CheckboxInput.tsx"
-import { Section } from "./common/Section.tsx"
+import { CheckboxInput } from "./common/CheckboxInput"
+import { Section } from "./common/Section"
 
 type PermissionsSectionProps = {
   user: StaffUser
