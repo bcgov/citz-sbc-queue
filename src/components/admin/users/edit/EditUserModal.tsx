@@ -9,21 +9,27 @@ import {
   DialogTitle,
   Modal,
 } from "@/components/common/dialog"
-import type { StaffUser } from "@/generated/prisma/client"
+import type { Role, StaffUser } from "@/generated/prisma/client"
 import { PermissionsSection } from "./PermissionsSection"
 import { RoleAndAssignmentSection } from "./RoleAndAssignmentSection"
 import { UserInformationSection } from "./UserInformationSection"
+import { useEditUserAvailableRoles } from "./useEditUserAvailableRoles"
 
-type Props = {
+type EditUserModalProps = {
   open: boolean
   onClose: () => void
   user: StaffUser | null
-  updateUser: (user: Partial<StaffUser>, prevUser: Partial<StaffUser>) => Promise<void>
+  updateUser: (
+    user: Partial<StaffUser>,
+    prevUser: Partial<StaffUser>,
+    availableRoles: Role[]
+  ) => Promise<void>
 }
 
-export const EditUserModal = ({ open, onClose, user, updateUser }: Props) => {
+export const EditUserModal = ({ open, onClose, user, updateUser }: EditUserModalProps) => {
   const [formData, setFormData] = useState<StaffUser | null>(null)
   const [previousUser, setPreviousUser] = useState<StaffUser | null>(null)
+  const availableRoles = useEditUserAvailableRoles()
 
   useEffect(() => {
     if (open && user) {
@@ -40,7 +46,7 @@ export const EditUserModal = ({ open, onClose, user, updateUser }: Props) => {
 
   const handleSave = async () => {
     if (formData) {
-      await updateUser(formData, previousUser)
+      await updateUser(formData, previousUser, availableRoles)
       onClose()
     }
   }
@@ -60,6 +66,7 @@ export const EditUserModal = ({ open, onClose, user, updateUser }: Props) => {
               user={formData}
               onRoleChange={(role) => handleChange("role", role)}
               onOfficeIdChange={(officeId) => handleChange("officeId", officeId)}
+              availableRoles={availableRoles}
             />
             <PermissionsSection
               user={formData}
