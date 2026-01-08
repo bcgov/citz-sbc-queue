@@ -4,6 +4,10 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 import * as hooks from "@/hooks"
 import Header from "./Header"
 
+vi.mock("@/hooks", () => ({
+  useAuth: () => ({ isAuthenticated: false, hasRole: () => false }),
+}))
+
 describe("Header", () => {
   afterEach(() => {
     vi.restoreAllMocks()
