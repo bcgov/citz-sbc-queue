@@ -46,7 +46,7 @@ export const updateUserOnLogin = async (accessToken: string) => {
       displayName: display_name,
       role: newRole,
       isActive: true,
-      officeId: csrUser ? csrUser.officeId : null,
+      locationId: csrUser ? csrUser.locationId : null,
       counterId: csrUser ? csrUser.counterId : null,
       deletedAt: csrUser ? csrUser.deleted : null,
       isFinanceDesignate: csrUser ? csrUser.financeDesignate === 1 : false,
