@@ -2,6 +2,7 @@
 
 import type { Role } from "@/generated/prisma/enums"
 import { getCSRByUsername } from "@/lib/prisma/legacy/csr/getCSRByUsername"
+import { getLocationByLegacyOfficeId } from "@/lib/prisma/location/getLocationByLegacyOfficeId"
 import { getStaffUserBySub } from "@/lib/prisma/staff_user/getStaffUserBySub"
 import { insertStaffUser } from "@/lib/prisma/staff_user/insertStaffUser"
 import { updateStaffUser } from "@/lib/prisma/staff_user/updateStaffUser"
@@ -37,6 +38,9 @@ export const updateUserOnLogin = async (accessToken: string) => {
     // Get new role
     const newRole = await assignNewRoleFromCSR(sub, csrUser?.roleId ?? null)
 
+    // Resolve legacy officeId -> locationId (Location.legacyOfficeNumber)
+    const resolvedLocation = csrUser ? await getLocationByLegacyOfficeId(csrUser.officeId) : null
+
     // Create new user
     await insertStaffUser({
       sub,
@@ -46,7 +50,7 @@ export const updateUserOnLogin = async (accessToken: string) => {
       displayName: display_name,
       role: newRole,
       isActive: true,
-      locationId: csrUser ? csrUser.locationId : null,
+      location: resolvedLocation ? { connect: { id: resolvedLocation.id } } : undefined,
       counterId: csrUser ? csrUser.counterId : null,
       deletedAt: csrUser ? csrUser.deleted : null,
       isFinanceDesignate: csrUser ? csrUser.financeDesignate === 1 : false,

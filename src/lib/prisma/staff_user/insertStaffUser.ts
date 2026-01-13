@@ -17,6 +17,6 @@ export const insertStaffUser = async (user: Prisma.StaffUserCreateInput): Promis
   // Update SSO role
   await assignRole(user.sub, user.role)
 
-  const staffUser = await prisma.staffUser.create({ data: user })
+  const staffUser = await prisma.staffUser.create({ data: { ...user } })
   return staffUser
 }
