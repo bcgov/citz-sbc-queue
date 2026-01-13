@@ -30,6 +30,10 @@ describe("Header", () => {
   })
 
   it("shows hamburger icon button when in mobile", () => {
+    vi.spyOn(hooks, "useAuth").mockReturnValue({
+      isAuthenticated: true,
+      hasRole: () => false,
+    } as unknown as ReturnType<typeof hooks.useAuth>)
     window.innerWidth = 639
     window.dispatchEvent(new Event("resize"))
     render(<Header />)
@@ -39,6 +43,10 @@ describe("Header", () => {
 
   it("does not show hamburger icon button when not in mobile", () => {
     // Simulate desktop width
+    vi.spyOn(hooks, "useAuth").mockReturnValue({
+      isAuthenticated: true,
+      hasRole: () => false,
+    } as unknown as ReturnType<typeof hooks.useAuth>)
     window.innerWidth = 640
     window.dispatchEvent(new Event("resize"))
     render(<Header />)

@@ -52,7 +52,7 @@ export default function RootLayout({
             <Header />
           </header>
           <main className="grid md:col-span-8 md:col-start-3 col-span-full">
-            <div className="grid p-sm m-sm gap-sm md:m-xl md:p-lg justify-around">{children}</div>
+            <div className="grid p-sm m-sm gap-sm md:m-xl md:p-lg">{children}</div>
           </main>
           <footer className="sticky top-[100vh] col-span-full h-auto">
             <Footer />

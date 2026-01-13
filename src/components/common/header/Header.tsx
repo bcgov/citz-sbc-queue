@@ -14,6 +14,7 @@ export const Header = () => {
   const [showNavList, setShowNavList] = useState(false)
 
   // Close nav after page changes
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <>
   useEffect(() => {
     setShowNavList(false)
   }, [pathname])
