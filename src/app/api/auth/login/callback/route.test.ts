@@ -5,6 +5,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 vi.mock("@/utils/auth/token/getTokens", () => ({
   getTokens: vi.fn(),
 }))
+// Mock the updateUserOnLogin utility
+vi.mock("@/utils/user/updateUserOnLogin", () => ({
+  updateUserOnLogin: vi.fn(),
+}))
 
 describe("/api/auth/login/callback", () => {
   const mockTokenResponse = {
@@ -110,6 +114,9 @@ describe("/api/auth/login/callback", () => {
       expect(setCookieHeaders).toBeDefined()
       expect(setCookieHeaders.length).toBeGreaterThan(0)
 
+      const updateUserModule = await import("@/utils/user/updateUserOnLogin")
+      expect(updateUserModule.updateUserOnLogin).toHaveBeenCalledWith("mock-access-token")
+
       // Check for access token cookie
       const accessTokenCookie = setCookieHeaders.find((cookie) =>
         cookie.includes("access_token=mock-access-token")
@@ -204,6 +211,9 @@ describe("/api/auth/login/callback", () => {
       expect(refreshExpiresInCookie).toContain("SameSite=none")
       expect(refreshExpiresInCookie).toContain("Path=/")
       expect(refreshExpiresInCookie).toContain("Secure") // Secure in production
+
+      const updateUserModule = await import("@/utils/user/updateUserOnLogin")
+      expect(updateUserModule.updateUserOnLogin).toHaveBeenCalledWith("mock-access-token")
     })
 
     it("should set cookies with lax sameSite in development", async () => {
@@ -268,6 +278,9 @@ describe("/api/auth/login/callback", () => {
       expect(refreshExpiresInCookie).toBeDefined()
       expect(refreshExpiresInCookie).toContain("SameSite=lax")
       expect(refreshExpiresInCookie).not.toContain("Secure") // Not secure in development
+
+      const updateUserModule = await import("@/utils/user/updateUserOnLogin")
+      expect(updateUserModule.updateUserOnLogin).toHaveBeenCalledWith("mock-access-token")
     })
 
     it("should use default values when environment variables are not set", async () => {
@@ -298,6 +311,9 @@ describe("/api/auth/login/callback", () => {
         ssoRealm: "standard", // default
         ssoProtocol: "openid-connect", // default
       })
+
+      const updateUserModule = await import("@/utils/user/updateUserOnLogin")
+      expect(updateUserModule.updateUserOnLogin).toHaveBeenCalledWith("mock-access-token")
     })
 
     it("should handle getTokens throwing an error", async () => {
@@ -372,6 +388,9 @@ describe("/api/auth/login/callback", () => {
           code: specialCode,
         })
       )
+
+      const updateUserModule = await import("@/utils/user/updateUserOnLogin")
+      expect(updateUserModule.updateUserOnLogin).toHaveBeenCalledWith("mock-access-token")
     })
   })
 })
