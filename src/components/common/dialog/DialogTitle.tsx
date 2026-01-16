@@ -28,10 +28,7 @@ export const DialogTitle = ({ children, id, className }: DialogTitleProps) => {
   const dialogContext = useDialogContext()
 
   const titleClasses = useMemo(() => {
-    return [
-      "text-[20px] font-bold leading-6 text-typography-primary",
-      `${className ?? ""}`,
-    ].join(" ")
+    return ["text-[20px] font-bold leading-6", `${className ?? ""}`].join(" ")
   }, [className])
 
   // If we're in a standalone dialog (has our custom context), use a regular h2

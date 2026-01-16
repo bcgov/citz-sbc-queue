@@ -2,8 +2,10 @@
 
 import { useState } from "react"
 import { DataTable } from "@/components/common/datatable"
+import { Switch } from "@/components/common/switch"
 import type { Location, Role, StaffUser } from "@/generated/prisma/client"
 import { useDialog } from "@/hooks/useDialog/useDialog"
+import { ConfirmArchiveUserModal } from "../ConfirmArchiveUserModal"
 import { EditStaffUserModal } from "../EditStaffUserModal"
 import { columns } from "./columns"
 
@@ -29,17 +31,30 @@ export const StaffUserTable = ({
     openDialog: openEditUserModal,
     closeDialog: closeEditUserModal,
   } = useDialog()
+  const {
+    open: confirmArchiveUserModalOpen,
+    openDialog: openConfirmArchiveUserModal,
+    closeDialog: closeConfirmArchiveUserModal,
+  } = useDialog()
+
   const [selectedUser, setSelectedUser] = useState<StaffUser | null>(null)
+  const [showArchived, setShowArchived] = useState<boolean>(false)
 
   const handleRowClick = (user: StaffUser) => {
     setSelectedUser(user)
     openEditUserModal()
   }
 
+  const usersToShow = showArchived ? users : users.filter((user) => user.deletedAt === null)
+
   return (
     <>
+      <div className="flex justify-end mb-3">
+        <h3 className="mr-2 self-center text-sm font-medium text-gray-700">Show Archived</h3>
+        <Switch checked={showArchived} onChange={setShowArchived} />
+      </div>
       <DataTable
-        data={users}
+        data={usersToShow}
         columns={columns}
         search={{
           enabled: true,
@@ -58,6 +73,14 @@ export const StaffUserTable = ({
         onClose={closeEditUserModal}
         user={selectedUser}
         offices={offices}
+        updateStaffUser={updateStaffUser}
+        revalidateTable={revalidateTable}
+        openConfirmArchiveUserModal={openConfirmArchiveUserModal}
+      />
+      <ConfirmArchiveUserModal
+        open={confirmArchiveUserModalOpen}
+        onClose={closeConfirmArchiveUserModal}
+        user={selectedUser}
         updateStaffUser={updateStaffUser}
         revalidateTable={revalidateTable}
       />
