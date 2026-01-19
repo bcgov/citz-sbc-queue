@@ -118,7 +118,7 @@ export const EditStaffUserModal = ({
           type="button"
           className="secondary danger"
           onClick={handleOpenArchive}
-          disabled={isReadonly && !isArchived}
+          disabled={isUserHigherRole}
         >
           {isArchived ? "Unarchive" : "Archive"}
         </button>
