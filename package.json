@@ -25,7 +25,7 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
-    "playwright:install": "playwright install",
+    "playwright:install": "playwright install-deps && playwright install",
     "clean": "rm -rf .next out build dist coverage test-results playwright-report",
     "check-licenses": "tsx scripts/check-licenses.ts",
     "db:push": "prisma db push",

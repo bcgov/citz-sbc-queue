@@ -31,7 +31,8 @@
         "github.vscode-pull-request-github",
         "ms-vsliveshare.vsliveshare",
         "irongeek.vscode-env",
-        "csstools.postcss"
+        "csstools.postcss",
+        "ms-playwright.playwright"
       ],
       "settings": {
         "files.eol": "\n",
