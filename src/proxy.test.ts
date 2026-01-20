@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { config, middleware } from "./middleware"
+import { config, proxy } from "./proxy"
 
 // Mock the auth middleware module
 vi.mock("./middleware/auth", () => ({
@@ -22,7 +22,7 @@ const mockAuthMiddleware = vi.mocked(authMiddleware)
 const mockIsProtectedRoute = vi.mocked(isProtectedRoute)
 const mockConditional = vi.mocked(conditional)
 
-describe("middleware", () => {
+describe("proxy", () => {
   const createMockRequest = (
     url = "https://example.com/api/test",
     headers: Record<string, string> = {}
@@ -50,7 +50,7 @@ describe("middleware", () => {
 
       const request = createMockRequest("https://example.com/api/protected/users")
 
-      await middleware(request)
+      await proxy(request)
 
       // Verify conditional was called with the correct parameters
       expect(mockConditional).toHaveBeenCalledWith(
@@ -68,7 +68,7 @@ describe("middleware", () => {
 
       const request = createMockRequest("https://example.com/api/protected/users")
 
-      await middleware(request)
+      await proxy(request)
 
       // Get the condition function that was passed to conditional
       const conditionFunction = mockConditional.mock.calls[0][0]
@@ -88,7 +88,7 @@ describe("middleware", () => {
 
       const request = createMockRequest()
 
-      const result = await middleware(request)
+      const result = await proxy(request)
 
       expect(result).toBe(expectedResponse)
     })
@@ -109,7 +109,7 @@ describe("middleware", () => {
         vi.clearAllMocks()
         const request = createMockRequest(url)
 
-        await middleware(request)
+        await proxy(request)
 
         // Get the condition function and test it
         const conditionFunction = mockConditional.mock.calls[0][0]
@@ -127,7 +127,7 @@ describe("middleware", () => {
 
       const request = createMockRequest()
 
-      await expect(middleware(request)).rejects.toThrow("Middleware error")
+      await expect(proxy(request)).rejects.toThrow("Middleware error")
     })
 
     it("should work with various HTTP methods", async () => {
@@ -136,8 +136,7 @@ describe("middleware", () => {
 
       const request = createMockRequest("https://example.com/api/protected/users")
 
-      await middleware(request)
-
+      await proxy(request)
       expect(mockConditionalMiddleware).toHaveBeenCalledWith(request)
     })
 
@@ -149,7 +148,7 @@ describe("middleware", () => {
         mockConditional.mockReturnValue(mockConditionalMiddleware)
 
         const request = createMockRequest()
-        await middleware(request)
+        await proxy(request)
 
         // Extract the condition function
         conditionFunction = mockConditional.mock.calls[0][0]
@@ -243,7 +242,7 @@ describe("middleware", () => {
         authorization: "Bearer valid-token",
       })
 
-      const result = await middleware(request)
+      const result = await proxy(request)
 
       // Verify the full chain
       expect(mockConditional).toHaveBeenCalledWith(expect.any(Function), mockAuthMiddleware)
@@ -265,7 +264,7 @@ describe("middleware", () => {
 
       const request = createMockRequest("https://example.com/api/public/health")
 
-      const result = await middleware(request)
+      const result = await proxy(request)
 
       // Verify the conditional middleware was still called
       expect(mockConditionalMiddleware).toHaveBeenCalledWith(request)
@@ -287,7 +286,7 @@ describe("middleware", () => {
 
       const request = createMockRequest("https://example.com/api/test")
 
-      await middleware(request)
+      await proxy(request)
 
       // Get and test the condition function
       const conditionFunction = mockConditional.mock.calls[0][0]
@@ -314,7 +313,7 @@ describe("middleware", () => {
 
         const request = createMockRequest(url)
 
-        await middleware(request)
+        await proxy(request)
 
         expect(mockConditionalMiddleware).toHaveBeenCalledWith(request)
 
@@ -336,7 +335,7 @@ describe("middleware", () => {
       // This should still work because NextRequest should have valid URL
       const request = createMockRequest("https://example.com/api/test")
 
-      await middleware(request)
+      await proxy(request)
 
       expect(mockConditionalMiddleware).toHaveBeenCalledWith(request)
     })
@@ -352,7 +351,7 @@ describe("middleware", () => {
         headers: { get: () => null },
       } as unknown as NextRequest
 
-      await middleware(request)
+      await proxy(request)
 
       expect(mockConditionalMiddleware).toHaveBeenCalledWith(request)
     })
@@ -365,7 +364,7 @@ describe("middleware", () => {
       const longPath = `/api/public/${"very-long-path-segment/".repeat(100)}endpoint`
       const request = createMockRequest(`https://example.com${longPath}`)
 
-      await middleware(request)
+      await proxy(request)
 
       const conditionFunction = mockConditional.mock.calls[0][0]
       conditionFunction(request)
@@ -381,7 +380,7 @@ describe("middleware", () => {
       const specialPath = "/api/protected/users/test%20user/data"
       const request = createMockRequest(`https://example.com${specialPath}`)
 
-      await middleware(request)
+      await proxy(request)
 
       const conditionFunction = mockConditional.mock.calls[0][0]
       conditionFunction(request)
