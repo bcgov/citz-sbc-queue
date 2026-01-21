@@ -25,6 +25,7 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
+    "test:e2e:report": "playwright show-report",
     "playwright:install": "playwright install-deps && playwright install",
     "clean": "rm -rf .next out build dist coverage test-results playwright-report",
     "check-licenses": "tsx scripts/check-licenses.ts",
@@ -52,6 +53,7 @@
     "zustand": "5.0.7"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.11.0",
     "@biomejs/biome": "2.1.3",
     "@playwright/test": "1.54.1",
     "@tailwindcss/aspect-ratio": "0.4.2",

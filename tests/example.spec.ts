@@ -1,18 +1,21 @@
 import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
-test('has title', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+test.describe('homepage', () => {
+  test('has paragraph', async ({ page }) => {
+    await page.goto('http://localhost:3000/');
 
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
-});
+    // Expect a title "to contain" a substring.
+    await expect(page.locator('h1')).toContainText('TEST');
+  });
 
-test('get started link', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+  test('should not have any automatically detectable accessibility issues', async ({ page }) => {
+    await page.goto('http://localhost:3000/');
 
-  // Click the get started link.
-  await page.getByRole('link', { name: 'Get started' }).click();
+    const accessibilityScanResults = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .analyze();
 
-  // Expects page to have a heading with the name of Installation.
-  await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
+  expect(accessibilityScanResults.violations).toEqual([]);
+  });
 });
