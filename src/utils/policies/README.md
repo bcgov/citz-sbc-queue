@@ -98,12 +98,12 @@ export const policies: Policies = {
 
 ## API
 
-### getAllowedActions
+### resolvePolicy
 
 Returns all allowed actions for a single resource.
 
 ```ts
-getAllowedActions(
+resolvePolicy(
 	resource: string,
 	user_context: UserContext,
 	data?: ResourceData,
@@ -113,7 +113,7 @@ getAllowedActions(
 **Example**
 
 ```ts
-const actions = getAllowedActions(
+const actions = resolvePolicy(
 	"comment",
 	{ staff_user_id: "u1", role: "Staff" },
 	{ created_by: "u1" },
@@ -171,7 +171,7 @@ Result:
 ### UI gating
 
 ```ts
-const actions = getAllowedActions("comment", user_context, comment);
+const actions = resolvePolicy("comment", user_context, comment);
 
 const canEdit = actions.includes("update");
 const canDelete = actions.includes("delete");

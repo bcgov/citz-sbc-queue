@@ -1,4 +1,4 @@
-import { getAllowedActions } from "./getAllowedActions"
+import { resolvePolicy } from "./resolvePolicy"
 import type { PolicyRequest, UserContext } from "./types"
 
 /**
@@ -19,7 +19,7 @@ export const resolvePolicies = (
   return requests.map(({ resource, data = null }) => {
     return {
       resource,
-      actions: getAllowedActions(resource, user_context, data),
+      actions: resolvePolicy(resource, user_context, data),
     }
   })
 }

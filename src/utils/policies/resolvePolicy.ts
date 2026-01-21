@@ -13,7 +13,7 @@ import type { ResourceData, UserContext } from "./types"
  * @param data - The resource record (if applicable)
  * @returns An array of allowed action strings for the resource
  */
-export const getAllowedActions = (
+export const resolvePolicy = (
   resource: string,
   user_context: UserContext,
   data: ResourceData = null
