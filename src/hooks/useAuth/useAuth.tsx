@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
+import type { Role } from "@/generated/prisma/enums"
 import { useAuthStore } from "@/stores/auth/store"
 import { decodeJWTBrowser } from "@/utils/auth/jwt/decodeJWT.browser"
 
@@ -24,6 +25,7 @@ import { decodeJWTBrowser } from "@/utils/auth/jwt/decodeJWT.browser"
  * @returns An object with the following shape:
  * {
  *   isAuthenticated: boolean, // true if session exists in the store
+ *   role: Role | null,
  *   hasRole: (role: string) => boolean, // checks for a role in token.client_roles
  *   display_name?: string | undefined,
  *   email?: string | undefined,
@@ -56,6 +58,7 @@ export const useAuth = () => {
 
   return {
     isAuthenticated: !!session,
+    role: (decodedAccessToken?.client_roles?.[0] ?? null) as Role | null,
     hasRole,
     display_name: decodedAccessToken?.display_name,
     email: decodedAccessToken?.email,
@@ -69,6 +72,7 @@ export const useAuth = () => {
 
 export type UseAuthReturn = {
   isAuthenticated: boolean
+  role: Role | null
   hasRole: (role: string) => boolean
   display_name?: string | undefined
   email?: string | undefined
