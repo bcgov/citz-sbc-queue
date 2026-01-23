@@ -1,6 +1,6 @@
-import type { BaseTokenPayload } from "../types"
+import type { SSOIdirUser } from "../types"
 
-export const decodeJWT = <Provider = unknown>(jwt: string): BaseTokenPayload<Provider> => {
+export const decodeJWT = (jwt: string): SSOIdirUser => {
   const parts = jwt.split(".")
   if (parts.length !== 3) {
     throw new Error("Invalid JWT format")
@@ -9,7 +9,7 @@ export const decodeJWT = <Provider = unknown>(jwt: string): BaseTokenPayload<Pro
   const base64Payload = parts[1]
   try {
     const decodedPayload = Buffer.from(base64Payload, "base64url").toString("utf-8")
-    return JSON.parse(decodedPayload)
+    return JSON.parse(decodedPayload) as SSOIdirUser
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Invalid input in decodeJWT(jwt: string): ${error.message}`)
