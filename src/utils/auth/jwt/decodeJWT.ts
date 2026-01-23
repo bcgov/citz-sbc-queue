@@ -1,6 +1,6 @@
 import type { BaseTokenPayload } from "../types"
 
-export const decodeJWT = (jwt: string): BaseTokenPayload<unknown> => {
+export const decodeJWT = <Provider = unknown>(jwt: string): BaseTokenPayload<Provider> => {
   const parts = jwt.split(".")
   if (parts.length !== 3) {
     throw new Error("Invalid JWT format")
