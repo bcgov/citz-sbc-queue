@@ -39,11 +39,11 @@ export type BaseTokenPayload<TProvider extends SSOIdentityProvider | unknown> = 
 }
 
 export type SSOIdirUser = BaseTokenPayload<IdirIdentityProvider> & {
-  idir_user_guid: string;
-  idir_username: string;
-  name: string;
-  display_name: string;
-  given_name: string;
-  family_name: string;
-  email: string;
-};
+  idir_user_guid: string
+  idir_username: string
+  name: string
+  display_name: string
+  given_name: string
+  family_name: string
+  email: string
+}

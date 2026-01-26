@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 import { getTokens } from "@/utils/auth/token/getTokens"
+import { updateUserOnLogin } from "@/utils/user/updateUserOnLogin"
 
 const {
   SSO_ENVIRONMENT = "dev",
@@ -39,6 +40,9 @@ export async function GET(request: NextRequest) {
       ssoRealm: SSO_REALM,
       ssoProtocol: SSO_PROTOCOL as "openid-connect",
     })
+
+    // Add or update user in the database upon login
+    await updateUserOnLogin(tokens.access_token)
 
     // Create HTML response for successful login
     const htmlContent = `

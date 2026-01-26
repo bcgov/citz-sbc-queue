@@ -6,6 +6,11 @@ vi.mock("@/utils/auth/token/getTokens", () => ({
   getTokens: vi.fn(),
 }))
 
+// Mock the updateUserOnLogin utility
+vi.mock("@/utils/user/updateUserOnLogin", () => ({
+  updateUserOnLogin: vi.fn(),
+}))
+
 describe("/api/auth/login/callback", () => {
   const mockTokenResponse = {
     access_token: "mock-access-token",
@@ -135,6 +140,9 @@ describe("/api/auth/login/callback", () => {
         ssoRealm: "standard",
         ssoProtocol: "openid-connect",
       })
+
+      const updateUserModule = await import("@/utils/user/updateUserOnLogin")
+      expect(updateUserModule.updateUserOnLogin).toHaveBeenCalledWith("mock-access-token")
     })
 
     it("should set cookies correctly in production", async () => {
@@ -204,6 +212,8 @@ describe("/api/auth/login/callback", () => {
       expect(refreshExpiresInCookie).toContain("SameSite=none")
       expect(refreshExpiresInCookie).toContain("Path=/")
       expect(refreshExpiresInCookie).toContain("Secure") // Secure in production
+      const updateUserModule = await import("@/utils/user/updateUserOnLogin")
+      expect(updateUserModule.updateUserOnLogin).toHaveBeenCalledWith("mock-access-token")
     })
 
     it("should set cookies with lax sameSite in development", async () => {
@@ -268,36 +278,9 @@ describe("/api/auth/login/callback", () => {
       expect(refreshExpiresInCookie).toBeDefined()
       expect(refreshExpiresInCookie).toContain("SameSite=lax")
       expect(refreshExpiresInCookie).not.toContain("Secure") // Not secure in development
-    })
 
-    it("should use default values when environment variables are not set", async () => {
-      vi.stubEnv("SSO_CLIENT_ID", "test-client-id")
-      vi.stubEnv("SSO_CLIENT_SECRET", "test-client-secret")
-      vi.stubEnv("APP_URL", "https://example.com")
-      // Don't set other environment variables to test defaults
-
-      const getTokensModule = await import("@/utils/auth/token/getTokens")
-      vi.mocked(getTokensModule.getTokens).mockResolvedValue(mockTokenResponse)
-
-      const { GET } = await import("./route")
-
-      const request = new NextRequest(
-        "http://localhost:3000/api/auth/login/callback?code=test-auth-code"
-      )
-      const response = await GET(request)
-
-      expect(response.status).toBe(200)
-      expect(response.headers.get("Content-Type")).toBe("text/html")
-
-      expect(getTokensModule.getTokens).toHaveBeenCalledWith({
-        code: "test-auth-code",
-        clientID: "test-client-id",
-        clientSecret: "test-client-secret",
-        redirectURI: "https://example.com/api/auth/login/callback",
-        ssoEnvironment: "dev", // default
-        ssoRealm: "standard", // default
-        ssoProtocol: "openid-connect", // default
-      })
+      const updateUserModule = await import("@/utils/user/updateUserOnLogin")
+      expect(updateUserModule.updateUserOnLogin).toHaveBeenCalledWith("mock-access-token")
     })
 
     it("should handle getTokens throwing an error", async () => {
@@ -372,6 +355,42 @@ describe("/api/auth/login/callback", () => {
           code: specialCode,
         })
       )
+
+      const updateUserModule = await import("@/utils/user/updateUserOnLogin")
+      expect(updateUserModule.updateUserOnLogin).toHaveBeenCalledWith("mock-access-token")
+    })
+
+    it("should use default values when environment variables are not set (and call updateUserOnLogin)", async () => {
+      vi.stubEnv("SSO_CLIENT_ID", "test-client-id")
+      vi.stubEnv("SSO_CLIENT_SECRET", "test-client-secret")
+      vi.stubEnv("APP_URL", "https://example.com")
+      // Don't set other environment variables to test defaults
+
+      const getTokensModule = await import("@/utils/auth/token/getTokens")
+      vi.mocked(getTokensModule.getTokens).mockResolvedValue(mockTokenResponse)
+
+      const { GET } = await import("./route")
+
+      const request = new NextRequest(
+        "http://localhost:3000/api/auth/login/callback?code=test-auth-code"
+      )
+      const response = await GET(request)
+
+      expect(response.status).toBe(200)
+      expect(response.headers.get("Content-Type")).toBe("text/html")
+
+      expect(getTokensModule.getTokens).toHaveBeenCalledWith({
+        code: "test-auth-code",
+        clientID: "test-client-id",
+        clientSecret: "test-client-secret",
+        redirectURI: "https://example.com/api/auth/login/callback",
+        ssoEnvironment: "dev", // default
+        ssoRealm: "standard", // default
+        ssoProtocol: "openid-connect", // default
+      })
+
+      const updateUserModule = await import("@/utils/user/updateUserOnLogin")
+      expect(updateUserModule.updateUserOnLogin).toHaveBeenCalledWith("mock-access-token")
     })
   })
 })

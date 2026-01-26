@@ -6,10 +6,17 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Loginout, SvgBcLogo } from "@/components"
+import type { StaffUser } from "@/generated/prisma/client"
 import { useAuth } from "@/hooks"
+import { AvailabilitySwitch } from "./availability"
 import { Navigation } from "./navigation"
 
-export const Header = () => {
+type HeaderProps = {
+  toggleAvailableBySub: (sub: string, isAvailable: boolean) => void
+  getStaffUserBySub: (sub: string) => Promise<StaffUser | null>
+}
+
+export const Header = ({ toggleAvailableBySub, getStaffUserBySub }: HeaderProps) => {
   const pathname = usePathname()
   const [showNavList, setShowNavList] = useState(false)
 
@@ -50,12 +57,16 @@ export const Header = () => {
       <div className="flex flex-row w-full min-h-[65px] h-[65px] justify-center border-b-sm border-b-border-light">
         {/** Above is bcds-header class */}
         {/** below is bcds-header--container class */}
-        <div className="flex flex-row grow max-w-[1200px] justify-between ">
+        <div className="flex flex-row gap-sm grow max-w-[1200px] justify-between">
           <BCGovLogo />
           <div className="flex flex-row  justify-around gap-sm px-sm items-center">
+            <AvailabilitySwitch
+              toggleAvailableBySub={toggleAvailableBySub}
+              getStaffUserBySub={getStaffUserBySub}
+            />
             {/** Display navagation as a hamburger icon button on mobile devices */}
             {useAuth().isAuthenticated && (
-              <div className="contents md:hidden " data-testid="hamburgerNav-parent">
+              <div className="contents md:hidden" data-testid="hamburgerNav-parent">
                 <HamburgerNav />
               </div>
             )}

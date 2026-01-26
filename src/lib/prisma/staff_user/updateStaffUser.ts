@@ -15,10 +15,13 @@ import { unassignRole } from "@/utils/sso/unassignRole"
 export const updateStaffUser = async (
   user: Partial<StaffUser>,
   prevUser: Partial<StaffUser>,
-  availableRoles: Role[]
+  availableRoles: Role[] = []
 ): Promise<StaffUser | null> => {
   const { guid, sub, ...data } = user
-  if (!guid || !sub) return null
+  if (!guid && !prevUser.guid) return null
+
+  // Use provided guid or fall back to previous user's guid
+  const guidToUpdate = guid || prevUser.guid
 
   // Only allow user to assign roles equal to or lower than their own role
   if (user.role && !availableRoles.includes(user.role)) {
@@ -26,13 +29,13 @@ export const updateStaffUser = async (
   }
 
   const staffUser = await prisma.staffUser.update({
-    where: { guid },
+    where: { guid: guidToUpdate },
     data: { ...data, updatedAt: new Date() },
   })
   if (!staffUser) return null
 
   // SSO Role Update
-  if (user.role !== prevUser.role && user.role && prevUser.role) {
+  if (sub && user.role !== prevUser.role && user.role && prevUser.role) {
     // Assign new role
     await assignRole(sub, user.role)
     // Remove previous role
