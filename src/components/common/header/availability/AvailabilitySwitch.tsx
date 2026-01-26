@@ -65,11 +65,14 @@ export const AvailabilitySwitch = ({
       {/* Modal */}
       <Modal open={open} onClose={onClose} size="sm">
         <DialogHeader trailing={<CloseButton onClick={onClose} />}>
-          <DialogTitle>Unavailable</DialogTitle>
+          <DialogTitle>Availability Paused</DialogTitle>
         </DialogHeader>
 
         <DialogBody>
-          <p>You are currently unavailable.</p>
+          <p>
+            You’re temporarily removed from the queue. Your colleagues will see that you’re
+            unavailable until you return to available status.
+          </p>
         </DialogBody>
 
         <DialogActions>
