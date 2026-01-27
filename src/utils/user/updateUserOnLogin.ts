@@ -7,11 +7,10 @@ import { getStaffUserBySub } from "@/lib/prisma/staff_user/getStaffUserBySub"
 import { insertStaffUser } from "@/lib/prisma/staff_user/insertStaffUser"
 import { updateStaffUser } from "@/lib/prisma/staff_user/updateStaffUser"
 import { decodeJWT } from "@/utils/auth/jwt/decodeJWT"
-import type { IdirIdentityProvider } from "@/utils/auth/types"
 import { assignNewRoleFromCSR } from "./assignNewRoleFromCSR"
 
 export const updateUserOnLogin = async (accessToken: string) => {
-  const jwt = decodeJWT<IdirIdentityProvider>(accessToken)
+  const jwt = decodeJWT(accessToken)
   const { sub, idir_user_guid, idir_username, display_name, client_roles } = jwt
   const userRole = (client_roles?.length ? client_roles[0] : "CSR") as Role
 
