@@ -2,7 +2,7 @@
 
 Each resource exposes a **policy** that determines which actions are allowed for a given user and record.
 
-The component or function that resolves the policy is only concerned with the actions that are returned. The policies map is the only place where polcies are configured (centralized control of permissions).
+The component or function that resolves the policy is only concerned with the actions that are returned. The policies map is the only place where polices are configured (centralized control of permissions).
 
 ## Summary
 
