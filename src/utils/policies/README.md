@@ -2,6 +2,14 @@
 
 Each resource exposes a **policy** that determines which actions are allowed for a given user and record.
 
+The component or function that resolves the policy is only concerned with the actions that are returned. The policies map is the only place where polcies are configured (centralized control of permissions).
+
+## Summary
+
+- Policies describe **what a user can do with a resource**
+- Actions are **discovered**, not checked individually
+- Actions are NOT limited to CRUD operations (could be for example 'publish' or 'lock')
+
 ---
 
 ## Core Concepts
@@ -176,8 +184,3 @@ const actions = resolvePolicy("comment", user_context, comment);
 const canEdit = actions.includes("update");
 const canDelete = actions.includes("delete");
 ```
-
-## Summary
-
-- Policies describe **what a user can do with a resource**
-- Actions are **discovered**, not checked individually
