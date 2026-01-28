@@ -68,6 +68,7 @@ describe("useAuth hook", () => {
     const { result } = renderHook(() => useAuth())
 
     expect(result.current.isAuthenticated).toBe(true)
+    expect(result.current.role).toBe("admin")
     expect(result.current.display_name).toBe("Test User")
     expect(result.current.given_name).toBe("Test")
     expect(result.current.family_name).toBe("User")
