@@ -10,7 +10,7 @@ export default function Home() {
         <ExampleModal />
         <ExampleDialog />
       </div>
-      {/* <div className="text-white">This should fail</div> */}
+      <div className="text-white">This should fail</div>
     </div>
   )
 }

@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from './customAxeBuilder';
 
 test.describe('homepage', () => {
   test('has paragraph', async ({ page }) => {
@@ -9,11 +8,10 @@ test.describe('homepage', () => {
     await expect(page.locator('h1')).toContainText('TEST');
   });
 
-  test('should not have any automatically detectable accessibility issues', async ({ page }) => {
+  test('should not have any automatically detectable accessibility issues', async ({ page, makeAxeBuilder }) => {
     await page.goto('http://localhost:3000/');
 
-    const accessibilityScanResults = await new AxeBuilder({ page })
-      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+    const accessibilityScanResults = await makeAxeBuilder()
       .analyze();
 
   expect(accessibilityScanResults.violations).toEqual([]);
