@@ -5,7 +5,9 @@ import { defineConfig, devices } from '@playwright/test'
  */
 export default defineConfig({
   /* Where to look for test files */
-  testDir: './tests',
+  testDir: './playwright/tests',
+  /* Where to store the test results */
+  outputDir: './playwright/test-results/',
 
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -21,9 +23,8 @@ export default defineConfig({
 
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
-    ['html'],
-    ['json', { outputFile: 'playwright-report/results.json' }],
-    ['junit', { outputFile: 'playwright-report/results.xml' }]
+    ['html', { outputFolder: 'playwright/report'}],
+    ['json', { outputFile: 'playwright/report/results.json' }]
   ],
 
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -48,10 +49,11 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
 
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
+    // Uncomment to test in Firefox - this currently hits issues on my Mac because permissions with HTTP and DNS maybe?
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] },
+    // },
 
     {
       name: 'webkit',
@@ -80,10 +82,10 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   /* Uncomment if running locally instead of in DevContainer */
-  // webServer: {
-  //   command: 'npm run dev',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  //   timeout: 120 * 1000,
-  // },
+  webServer: {
+    command: 'npm run dev',
+    url: 'http://localhost:3000',
+    reuseExistingServer: !process.env.CI,
+    timeout: 120 * 1000,
+  },
 })
