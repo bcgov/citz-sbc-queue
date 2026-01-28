@@ -9,7 +9,7 @@ services:
         NODE_TAG: 22-bullseye-slim
     volumes:
       - ..:/workspace:cached
-      - /workspace/node_modules
+      - node_modules:/workspace/node_modules
     working_dir: /workspace
     environment:
       - PORT=3001
