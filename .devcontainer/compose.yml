@@ -3,7 +3,7 @@ services:
     tty: true
     init: true
     build:
-      context: ../
+      context: ..
       dockerfile: Dockerfile
       args:
         NODE_TAG: 22-bullseye-slim
@@ -14,10 +14,8 @@ services:
     environment:
       - PORT=3001
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/sbc_queue
-      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
     depends_on:
       - postgres
-      - rabbitmq
     ports:
       - "127.0.0.1:3000:3001"
     networks:
@@ -42,29 +40,9 @@ services:
       timeout: 5s
       retries: 5
 
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    restart: unless-stopped
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    ports:
-      - "5672:5672"   # AMQP port
-      - "15672:15672" # Management UI port
-    networks:
-      - sbc-queue-network
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
 volumes:
   node_modules:
   postgres_data:
-  rabbitmq_data:
 
 networks:
   sbc-queue-network:

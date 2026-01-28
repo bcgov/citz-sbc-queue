@@ -1,5 +1,5 @@
-import type { Dispatch, SetStateAction } from "react"
 import type { Location, Role, StaffUser } from "@/generated/prisma/client"
+import type { Dispatch, SetStateAction } from "react"
 import { Section } from "./common/Section"
 import { SelectInput } from "./common/SelectInput"
 
@@ -41,7 +41,7 @@ export const RoleAndAssignmentSection = ({
       <SelectInput
         id="locationId"
         label="Office"
-        value={user.locationId ?? undefined}
+        value={user.locationId === null ? undefined : user.locationId}
         onChange={(value) => setFormData((prev) => prev && { ...prev, locationId: value })}
         disabled={disabled ?? false}
         options={offices.map((office) => ({

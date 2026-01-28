@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server"
 import { authMiddleware, isProtectedRoute } from "./middleware/auth"
 import { conditional } from "./middleware/utils"
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // Create conditional middleware that only runs auth for protected routes
   const conditionalAuthMiddleware = conditional(
     (req: NextRequest) => isProtectedRoute(req.nextUrl.pathname),
