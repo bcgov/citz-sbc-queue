@@ -24,25 +24,16 @@ WORKDIR /workspace
 # Ensure dev dependencies are available
 ENV NODE_ENV=development
 
-# Copy package files first for better Docker layer caching
-COPY package.json ./
-
-# Install dependencies first (this creates platform-specific binaries)
-RUN npm install
-
-# Copy the rest of the files
-COPY . .
+# Don’t copy app code or install deps in the image for a bind-mounted devcontainer.
 
 # Clean npm cache and rebuild all native dependencies for this architecture
 RUN npm cache clean --force && \
     rm -rf node_modules/.cache && \
     npm rebuild --verbose
 
-# Change ownership of workspace to node user
-RUN chown -R node:node /workspace
-
 # Switch to non-root user
 USER node
 
-# Default command
-CMD ["npm", "run", "dev"]
+# Keep the container alive for VS Code to attach.
+# Start the dev server via devcontainer.json postStartCommand instead.
+CMD ["bash", "-lc", "sleep infinity"]
