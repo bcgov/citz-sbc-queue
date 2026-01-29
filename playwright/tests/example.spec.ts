@@ -8,11 +8,17 @@ test.describe('homepage', () => {
     await expect(page.locator('h1')).toContainText('TEST');
   });
 
-  test('should not have any automatically detectable accessibility issues', async ({ page, makeAxeBuilder }) => {
+  test('should not have any automatically detectable accessibility issues', async ({ page, makeAxeBuilder }, testInfo) => {
     await page.goto('http://localhost:3000/');
 
     const accessibilityScanResults = await makeAxeBuilder()
       .analyze();
+
+    // Send test results to reporter to see more info
+    await testInfo.attach('accessibility-scan-results', {
+      body: JSON.stringify(accessibilityScanResults, null, 2),
+      contentType: 'application/json'
+    })
 
   expect(accessibilityScanResults.violations).toEqual([]);
   });
