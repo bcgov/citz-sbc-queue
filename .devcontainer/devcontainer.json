@@ -63,6 +63,7 @@
     }
   },
 
+  // Set container user. To run as root comment the following line. More info: https://aka.ms/dev-containers-non-root
   "remoteUser": "node",
 
   "postCreateCommand": "npm ci --no-fund && npm run db:generate && npm run db:migrate",
