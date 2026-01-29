@@ -1,0 +1,15 @@
+model LocationCounter {
+  id                   String    @id @default(uuid())
+
+  locationId           String?   @map("location_id")
+  location             Location? @relation(fields: [locationId], references: [id])
+
+  counterId            String?   @map("counter_id")
+  counter              Counter?  @relation(fields: [counterId], references: [id])
+
+  createdAt            DateTime  @default(now()) @db.Timestamp(6) @map("created_at")
+  updatedAt            DateTime  @updatedAt @db.Timestamp(6) @map("updated_at")
+
+  @@map("location_counter")
+  @@schema("app")
+}
