@@ -26,6 +26,7 @@ export const updateUserOnLogin = async (accessToken: string) => {
         username: idir_username,
         displayName: display_name,
         role: userRole,
+        isActive: true,
       },
       staffUser,
       [userRole]
