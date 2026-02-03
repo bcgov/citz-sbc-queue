@@ -57,6 +57,7 @@ describe("updateStaffUser", () => {
     }
 
     const prevUser = {
+      guid: mockStaffUser.guid,
       role: mockStaffUser.role,
     }
 
@@ -86,6 +87,7 @@ describe("updateStaffUser", () => {
     }
 
     const prevUser = {
+      guid: mockStaffUser.guid,
       role: "CSR" as Role,
     }
 
@@ -111,6 +113,7 @@ describe("updateStaffUser", () => {
     }
 
     const prevUser = {
+      guid: mockStaffUser.guid,
       role: "CSR" as Role,
     }
 
@@ -123,29 +126,48 @@ describe("updateStaffUser", () => {
     expect(prisma.staffUser.update).not.toHaveBeenCalled()
   })
 
-  it("should return null when guid is missing", async () => {
+  it("updates using prevUser.guid when guid is missing", async () => {
     const user = {
       sub: mockStaffUser.sub,
     }
 
-    const prevUser = {}
+    const prevUser = { guid: mockStaffUser.guid }
     const availableRoles: Role[] = ["CSR"]
+
+    vi.mocked(prisma.staffUser.update).mockResolvedValueOnce(mockStaffUser)
 
     const result = await updateStaffUser(user, prevUser, availableRoles)
 
-    expect(result).toBeNull()
-    expect(prisma.staffUser.update).not.toHaveBeenCalled()
+    expect(result).toEqual(mockStaffUser)
+    expect(prisma.staffUser.update).toHaveBeenCalledWith({
+      where: { guid: mockStaffUser.guid },
+      data: expect.objectContaining({ updatedAt: expect.any(Date) }),
+    })
   })
 
-  it("should return null when sub is missing", async () => {
+  it("updates when sub is missing (no SSO changes)", async () => {
     const user = {
       guid: mockStaffUser.guid,
     }
-
     const prevUser = {}
     const availableRoles: Role[] = ["CSR"]
 
+    vi.mocked(prisma.staffUser.update).mockResolvedValueOnce(mockStaffUser)
+
     const result = await updateStaffUser(user, prevUser, availableRoles)
+
+    expect(result).toEqual(mockStaffUser)
+    // because sub is missing, no SSO changes should be attempted
+    expect(unassignRole).not.toHaveBeenCalled()
+    expect(assignRole).not.toHaveBeenCalled()
+    expect(prisma.staffUser.update).toHaveBeenCalled()
+  })
+
+  it("should return null when both guid and prevUser.guid are missing", async () => {
+    const user = { sub: mockStaffUser.sub }
+    const prevUser = {}
+
+    const result = await updateStaffUser(user, prevUser, [])
 
     expect(result).toBeNull()
     expect(prisma.staffUser.update).not.toHaveBeenCalled()
@@ -161,6 +183,7 @@ describe("updateStaffUser", () => {
     }
 
     const prevUser = {
+      guid: mockStaffUser.guid,
       role: "CSR" as Role,
     }
 
@@ -184,6 +207,7 @@ describe("updateStaffUser", () => {
     }
 
     const prevUser = {
+      guid: mockStaffUser.guid,
       role: "CSR" as Role,
     }
 
