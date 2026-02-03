@@ -10,7 +10,13 @@ export default function Home() {
         <ExampleModal />
         <ExampleDialog />
       </div>
-      <div className="text-white">This should fail</div>
+      <h2 className="text-blue-600">Passing Lines</h2>
+      <div className="text-blue-700">This should pass</div>
+      <hr />
+      {/* <h3 className="text-blue-500">Failing lines</h3> */}
+      <div className="text-blue-600">2</div>
+      <br />
+      <div className="text-white">3</div>
     </div>
   )
 }

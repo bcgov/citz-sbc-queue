@@ -1,6 +1,6 @@
 import { test as base } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { parse } from 'path';
+import type {Result}  from 'axe-core';
 
 type AxeFixture = {
   makeAxeBuilder: () => AxeBuilder;
@@ -19,35 +19,14 @@ export const test = base.extend<AxeFixture>({
   }
 });
 
-type nodeItem = {
-  any?: { id: string; data?: { fontSize: string; contrastRatio: number } }[];
-}
-
-type incompleteItem = {
-  id: string;
-  nodes: nodeItem[];
-}
-
-type AxeResult = {
-  inapplicable: object[];
-  passes: object[];
-  violations: object[];
-  incomplete: incompleteItem[];
-};
 
 /**
- * Given a playwright JSON scan result parse and return only useful data. Information for each
- * group is from https://docs.deque.com/devtools-for-web/4/en/java-use-results#results-overview
+ * Given data from Axe-Core testing, parse incomplete object to determine if a violation has occurred or not.
+ * See detailed information on report groups here:
+ * https://docs.deque.com/devtools-for-web/4/en/java-use-results#results-overview
  *
  */
-export const parseResults = (jsonData: AxeResult) => {
-  const {inapplicable, passes, violations, incomplete} = jsonData;
-
-  /**
-   * Passed group - tests which ran and passed successfully. Can update the following to not
-   * report on information on passed tests.
-   */
-  const passedStr = `${passes.length} accessibility checks passed.`;
+export const parseResults = (inapplicableData: Result[]) => {
 
   /**
    * Incomplete group - tests which ran, but the results require further (manual) review to
@@ -55,10 +34,11 @@ export const parseResults = (jsonData: AxeResult) => {
    * is color contrast as there is no way to set what contrast level is acceptable.
    */
   let failedColorContrast = [];
+  let failedNode = [];
 
-  if (incomplete.length > 0) {
+  if (inapplicableData.length > 0) {
     // Process each incomplete item to check for failed color-contrast rules
-    for (const item of incomplete) {
+    for (const item of inapplicableData) {
       if (item.id === 'color-contrast' && item.nodes) {
         // Review each node in the color-contrast rule
         for (const node of item.nodes) {
@@ -80,55 +60,20 @@ export const parseResults = (jsonData: AxeResult) => {
                   const failsNormalText = isNormalText && contrastRatio < 4.5;
 
                   if (failsLargeText || failsNormalText) {
-                    failedColorContrast.push({
-                      ...node,
-                      contrastData: check.data,
-                      sizeInPx,
-                      failureReason: failsLargeText
-                        ? `Large text (${sizeInPx}px) has contrast ${contrastRatio} < 3:1`
-                        : `Normal text (${sizeInPx}px) has contrast ${contrastRatio} < 4.5:1`
-                    });
+                    failedNode.push(node);
                   }
                 }
               }
             }
           }
         }
+        if (failedNode.length === item.nodes.length) {
+          // All nodes failed, add everything to violations.
+          failedColorContrast.push(item);
+        }
       }
     }
   }
 
-  let incompleteStr = '';
-  if (incomplete.length - failedColorContrast.length > 0 ) {
-    incompleteStr = `${incomplete.length} accessibility checks require further review.`;
-  }
-
-  /**
-   * Violation group - all the accessibility violations found in the scan.
-   */
-  let violationStr = '';
-  if (violations.length + failedColorContrast.length > 0) {
-    violationStr = `${violations.length + failedColorContrast.length} accessibility violations found.`;
-  } else {
-    violationStr = 'No accessibility violations found.';
-  }
-
-  /**
-   * Inapplicable group - no page content relevant to that particular test,
-   *  such as form related tests on a page with no forms. Only included if there are any.
-   */
-  let inapplicableStr = ``;
-  if (inapplicable.length > 0) {
-    inapplicableStr = `${inapplicable.length} tests were applied but not relevant to the page content.`;
-  }
-
-
-  const parsedResults = {
-    passed: passedStr,
-    incomplete: incompleteStr,
-    violation: violationStr,
-    inapplicable: inapplicableStr
-  }
-
-  return parsedResults;
+  return failedColorContrast;
 }
