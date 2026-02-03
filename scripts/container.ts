@@ -71,17 +71,10 @@ if (action.startsWith("db:")) {
 
 // Handle container actions
 if (action === "rebuild") {
-  const buildCmd = useWsl
-    ? `wsl -e ${composeCmd} build --no-cache`
-    : `${composeCmd} build --no-cache`
-  const upCmd = useWsl
-    ? `wsl -e ${composeCmd} up --remove-orphans`
-    : `${composeCmd} up --remove-orphans`
-  run(buildCmd)
-  run(upCmd)
+  run(wrap(`${composeCmd} build --no-cache`))
+  run(wrap(`${composeCmd} up --remove-orphans`))
+} else if (action === "up") {
+  run(wrap(`${composeCmd} up`))
 } else {
-  const cmd = useWsl
-    ? `wsl -e ${composeCmd} ${action === "up" ? "up" : "down --rmi all --remove-orphans"}`
-    : `${composeCmd} ${action === "up" ? "up" : "down --rmi all --remove-orphans"}`
-  run(cmd)
+  run(wrap(`${composeCmd} down --rmi all --remove-orphans`))
 }
