@@ -1,0 +1,51 @@
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=sbc_queue
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - sbc-queue
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d sbc_queue"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    tty: true
+    init: true
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NODE_TAG: 22-bullseye-slim
+    volumes:
+      - /workspace/node_modules
+      - ./prisma:/workspace/prisma
+    env_file:
+      - .env
+    environment:
+      - PORT=3000
+    depends_on:
+      - postgres
+    ports:
+      - "3000:3000"
+      - "5555:5555"
+    networks:
+      - sbc-queue
+
+volumes:
+  node_modules:
+  postgres_data:
+
+networks:
+  sbc-queue:
+    driver: bridge

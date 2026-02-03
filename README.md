@@ -19,21 +19,25 @@ The Queue Managment System is used to manage citizen flow and provide analtyics 
 
 ## Development Environment
 
-## DevContainers
+## Running locally
 
-See [.devcontainer/README.md](.devcontainer/README.md) for detailed setup instructions.
+Use the provided npm scripts to control the compose environment. The runner reads `CONTAINER_CLIENT` and `WSL` en vars, so set those there before running.
 
-## Alternative
+- **npm run up** — start services.
+- **npm run down** — stop and remove containers, images, and orphans.
+- **npm run rebuild** — rebuild images (no-cache) then bring services up.
 
-To run the applicaiton without DevContainers please follow these steps:
+Example `.env` values (project root):
 
-TODO: Add steps to run locally without DevContainers
+```
+CONTAINER_CLIENT=docker   # or podman
+WSL=true                  # set to "true" on Windows when using WSL to run the container CLI
+```
 
 ## Directory Information
 
 | Type | File Path | Description |
 | ---- | --------- | ----------- |
-| Directory | `.devcontainer` | Settings, information, and configuration of DevContainer. See `.devcontainer/README.md` for detailed information |
 | Directory | `.github` | Holds Github related files. See .github/README.md for more information |
 | Configuration | `.vscode/settings.json` | Editor and linter configuration |
 | Directory | `public` | Globally accessable static files |

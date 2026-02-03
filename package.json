@@ -10,6 +10,15 @@
     "npm": ">=10.0.0"
   },
   "scripts": {
+    "up": "tsx scripts/container.ts up",
+    "down": "tsx scripts/container.ts down",
+    "rebuild": "tsx scripts/container.ts rebuild",
+    "db:studio": "tsx scripts/container.ts db:studio",
+    "db:generate": "tsx scripts/container.ts db:generate",
+    "db:migrate": "tsx scripts/container.ts db:migrate",
+    "db:push": "tsx scripts/container.ts db:push",
+    "db:reset": "tsx scripts/container.ts db:reset",
+    "db:seed": "tsx scripts/container.ts db:seed",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -25,16 +34,9 @@
     "test:e2e": "playwright test",
     "test:e2e-ui": "playwright test --ui",
     "test:e2e-headed": "playwright test --headed",
-    "test:e2e-report": "playwright show-report playwright/report",
-    "test:e2e-install": "playwright install-deps && playwright install",
+    "test:e2e-install": "playwright install",
     "clean": "rm -rf .next out build dist coverage playwright/test-results playwright/report && playwright clear-cache",
-    "check-licenses": "tsx scripts/check-licenses.ts",
-    "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev",
-    "db:reset": "prisma migrate reset",
-    "db:studio": "prisma studio",
-    "db:generate": "rm -rf src/generated/prisma && prisma generate",
-    "db:seed": "tsx prisma/seed.ts"
+    "check-licenses": "tsx scripts/check-licenses.ts"
   },
   "dependencies": {
     "@bcgov/bc-sans": "2.1.0",
