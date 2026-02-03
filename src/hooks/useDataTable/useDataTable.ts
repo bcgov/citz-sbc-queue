@@ -1,10 +1,12 @@
-import { useMemo, useState } from "react"
+"use client"
+
 import type {
   ColumnConfig,
   PaginationConfig,
   SearchConfig,
   SortConfig,
 } from "@/components/common/datatable/types"
+import { useMemo, useState } from "react"
 import { DEFAULT_DEBOUNCE_MS, DEFAULT_PAGE_SIZE } from "./constants"
 
 export type UseDataTableProps<T extends Record<string, unknown>> = {
@@ -86,7 +88,7 @@ export const useDataTable = <T extends Record<string, unknown>>({
         const value = row[col.key]
         if (value === null || value === undefined) return false
         return String(value).toLowerCase().includes(lowerQuery)
-      })
+      }),
     )
   }, [data, searchQuery, searchableColumns])
 
