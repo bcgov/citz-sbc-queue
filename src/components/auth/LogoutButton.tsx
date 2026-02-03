@@ -1,6 +1,8 @@
 "use client"
 
 import { useCallback } from "react"
+import { useAuth } from "@/hooks"
+import { updateUserOnLogout } from "@/utils/user/updateUserOnLogout"
 
 export type LogoutButtonProps = {
   text?: string
@@ -18,11 +20,14 @@ export type LogoutButtonProps = {
  * @property {string} [variant="primary"] - The button variant
  */
 export const LogoutButton = ({ text = "Logout", variant = "primary" }: LogoutButtonProps) => {
-  const onClick = useCallback(() => {
+  const { sub } = useAuth()
+
+  const onClick = useCallback(async () => {
+    if (sub) await updateUserOnLogout(sub)
     const redirectUri = `${window.location.origin}/?post_logout=true`
     // Force a full navigation so cookies are sent to /api/auth/logout
     window.location.href = `/api/auth/logout?redirect_uri=${encodeURIComponent(redirectUri)}`
-  }, [])
+  }, [sub])
 
   return (
     <button type="button" className={`${variant}`} onClick={onClick}>

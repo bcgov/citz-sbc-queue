@@ -1,11 +1,12 @@
-import type { Metadata } from "next"
-import "../styles/globals.css"
-import localFont from "next/font/local"
 import { AuthProvider } from "@/components/auth/AuthProvider"
 import { Footer, Header } from "@/components/common"
-import { CurrentLocationProvider } from "@/hooks"
 import { ArchiveUserBlock } from "@/components/user/ArchiveUserBlock"
+import { CurrentLocationProvider } from "@/hooks"
 import { getStaffUserBySub } from "@/lib/prisma/staff_user/getStaffUserBySub"
+import { toggleAvailabilityBySub } from "@/lib/prisma/staff_user/toggleAvailabilityBySub"
+import type { Metadata } from "next"
+import localFont from "next/font/local"
+import "../styles/globals.css"
 
 const BCSans = localFont({
   src: [
@@ -53,7 +54,10 @@ export default async function RootLayout({
         <CurrentLocationProvider>
           <div className="h-screen w-screen overflow-x-hidden grid md:grid-cols-12 grid-cols-4 grid-rows-fr auto-rows-max gap-4">
             <header className="col-span-full max-h-auto md:max-h-[118px] bg-background-default">
-              <Header />
+              <Header
+                toggleAvailableBySub={toggleAvailabilityBySub}
+                getStaffUserBySub={getStaffUserBySub}
+              />
             </header>
             <main className="grid md:col-span-8 md:col-start-3 col-span-full">
               <div className="grid p-sm m-sm gap-sm md:m-xl md:p-lg justify-around">{children}</div>
@@ -66,7 +70,10 @@ export default async function RootLayout({
         <ArchiveUserBlock getStaffUserBySub={getStaffUserBySub} />
         <div className="h-screen w-screen overflow-x-hidden grid md:grid-cols-12 grid-cols-4 grid-rows-fr auto-rows-max gap-4">
           <header className="col-span-full max-h-auto md:max-h-[118px] bg-background-default">
-            <Header />
+            <Header
+              toggleAvailableBySub={toggleAvailabilityBySub}
+              getStaffUserBySub={getStaffUserBySub}
+            />
           </header>
           <main className="grid md:col-span-8 md:col-start-3 col-span-full">
             <div className="grid p-sm m-sm gap-sm md:m-xl md:p-lg">{children}</div>

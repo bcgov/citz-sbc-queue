@@ -1,4 +1,5 @@
 export * from "./useAuth"
 export * from "./useDataTable"
-export * from "./useLocation"
+export * from "./useDialog"
 export * from "./useEditableRoles"
+export * from "./useLocation"
