@@ -9,7 +9,9 @@ model StaffUser {
   locationId           String?   @map("location_id")
   location             Location? @relation(fields: [locationId], references: [id])
 
-  counterId            Int?      @map("counter_id")
+  counterId            String?   @map("counter_id")
+  counter              Counter?  @relation(fields: [counterId], references: [id])
+
   role                 Role
   isActive             Boolean   @default(false) @map("is_active")
 
