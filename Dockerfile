@@ -24,16 +24,19 @@ WORKDIR /workspace
 # Ensure dev dependencies are available
 ENV NODE_ENV=development
 
-# Don’t copy app code or install deps in the image for a bind-mounted devcontainer.
+# Copy project files and install dependencies
+COPY . .
+RUN npm ci --no-fund && npm cache clean --force
 
-# Clean npm cache and rebuild all native dependencies for this architecture
-RUN npm cache clean --force && \
-    rm -rf node_modules/.cache && \
-    npm rebuild --verbose
+# Ensure the non-root `node` user owns the workspace so it can write build/artifact dirs
+RUN chown -R node:node /workspace
+
+# Copy migrations script and make it executable
+COPY scripts/run-migrations.sh /usr/local/bin/run-migrations.sh
+RUN chown node:node /usr/local/bin/run-migrations.sh && chmod +x /usr/local/bin/run-migrations.sh
 
 # Switch to non-root user
 USER node
 
-# Keep the container alive for VS Code to attach.
-# Start the dev server via devcontainer.json postStartCommand instead.
-CMD ["bash", "-lc", "sleep infinity"]
+ENTRYPOINT ["/usr/local/bin/run-migrations.sh"]
+CMD ["npm", "run", "dev"]

@@ -1,0 +1,13 @@
+model Counter {
+  id                 String   @id @default(uuid())
+  name               String   @db.VarChar(250)
+
+  locationCounters   LocationCounter[]
+  staffUsers         StaffUser[]
+
+  createdAt          DateTime @default(now()) @db.Timestamp(6) @map("created_at")
+  updatedAt          DateTime @updatedAt @db.Timestamp(6) @map("updated_at")
+
+  @@map("counter")
+  @@schema("app")
+}
