@@ -34,12 +34,12 @@ export const parseResults = (inapplicableData: Result[]) => {
    * is color contrast as there is no way to set what contrast level is acceptable.
    */
   let failedColorContrast = [];
-  let failedNode = [];
 
   if (inapplicableData.length > 0) {
     // Process each incomplete item to check for failed color-contrast rules
     for (const item of inapplicableData) {
       if (item.id === 'color-contrast' && item.nodes) {
+        let failedNode = [];
         // Review each node in the color-contrast rule
         for (const node of item.nodes) {
           if (node.any && Array.isArray(node.any)) {
@@ -52,14 +52,7 @@ export const parseResults = (inapplicableData: Result[]) => {
                 const sizeInPx = fontSizeMatch ? parseInt(fontSizeMatch[1], 10) : null;
 
                 if (sizeInPx !== null && contrastRatio !== null) {
-                  const isNormalText = sizeInPx < 18;
-                  const isLargeText = sizeInPx >= 18;
-
-                  // Check if contrast ratio fails for the size category
-                  const failsLargeText = isLargeText && contrastRatio < 3;
-                  const failsNormalText = isNormalText && contrastRatio < 4.5;
-
-                  if (failsLargeText || failsNormalText) {
+                  if ((sizeInPx < 18 && contrastRatio < 4.5 ) || (sizeInPx >= 18 && contrastRatio < 3)) {
                     failedNode.push(node);
                   }
                 }
