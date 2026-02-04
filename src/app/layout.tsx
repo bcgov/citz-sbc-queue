@@ -1,12 +1,13 @@
+import type { Metadata } from "next"
+import localFont from "next/font/local"
 import { AuthProvider } from "@/components/auth/AuthProvider"
 import { Footer, Header } from "@/components/common"
 import { ArchiveUserBlock } from "@/components/user/ArchiveUserBlock"
 import { CurrentLocationProvider } from "@/hooks"
 import { getStaffUserBySub } from "@/lib/prisma/staff_user/getStaffUserBySub"
 import { toggleAvailabilityBySub } from "@/lib/prisma/staff_user/toggleAvailabilityBySub"
-import type { Metadata } from "next"
-import localFont from "next/font/local"
 import "../styles/globals.css"
+import { ExampleLocation } from "@/components/examples/ExampleLocation"
 
 const BCSans = localFont({
   src: [
@@ -59,6 +60,7 @@ export default async function RootLayout({
                 getStaffUserBySub={getStaffUserBySub}
               />
             </header>
+            <ExampleLocation />
             <main className="grid md:col-span-8 md:col-start-3 col-span-full">
               <div className="grid p-sm m-sm gap-sm md:m-xl md:p-lg justify-around">{children}</div>
             </main>

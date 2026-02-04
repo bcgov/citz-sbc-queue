@@ -1,3 +1,5 @@
+"use client"
+
 import { useCallback, useState } from "react"
 import type { UseDialogOptions, UseDialogReturn } from "./types"
 
@@ -31,7 +33,7 @@ export const useDialog = ({
         return next
       })
     },
-    [onOpen, onClose]
+    [onOpen, onClose],
   )
 
   const openDialog = useCallback(() => {
