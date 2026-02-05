@@ -4,8 +4,9 @@ import { defineConfig, devices } from '@playwright/test'
  * @see https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
-  /* Where to look for test files */
+  /* Where to look and the name of file to match for test files */
   testDir: './playwright/tests',
+  testMatch: '*.spec.ts',
   /* Where to store the test results */
   outputDir: './playwright/test-results/',
 
@@ -24,7 +25,7 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['line'],
-    ['html', { outputFolder: 'playwright/report'}],
+    ['html', { outputFolder: 'playwright/report', open: 'never'}],
     ['json', { outputFile: 'playwright/report/results.json' }]
   ],
 
@@ -82,7 +83,7 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  /* Uncomment if running locally instead of in DevContainer */
+  /* Comment out if running with Docker container */
   webServer: {
     command: 'npm run dev',
     url: 'http://localhost:3000',

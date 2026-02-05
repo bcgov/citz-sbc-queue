@@ -6,7 +6,7 @@ import { createHtmlReport } from 'axe-html-reporter';
 // may have to work on this to get a way to log in first
 const urlsToCheck = [
     {
-        url: 'http://localhost:3000/',
+        url: '/',
         name: 'Homepage',
     },
 ];
@@ -42,8 +42,8 @@ test.describe('Accessibility Testing', () => {
           // comment out this line if you want to have a report file created locally
           doNotCreateReportFile:true,
           // uncomment these lines if you want to have a report file created locally
-          // reportFileName: `${name}.html`,
-          // outputDirPath: `./playwright/report/accessibility/`
+          reportFileName: `${name}.html`,
+          outputDir: `playwright/test-results/accessibility-reports/`,
         },
       });
 
