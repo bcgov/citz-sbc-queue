@@ -16,7 +16,7 @@ export default defineConfig({
       '.next',
       'coverage',
       'e2e/**/*',
-      'playwright-tests/**/*'
+      'playwright/**/*'
     ],
     coverage: {
       provider: 'v8',
