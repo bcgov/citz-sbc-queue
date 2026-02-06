@@ -1,0 +1,15 @@
+model ExamType {
+  examTypeId       Int       @id @default(autoincrement()) @map("exam_type_id")
+  examTypeName     String    @db.VarChar(50) @map("exam_type_name")
+  examColor        String    @db.VarChar(10) @map("exam_color")
+  numberOfHours    Int       @map("number_of_hours")
+  methodType       String    @db.VarChar(10) @map("method_type")
+  itaInd           Int       @map("ita_ind")
+  groupExamInd     Int       @map("group_exam_ind")
+  pesticideExamInd Int       @map("pesticide_exam_ind")
+  numberOfMinutes  Int?      @map("number_of_minutes")
+  deleted          DateTime? @map("deleted")
+
+  @@map("examtype")
+  @@schema("public")
+}

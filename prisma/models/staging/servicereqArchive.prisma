@@ -1,0 +1,12 @@
+model ServiceReqArchive {
+  srId       Int @id @default(autoincrement()) @map("sr_id")
+  citizenId  Int @map("citizen_id")
+  quantity   Int @map("quantity")
+  channelId  Int @map("channel_id")
+  serviceId  Int @map("service_id")
+  srStateId  Int @map("sr_state_id")
+  srNumber   Int @map("sr_number")
+
+  @@map("servicereq_archive")
+  @@schema("public")
+}

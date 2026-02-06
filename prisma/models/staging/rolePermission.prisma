@@ -1,0 +1,8 @@
+model RolePermission {
+  roleId       Int @map("role_id")
+  permissionId Int @map("permission_id")
+
+  @@id([roleId, permissionId])
+  @@map("role_permission")
+  @@schema("public")
+}

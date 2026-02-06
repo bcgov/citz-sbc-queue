@@ -1,0 +1,8 @@
+model BookingInvigilators {
+  bookingId     Int @map("booking_id")
+  invigilatorId Int @map("invigilator_id")
+
+  @@id([bookingId, invigilatorId])
+  @@map("booking_invigilators")
+  @@schema("public")
+}

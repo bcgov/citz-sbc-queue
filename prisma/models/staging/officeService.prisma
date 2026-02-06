@@ -1,0 +1,8 @@
+model OfficeService {
+  officeId Int @map("office_id")
+  serviceId Int @map("service_id")
+
+  @@id([officeId, serviceId])
+  @@map("office_service")
+  @@schema("public")
+}

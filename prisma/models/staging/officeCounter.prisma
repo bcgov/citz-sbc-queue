@@ -1,0 +1,8 @@
+model OfficeCounter {
+  officeId Int @map("office_id")
+  counterId Int @map("counter_id")
+
+  @@id([officeId, counterId])
+  @@map("office_counter")
+  @@schema("public")
+}

@@ -1,0 +1,24 @@
+model ServiceLegacy {
+  serviceId           Int      @id @default(autoincrement()) @map("service_id")
+  serviceCode         String   @db.VarChar(50) @map("service_code")
+  serviceName         String   @db.VarChar(500) @map("service_name")
+  serviceDesc         String   @db.VarChar(2000) @map("service_desc")
+  parentId            Int?     @map("parent_id")
+  deleted             DateTime? @db.Timestamp(6)
+  prefix              String   @db.VarChar(10)
+  displayDashboardInd Int      @map("display_dashboard_ind")
+  actualServiceInd    Int      @map("actual_service_ind")
+  externalServiceName String?  @db.VarChar(500) @map("external_service_name")
+  onlineAvailability  String?  @map("online_availability")
+  onlineLink          String?  @db.VarChar(500) @map("online_link")
+  timeslotDuration    Int?     @map("timeslot_duration")
+  isDlkt              String?  @map("is_dlkt")
+  emailParagraph      String?  @map("email_paragraph")
+  cssColour           String?  @db.VarChar(50) @map("css_colour")
+
+  serviceReqs         ServiceReq[]
+  appointments        AppointmentLegacy[]
+
+  @@map("service")
+  @@schema("public")
+}
