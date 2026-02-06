@@ -1,0 +1,8 @@
+model TransactionArchive {
+  id         Int      @id @default(autoincrement()) @map("id")
+  issuedAt   DateTime? @map("issued_at")
+  remoteAddr String?  @db.VarChar(50) @map("remote_addr")
+
+  @@map("transaction_archive")
+  @@schema("public")
+}

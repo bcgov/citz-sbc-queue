@@ -1,0 +1,10 @@
+model CSRState {
+  csrStateId   Int    @id @default(autoincrement()) @map("csr_state_id")
+  csrStateName String @db.VarChar(50) @map("csr_state_name")
+  csrStateDesc String @db.VarChar(1000) @map("csr_state_desc")
+
+  csrs         CSR[]
+
+  @@map("csrstate")
+  @@schema("public")
+}

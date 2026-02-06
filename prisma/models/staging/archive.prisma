@@ -1,0 +1,11 @@
+model Archive {
+  archiveId   Int      @id @map("archive_id")
+  tableName   String   @db.VarChar(255) @map("table_name")
+  archiveDate DateTime @db.Timestamp(6) @map("archive_date")
+  idMin       Int?     @map("id_min")
+  idMax       Int?     @map("id_max")
+  count       Int?     @map("count")
+
+  @@map("archive")
+  @@schema("public")
+}

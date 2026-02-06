@@ -1,0 +1,10 @@
+model Transaction {
+  id         Int      @id @default(autoincrement()) @map("id")
+  issuedAt   DateTime? @map("issued_at")
+  remoteAddr String?  @db.VarChar(50) @map("remote_addr")
+  appointmentVersions AppointmentVersion[]
+  appointmentVersionArchives AppointmentVersionArchive[]
+
+  @@map("transaction")
+  @@schema("public")
+}

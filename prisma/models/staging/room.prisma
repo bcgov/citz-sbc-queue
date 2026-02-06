@@ -1,0 +1,11 @@
+model Room {
+  roomId    Int      @id @default(autoincrement()) @map("room_id")
+  officeId  Int      @map("office_id")
+  roomName  String   @db.VarChar(50) @map("room_name")
+  capacity  Int      @map("capacity")
+  color     String   @db.VarChar(25) @map("color")
+  deleted   DateTime? @db.Timestamp(6)
+
+  @@map("room")
+  @@schema("public")
+}

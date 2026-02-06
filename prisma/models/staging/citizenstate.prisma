@@ -1,0 +1,8 @@
+model CitizenState {
+  csId        Int    @id @default(autoincrement()) @map("cs_id")
+  csStateName String @db.VarChar(100) @map("cs_state_name")
+  csStateDesc String @db.VarChar(1000) @map("cs_state_desc")
+
+  @@map("citizenstate")
+  @@schema("public")
+}

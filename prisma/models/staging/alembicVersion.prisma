@@ -1,0 +1,6 @@
+model AlembicVersion {
+  versionNum String @id @map("version_num")
+
+  @@map("alembic_version")
+  @@schema("public")
+}

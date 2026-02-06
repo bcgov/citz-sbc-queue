@@ -1,0 +1,9 @@
+model Channel {
+  channelId   Int    @id @default(autoincrement()) @map("channel_id")
+  channelName String @db.VarChar(100) @map("channel_name")
+
+  serviceReqs  ServiceReq[]
+
+  @@map("channel")
+  @@schema("public")
+}

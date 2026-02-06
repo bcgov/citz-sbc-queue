@@ -1,0 +1,10 @@
+model RoleLegacy {
+  roleId   Int     @id @default(autoincrement()) @map("role_id")
+  roleCode String? @db.VarChar(100) @map("role_code")
+  roleDesc String? @db.VarChar(1000) @map("role_desc")
+
+  csrs     CSR[]
+
+  @@map("role")
+  @@schema("public")
+}

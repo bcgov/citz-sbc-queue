@@ -1,0 +1,8 @@
+model ServiceMetadata {
+  serviceId  Int @map("service_id")
+  metadataId Int @map("metadata_id")
+
+  @@id([serviceId, metadataId])
+  @@map("service_metadata")
+  @@schema("public")
+}

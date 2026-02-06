@@ -1,0 +1,7 @@
+model Smartboard {
+  sbId   Int    @id @default(autoincrement()) @map("sb_id")
+  sbType String @db.VarChar(45) @map("sb_type")
+
+  @@map("smartboard")
+  @@schema("public")
+}
