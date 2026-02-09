@@ -1,18 +1,40 @@
 import { prisma } from "@/utils/db/prisma"
 
+
 /**
- * Database seed script for initial data population.
- * Run with: npm run db:seed
+ * Seed information to populate the counter table with initial data.
  */
-
-async function main() {
-  console.log("🌱 Starting database seeding...")
-
+async function seedCounters() {
   try {
-    // ============================================
-    // Seed app schema models
-    // ============================================
-    console.log("📦 Seeding app schema...")
+    console.log("📦 Seeding app counters...")
+
+    const counters = [
+      {name: "Reception"},
+      {name: "Quick Transaction"},
+      {name: "Counter"},
+      {name: "Ptax"},
+      {name: "Cheque P/U"},
+      {name: "ICBC Test"},
+      {name: "Training"},
+    ]
+
+    await prisma.counter.createMany({
+      data: counters,
+      skipDuplicates: true,
+    })
+    console.log(`✅ Seeded ${counters.length} counters`)
+
+  } catch (error) {
+    console.error("❌ Seeding counters failed:", error)
+}
+}
+
+/**
+ * Seed information to populate the location table with initial data.
+ */
+async function seedLocations() {
+  try {
+    console.log("📦 Seeding app locations...")
 
     const locations = [
       {
@@ -53,13 +75,23 @@ async function main() {
     })
     console.log(`✅ Seeded ${locations.length} locations`)
 
-    console.log("✅ Database seeding completed successfully!")
   } catch (error) {
-    console.error("❌ Seeding failed:", error)
-    process.exit(1)
-  } finally {
-    await prisma.$disconnect()
-  }
+    console.error("❌ Seeding locations failed:", error)
+}}
+
+/**
+ * Database seed script for initial data population.
+ * Run with: npm run db:seed
+ */
+async function main() {
+  console.log("🌱 Starting database seeding...")
+
+  await seedLocations()
+  await seedCounters()
+
+  console.log("✅ Database seeding completed successfully!")
+  await prisma.$disconnect()
+
 }
 
 main()
