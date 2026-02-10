@@ -34,20 +34,13 @@ async function main() {
         phoneNumber: "250-555-0100",
         latitude: 48.458359,
         longitude: -123.377106,
-        locationCounters: { create: [
-          {
-            counterId: counter.id
-          },
-          {
-            counterId: reception.id
-          },
-          {
-            counterId: quickTransaction.id
-          },
-          {
-            counterId: training.id
-          }
-        ]}
+        counters: {
+          connect: [
+          { id: counter.id },
+          { id: reception.id },
+          { id: quickTransaction.id },
+          { id: training.id }]
+        }
       }
     })
 
@@ -62,13 +55,11 @@ async function main() {
         phoneNumber: "250-555-0200",
         latitude: 48.458359,
         longitude: -123.377106,
-        locationCounters: {
-          createMany: {
-            data: [
-              {counterId: counter.id},
-              {counterId: reception.id},
-            ]
-          }
+        counters: {
+          connect: [
+              {id: counter.id},
+              {id: reception.id},
+          ]
         }
       }
     })
