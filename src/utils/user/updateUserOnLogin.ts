@@ -43,7 +43,7 @@ export const updateUserOnLogin = async (accessToken: string) => {
     const resolvedLocation = csrUser ? await getLocationByLegacyOfficeId(csrUser.officeId) : null
 
     // Resolve legacy counterType
-    const defaultCounter = await getCounterByName("Counter");
+    const defaultCounter = await getCounterByName("Counter")
 
     // Create new user
     await insertStaffUser({
@@ -55,7 +55,7 @@ export const updateUserOnLogin = async (accessToken: string) => {
       role: newRole,
       isActive: true,
       location: resolvedLocation ? { connect: { id: resolvedLocation.id } } : undefined,
-      counter: defaultCounter ? { connect: { id: defaultCounter.id } }: undefined,
+      counter: defaultCounter ? { connect: { id: defaultCounter.id } } : undefined,
       deletedAt: csrUser ? csrUser.deleted : null,
       isFinanceDesignate: csrUser ? csrUser.financeDesignate === 1 : false,
       isIta2Designate: csrUser ? csrUser.ita2Designate === 1 : false,

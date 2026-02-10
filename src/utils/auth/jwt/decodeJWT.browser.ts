@@ -32,7 +32,8 @@ function base64UrlToBase64(input: string): string {
  */
 function base64ToUtf8(base64: string): string {
   // atob is available in browsers; in some test environments it may be polyfilled.
-  const binaryString = typeof atob !== "undefined" ? atob(base64) : Buffer.from(base64, "base64").toString("binary")
+  const binaryString =
+    typeof atob !== "undefined" ? atob(base64) : Buffer.from(base64, "base64").toString("binary")
 
   const len = binaryString.length
   const bytes = new Uint8Array(len)
