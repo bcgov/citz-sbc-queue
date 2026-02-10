@@ -89,6 +89,7 @@ async function main() {
   } catch (error) {
 
     console.error("❌ Seeding database failed:", error)
+    process.exit(1)
 
   } finally {
 
