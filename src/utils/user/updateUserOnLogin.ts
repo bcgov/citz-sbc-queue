@@ -8,6 +8,7 @@ import { insertStaffUser } from "@/lib/prisma/staff_user/insertStaffUser"
 import { updateStaffUser } from "@/lib/prisma/staff_user/updateStaffUser"
 import { decodeJWT } from "@/utils/auth/jwt/decodeJWT"
 import { assignNewRoleFromCSR } from "./assignNewRoleFromCSR"
+import { getCounterByName } from "../counter/getCounterByName"
 
 export const updateUserOnLogin = async (accessToken: string) => {
   const jwt = decodeJWT(accessToken)
@@ -41,6 +42,9 @@ export const updateUserOnLogin = async (accessToken: string) => {
     // Resolve legacy officeId -> locationId (Location.legacyOfficeNumber)
     const resolvedLocation = csrUser ? await getLocationByLegacyOfficeId(csrUser.officeId) : null
 
+    // Resolve legacy counterType
+    const defaultCounter = await getCounterByName("Counter");
+
     // Create new user
     await insertStaffUser({
       sub,
@@ -51,7 +55,7 @@ export const updateUserOnLogin = async (accessToken: string) => {
       role: newRole,
       isActive: true,
       location: resolvedLocation ? { connect: { id: resolvedLocation.id } } : undefined,
-      counterId: csrUser ? csrUser.counterId : null,
+      counter: defaultCounter ? { connect: { id: defaultCounter.id } }: undefined,
       deletedAt: csrUser ? csrUser.deleted : null,
       isFinanceDesignate: csrUser ? csrUser.financeDesignate === 1 : false,
       isIta2Designate: csrUser ? csrUser.ita2Designate === 1 : false,
