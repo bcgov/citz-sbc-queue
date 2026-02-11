@@ -1,0 +1,28 @@
+model CitizenLegacy {
+  citizenId               Int       @id @default(autoincrement()) @map("citizen_id")
+  officeId                Int       @map("office_id")
+  ticketNumber            String?   @db.VarChar(50) @map("ticket_number")
+  citizenName             String?   @db.VarChar(150) @map("citizen_name")
+  citizenComments         String?   @db.VarChar(1000) @map("citizen_comments")
+  qtXnCitizenInd          Int       @map("qt_xn_citizen_ind")
+  csId                    Int       @map("cs_id")
+  startTime               DateTime  @db.Timestamp(6) @map("start_time")
+  accurateTimeInd         Int       @map("accurate_time_ind")
+  priority                Int       @map("priority")
+  counterId               Int?      @map("counter_id")
+  userId                  Int?      @map("user_id")
+  automaticReminderFlag   Int?      @map("automatic_reminder_flag")
+  notificationEmail       String?   @db.VarChar(100) @map("notification_email")
+  notificationPhone       String?   @db.VarChar(100) @map("notification_phone")
+  notificationSentTime    DateTime? @map("notification_sent_time")
+  reminderFlag            Int?      @map("reminder_flag")
+  walkinUniqueId          String?   @db.VarChar(500) @map("walkin_unique_id")
+  createdAt               DateTime? @db.Timestamp(6) @map("created_at")
+  startPosition           Int?      @map("start_position")
+  office                  Office @relation(fields: [officeId], references: [officeId])
+  appointments            AppointmentLegacy[]
+  serviceReqs             ServiceReq[]
+
+  @@map("citizen")
+  @@schema("public")
+}

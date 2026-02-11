@@ -1,0 +1,7 @@
+model Timezone {
+  timezoneId   Int    @id @default(autoincrement()) @map("timezone_id")
+  timezoneName String @db.VarChar(256) @map("timezone_name")
+
+  @@map("timezone")
+  @@schema("public")
+}

@@ -1,0 +1,17 @@
+model ServiceReq {
+  srId       Int @id @default(autoincrement()) @map("sr_id")
+  citizenId  Int @map("citizen_id")
+  quantity   Int @map("quantity")
+  channelId  Int @map("channel_id")
+  serviceId  Int @map("service_id")
+  srStateId  Int @map("sr_state_id")
+  srNumber   Int @map("sr_number")
+
+  citizen     CitizenLegacy   @relation(fields: [citizenId], references: [citizenId])
+  service     ServiceLegacy   @relation(fields: [serviceId], references: [serviceId])
+  channel     Channel   @relation(fields: [channelId], references: [channelId])
+  periods     Period[]
+
+  @@map("servicereq")
+  @@schema("public")
+}

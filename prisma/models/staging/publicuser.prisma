@@ -1,0 +1,13 @@
+model PublicUser {
+  userId             Int     @id @default(autoincrement()) @map("user_id")
+  username           String? @db.VarChar(100)
+  displayName        String? @db.VarChar(200) @map("display_name")
+  lastName           String? @db.VarChar(200) @map("last_name")
+  email              String? @db.VarChar(200)
+  telephone          String? @db.VarChar(20)
+  sendEmailReminders Boolean @map("send_email_reminders")
+  sendSmsReminders   Boolean @map("send_sms_reminders")
+
+  @@map("publicuser")
+  @@schema("public")
+}

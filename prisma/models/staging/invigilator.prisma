@@ -1,0 +1,16 @@
+model Invigilator {
+  invigilatorId     Int       @id @default(autoincrement()) @map("invigilator_id")
+  officeId          Int       @map("office_id")
+  invigilatorName   String    @db.VarChar(50) @map("invigilator_name")
+  invigilatorNotes  String?   @db.VarChar(400) @map("invigilator_notes")
+  contactPhone      String?   @db.VarChar(15) @map("contact_phone")
+  contactEmail      String?   @db.VarChar(50) @map("contact_email")
+  contractNumber    String    @db.VarChar(50) @map("contract_number")
+  contractExpiryDate String   @db.VarChar(50) @map("contract_expiry_date")
+  deleted           DateTime? @db.Timestamp(6)
+  shadowCount       Int       @default(2) @map("shadow_count")
+  shadowFlag        String    @db.VarChar(1) @default("Y") @map("shadow_flag")
+
+  @@map("invigilator")
+  @@schema("public")
+}

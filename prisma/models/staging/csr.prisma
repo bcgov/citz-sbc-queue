@@ -12,6 +12,12 @@ model CSR {
   financeDesignate     Int       @default(0) @map("finance_designate")
   ita2Designate        Int       @default(0) @map("ita2_designate")
 
+  periods              Period[]
+  office               Office   @relation(fields: [officeId], references: [officeId])
+  role                 RoleLegacy @relation(fields: [roleId], references: [roleId])
+  csrState             CSRState @relation(fields: [csrStateId], references: [csrStateId])
+  counter              CounterLegacy? @relation(fields: [counterId], references: [counterId])
+
   @@map("csr")
   @@schema("public")
 }

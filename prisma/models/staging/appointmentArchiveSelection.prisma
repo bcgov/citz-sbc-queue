@@ -1,0 +1,8 @@
+model AppointmentArchiveSelection {
+  appointmentId Int  @id @map("appointment_id")
+  citizenId     Int? @map("citizen_id")
+  officeId      Int? @map("office_id")
+
+  @@map("appointment_archive_selection")
+  @@schema("public")
+}

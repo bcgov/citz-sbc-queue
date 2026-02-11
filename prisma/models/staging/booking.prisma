@@ -1,0 +1,19 @@
+model Booking {
+  bookingId                 Int       @id @default(autoincrement()) @map("booking_id")
+  roomId                    Int?      @map("room_id")
+  startTime                 DateTime  @db.Timestamp(6) @map("start_time")
+  endTime                   DateTime  @db.Timestamp(6) @map("end_time")
+  fees                      String?   @db.VarChar(5)
+  bookingName               String?   @db.VarChar(150) @map("booking_name")
+  officeId                  Int       @map("office_id")
+  sbcStaffInvigilated       Int?      @map("sbc_staff_invigilated")
+  bookingContactInformation String?   @db.VarChar(256) @map("booking_contact_information")
+  shadowInvigilatorId       Int?      @map("shadow_invigilator_id")
+  blackoutFlag              String    @db.VarChar(1) @default("N") @map("blackout_flag")
+  blackoutNotes             String?   @db.VarChar(255) @map("blackout_notes")
+  recurringUuid             String?   @db.VarChar(255) @map("recurring_uuid")
+  statFlag                  Boolean   @map("stat_flag")
+
+  @@map("booking")
+  @@schema("public")
+}

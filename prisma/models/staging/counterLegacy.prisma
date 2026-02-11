@@ -1,0 +1,9 @@
+model CounterLegacy {
+  counterId   Int    @id @default(autoincrement()) @map("counter_id")
+  counterName String @db.VarChar(50) @map("counter_name")
+
+  csrs        CSR[]
+
+  @@map("counter")
+  @@schema("public")
+}

@@ -1,0 +1,11 @@
+model Timeslot {
+  timeSlotId Int      @id @default(autoincrement()) @map("time_slot_id")
+  startTime  String   @map("start_time")
+  endTime    String   @map("end_time")
+  noOfSlots  Int      @map("no_of_slots")
+  dayOfWeek  String[] @map("day_of_week")
+  officeId   Int?     @map("office_id")
+
+  @@map("timeslot")
+  @@schema("public")
+}

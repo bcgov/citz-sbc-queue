@@ -1,0 +1,41 @@
+model Office {
+  officeId                    Int       @id @default(autoincrement()) @map("office_id")
+  officeName                  String?   @db.VarChar(100) @map("office_name")
+  officeNumber                Int?      @map("office_number")
+  sbId                        Int?      @map("sb_id")
+  deleted                     DateTime? @db.Timestamp(6)
+  examsEnabledInd             Int       @map("exams_enabled_ind")
+  appointmentsEnabledInd      Int       @map("appointments_enabled_ind")
+  timezoneId                  Int?      @map("timezone_id")
+  latitude                    Float?    @map("latitude")
+  longitude                   Float?    @map("longitude")
+  officeAppointmentMessage    String?   @map("office_appointment_message")
+  appointmentsDaysLimit       Int?      @map("appointments_days_limit")
+  appointmentDuration         Int?      @map("appointment_duration")
+  maxPersonAppointmentPerDay  Int?      @map("max_person_appointment_per_day")
+  civicAddress                String?   @db.VarChar(200) @map("civic_address")
+  telephone                   String?   @db.VarChar(20) @map("telephone")
+  onlineStatus                String?   @map("online_status")
+  numberOfDlkt                Int?      @map("number_of_dlkt")
+  officeEmailParagraph        String?   @map("office_email_paragraph")
+  externalMapLink             String?   @map("external_map_link")
+  soonestAppointment          Int?      @map("soonest_appointment")
+  automaticReminderAt         Int?      @map("automatic_reminder_at")
+  checkInNotification         Int?      @map("check_in_notification")
+  checkInReminderMsg          String?   @map("check_in_reminder_msg")
+  currentlyWaiting            Int?      @map("currently_waiting")
+  digitalSignageMessage       Int?      @map("digital_signage_message")
+  digitalSignageMessage1      String?   @map("digital_signage_message_1")
+  digitalSignageMessage2      String?   @map("digital_signage_message_2")
+  digitalSignageMessage3      String?   @map("digital_signage_message_3")
+  showCurrentlyWaitingBottom  Int?      @map("show_currently_waiting_bottom")
+  optoutStatus                Int?      @default(0) @map("optout_status")
+  appointments                AppointmentLegacy[]
+  appointmentVersions         AppointmentVersion[]
+  appointmentVersionArchives  AppointmentVersionArchive[]
+  citizens                    CitizenLegacy[]
+  csrs                        CSR[]
+
+  @@map("office")
+  @@schema("public")
+}

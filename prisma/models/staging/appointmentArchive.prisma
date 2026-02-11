@@ -1,0 +1,23 @@
+model AppointmentArchive {
+  appointmentId      Int       @id @map("appointment_id")
+  officeId           Int       @map("office_id")
+  startTime          DateTime  @db.Timestamp(6) @map("start_time")
+  endTime            DateTime  @db.Timestamp(6) @map("end_time")
+  checkedInTime      DateTime? @db.Timestamp(6) @map("checked_in_time")
+  comments           String?   @db.VarChar(255)
+  citizenName        String    @db.VarChar(255) @map("citizen_name")
+  contactInformation String?   @db.VarChar(255) @map("contact_information")
+  serviceId          Int?      @map("service_id")
+  blackoutFlag       String    @db.VarChar(1) @default("N") @map("blackout_flag")
+  citizenId          Int?      @map("citizen_id")
+  recurringUuid      String?   @db.VarChar(255) @map("recurring_uuid")
+  onlineFlag         Boolean?  @map("online_flag")
+  isDraft            Boolean?  @map("is_draft")
+  createdAt          DateTime? @db.Timestamp(6) @map("created_at")
+  statFlag           Boolean   @map("stat_flag")
+  updatedAt          DateTime? @db.Timestamp(6) @map("updated_at")
+  updatedBy          String?   @map("updated_by")
+
+  @@map("appointment_archive")
+  @@schema("public")
+}

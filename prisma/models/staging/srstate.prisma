@@ -1,0 +1,8 @@
+model SRState {
+  srStateId   Int    @id @default(autoincrement()) @map("sr_state_id")
+  srCode      String @db.VarChar(100) @map("sr_code")
+  srStateDesc String @db.VarChar(1000) @map("sr_state_desc")
+
+  @@map("srstate")
+  @@schema("public")
+}

@@ -1,0 +1,11 @@
+model OfficeSharepoint {
+  officeNumber Int     @id @map("office_number")
+  officeName   String  @db.VarChar(100) @map("office_name")
+  latitude     Float?  @map("latitude")
+  longitude    Float?  @map("longitude")
+  civicAddress String? @db.VarChar(200) @map("civic_address")
+  telephone    String? @db.VarChar(20) @map("telephone")
+
+  @@map("office_sharepoint")
+  @@schema("public")
+}

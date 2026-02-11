@@ -1,0 +1,8 @@
+model OfficeQuickList {
+  officeId Int @map("office_id")
+  serviceId Int @map("service_id")
+
+  @@id([officeId, serviceId])
+  @@map("office_quick_list")
+  @@schema("public")
+}

@@ -1,0 +1,14 @@
+model Period {
+  periodId        Int      @id @default(autoincrement()) @map("period_id")
+  srId            Int      @map("sr_id")
+  csrId           Int      @map("csr_id")
+  receptionCsrInd Int      @map("reception_csr_ind")
+  psId            Int      @map("ps_id")
+  timeStart       DateTime @db.Timestamp(6) @map("time_start")
+  timeEnd         DateTime? @db.Timestamp(6) @map("time_end")
+  serviceReq      ServiceReq @relation(fields: [srId], references: [srId])
+  csr             CSR        @relation(fields: [csrId], references: [csrId])
+
+  @@map("period")
+  @@schema("public")
+}

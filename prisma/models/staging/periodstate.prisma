@@ -1,0 +1,9 @@
+model PeriodState {
+  psId     Int    @id @default(autoincrement()) @map("ps_id")
+  psName   String @db.VarChar(100) @map("ps_name")
+  psDesc   String @db.VarChar(1000) @map("ps_desc")
+  psNumber Int    @map("ps_number")
+
+  @@map("periodstate")
+  @@schema("public")
+}
