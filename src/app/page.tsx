@@ -1,7 +1,7 @@
 import { ExampleDialog } from "@/components/examples/ExampleDialog"
 import { ExampleModal } from "@/components/examples/ExampleModal"
 
-export default function Home() {
+export default async function Home() {
   return (
     <div className="flex flex-col">
       <p className="text-xl">TEST</p>
