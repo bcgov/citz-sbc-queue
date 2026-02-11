@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from "react"
 import { SelectInput } from "@/components/common/select"
 import type { Location, Role, StaffUser } from "@/generated/prisma/client"
-import { Section } from "./common/Section"
+import { Section } from "./Section"
 
 type RoleAndAssignmentSectionProps = {
   user: StaffUser
