@@ -25,7 +25,7 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['line'],
-    ['html', { outputFolder: 'playwright/report', open: 'never'}],
+    ['html', { outputFolder: 'playwright/report', open: 'on-failure'}],
     ['json', { outputFile: 'playwright/report/results.json' }]
   ],
 
@@ -64,10 +64,10 @@ export default defineConfig({
     /* Test against branded browsers. */
     // Currently Microsoft Edge for Linux is not available for arm64 systems
     // Can uncomment when support is added
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
+    {
+      name: 'Microsoft Edge',
+      use: { ...devices['Desktop Edge'], channel: 'msedge' },
+    },
 
     /* Test against mobile viewports. */
     {
