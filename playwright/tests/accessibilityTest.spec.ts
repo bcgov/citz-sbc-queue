@@ -29,19 +29,18 @@ test.describe('Accessibility Testing', () => {
           // if not all the incomplete tests were color-contrast failures, report them as violations
           expect.soft(accessibilityScanResults.incomplete.length).toEqual(0);
         } else {
-        // add failed colour contrast tests to violations for reporting
-        accessibilityScanResults.violations.push(...failedColorContrast);
-        accessibilityScanResults.incomplete = [];
-      }
-
+          // add failed colour contrast tests to violations for reporting
+          accessibilityScanResults.violations.push(...failedColorContrast);
+          accessibilityScanResults.incomplete = [];
+        }
       }
 
       const reportHTML = createHtmlReport({
         results: accessibilityScanResults,
         options: {
-          // comment out this line if you want to have a report file created locally
-          doNotCreateReportFile:true,
-          // uncomment these lines if you want to have a report file created locally
+          // uncomment this line if you dont want to create a report file locally
+          // doNotCreateReportFile:true,
+          // comment these lines if you dont want to have a report file created locally
           reportFileName: `${name}.html`,
           outputDir: `playwright/test-results/accessibility-reports/`,
         },
