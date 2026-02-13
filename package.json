@@ -12,9 +12,9 @@
   "scripts": {
     "up": "tsx scripts/container.ts up",
     "down": "tsx scripts/container.ts down",
-    "rebuild": "tsx scripts/container.ts rebuild",
+    "rebuild": "npx prisma generate && tsx scripts/container.ts rebuild",
     "db:studio": "tsx scripts/container.ts db:studio",
-    "db:generate": "tsx scripts/container.ts db:generate",
+    "db:generate": "npx prisma generate",
     "db:migrate": "tsx scripts/container.ts db:migrate",
     "db:push": "tsx scripts/container.ts db:push",
     "db:reset": "tsx scripts/container.ts db:reset",
