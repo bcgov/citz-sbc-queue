@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import type { CSR, Location, StaffUser } from "@/generated/prisma/client"
+import { getCounterByName } from "@/lib/prisma/counter/read"
 import { getCSRByUsername } from "@/lib/prisma/legacy/csr/getCSRByUsername"
 import { getLocationByLegacyOfficeId } from "@/lib/prisma/location/getLocationByLegacyOfficeId"
 import { getStaffUserBySub } from "@/lib/prisma/staff_user/getStaffUserBySub"
@@ -18,6 +19,7 @@ vi.mock("./assignNewRoleFromCSR", () => ({ assignNewRoleFromCSR: vi.fn() }))
 vi.mock("@/lib/prisma/location/getLocationByLegacyOfficeId", () => ({
   getLocationByLegacyOfficeId: vi.fn(),
 }))
+vi.mock("@/lib/prisma/counter/read", () => ({ getCounterByName: vi.fn() }))
 vi.mock("@/lib/prisma/staff_user/insertStaffUser", () => ({ insertStaffUser: vi.fn() }))
 
 describe("updateUserOnLogin", () => {
@@ -50,6 +52,7 @@ describe("updateUserOnLogin", () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.mocked(decodeJWT).mockReturnValue(mockJwt)
+    vi.mocked(getCounterByName).mockResolvedValue(null)
   })
 
   afterEach(() => {
@@ -105,7 +108,6 @@ describe("updateUserOnLogin", () => {
         role: "SDM",
         isActive: true,
         location: { connect: { id: "loc-id-1" } },
-        counterId: 5,
         deletedAt: null,
         isFinanceDesignate: true,
         isIta2Designate: false,
@@ -136,7 +138,6 @@ describe("updateUserOnLogin", () => {
         role: "CSR",
         isActive: true,
         location: undefined,
-        counterId: null,
         deletedAt: null,
         isFinanceDesignate: false,
         isIta2Designate: false,
