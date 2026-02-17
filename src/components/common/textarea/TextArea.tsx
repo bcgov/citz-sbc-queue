@@ -1,30 +1,30 @@
-type TextFieldProps = {
+type TextAreaProps = {
   id: string
   label: string
   value: string
   onChange: (value: string) => void
   disabled?: boolean
   placeholder?: string
-  type?: string
   minLength?: number
   maxLength?: number
   required?: boolean
   className?: string
+  rows?: number
 }
 
-export const TextField = ({
+export const TextArea = ({
   id,
   label,
   value,
   onChange,
   disabled = false,
   placeholder,
-  type = "text",
   minLength,
   maxLength,
   required = false,
   className = "",
-}: TextFieldProps) => {
+  rows = 4,
+}: TextAreaProps) => {
   return (
     <div className={className}>
       <label htmlFor={id} className="block text-xs font-medium text-typography-primary">
@@ -36,16 +36,16 @@ export const TextField = ({
         )}
       </label>
       <div className="relative">
-        <input
+        <textarea
           id={id}
-          type={type}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
           placeholder={placeholder}
           minLength={minLength}
           maxLength={maxLength}
-          className="mt-xs block w-full rounded-md border border-border-dark px-sm py-xs pr-14 text-xs text-typography-primary disabled:cursor-not-allowed disabled:bg-gray-100"
+          rows={rows}
+          className="mt-xs block w-full rounded-md border border-border-dark px-sm py-xs text-xs text-typography-primary disabled:cursor-not-allowed disabled:bg-gray-100"
         />
 
         {(minLength !== undefined || maxLength !== undefined) && (

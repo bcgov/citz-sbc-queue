@@ -10,6 +10,7 @@ import {
   Modal,
 } from "@/components/common/dialog"
 import type { Location, Service } from "@/generated/prisma/client"
+import { ServiceForm } from "./ServiceForm"
 
 type EditServiceModalProps = {
   open: boolean
@@ -74,6 +75,8 @@ export const EditServiceModal = ({
               )}
             </div>
           )}
+
+          <ServiceForm service={formData} setFormData={setFormData} isReadonly={isReadonly} />
         </form>
       </DialogBody>
 

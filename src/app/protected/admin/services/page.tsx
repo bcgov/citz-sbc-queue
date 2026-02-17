@@ -1,5 +1,7 @@
+import { revalidatePath } from "next/cache"
 import { ServiceTable } from "@/components/admin/services/ServiceTable"
 import { getAllServices } from "@/lib/prisma/service/getAllServices"
+import { updateService } from "@/lib/prisma/service/updateService"
 
 // This page should always be rendered dynamically to ensure fresh data
 export const dynamic = "force-dynamic"
@@ -7,10 +9,19 @@ export const dynamic = "force-dynamic"
 export default async function Page() {
   const services = await getAllServices()
 
+  const revalidateTable = async () => {
+    "use server"
+    revalidatePath("/protected/admin/services")
+  }
+
   return (
     <div className="space-y-sm">
       <h2>Services</h2>
-      <ServiceTable services={services} />
+      <ServiceTable
+        services={services}
+        updateService={updateService}
+        revalidateTable={revalidateTable}
+      />
     </div>
   )
 }
