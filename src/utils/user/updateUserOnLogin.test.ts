@@ -52,6 +52,7 @@ describe("updateUserOnLogin", () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.mocked(decodeJWT).mockReturnValue(mockJwt)
+    vi.mocked(getCounterByName).mockResolvedValue(null)
   })
 
   afterEach(() => {
