@@ -1,6 +1,6 @@
 model Counter {
   id                 String   @id @default(uuid())
-  name               String   @db.VarChar(250)
+  name               String   @db.VarChar(250) @unique
 
   locations          Location[]
   staffUsers         StaffUser[]
