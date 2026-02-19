@@ -19,7 +19,7 @@
     "db:push": "tsx scripts/container.ts db:push",
     "db:reset": "tsx scripts/container.ts db:reset",
     "db:seed": "tsx scripts/container.ts db:seed",
-    "dev": "next dev",
+    "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
     "lint": "biome lint ./src",
