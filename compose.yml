@@ -28,12 +28,15 @@ services:
       args:
         NODE_TAG: 22-bullseye-slim
     volumes:
+      - ./:/workspace
       - /workspace/node_modules
-      - ./prisma:/workspace/prisma
     env_file:
       - .env
     environment:
       - PORT=3000
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=150
     depends_on:
       - postgres
     ports:
@@ -43,7 +46,6 @@ services:
       - sbc-queue
 
 volumes:
-  node_modules:
   postgres_data:
 
 networks:
