@@ -1,5 +1,5 @@
 import type { StaffUser } from "@/generated/prisma/client"
-import { Section } from "./common/Section"
+import { Section } from "./Section"
 
 type UserInformationSectionProps = {
   user: StaffUser

@@ -141,7 +141,7 @@ const mockStaffUser: StaffUser = {
   username: "john.doe",
   displayName: "John Doe",
   locationId: "11111111-1111-1111-1111-111111111111",
-  counterId: 1,
+  counterId: "33333333-3333-3333-3333-333333333333",
   role: "CSR",
   isActive: true,
   deletedAt: null,
@@ -201,6 +201,7 @@ describe("EditStaffUserModal", () => {
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
         offices={mockOffices}
+        openConfirmArchiveUserModal={vi.fn()}
       />
     )
 
@@ -218,6 +219,7 @@ describe("EditStaffUserModal", () => {
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
         offices={mockOffices}
+        openConfirmArchiveUserModal={vi.fn()}
       />
     )
 
@@ -235,6 +237,7 @@ describe("EditStaffUserModal", () => {
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
         offices={mockOffices}
+        openConfirmArchiveUserModal={vi.fn()}
       />
     )
 
@@ -252,6 +255,7 @@ describe("EditStaffUserModal", () => {
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
         offices={mockOffices}
+        openConfirmArchiveUserModal={vi.fn()}
       />
     )
 
@@ -272,6 +276,7 @@ describe("EditStaffUserModal", () => {
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
         offices={mockOffices}
+        openConfirmArchiveUserModal={vi.fn()}
       />
     )
 
@@ -293,6 +298,7 @@ describe("EditStaffUserModal", () => {
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
         offices={mockOffices}
+        openConfirmArchiveUserModal={vi.fn()}
       />
     )
 
@@ -314,6 +320,7 @@ describe("EditStaffUserModal", () => {
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
         offices={mockOffices}
+        openConfirmArchiveUserModal={vi.fn()}
       />
     )
 
@@ -340,6 +347,7 @@ describe("EditStaffUserModal", () => {
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
         offices={mockOffices}
+        openConfirmArchiveUserModal={vi.fn()}
       />
     )
 
@@ -362,6 +370,7 @@ describe("EditStaffUserModal", () => {
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
         offices={mockOffices}
+        openConfirmArchiveUserModal={vi.fn()}
       />
     )
 
@@ -388,6 +397,7 @@ describe("EditStaffUserModal", () => {
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
         offices={mockOffices}
+        openConfirmArchiveUserModal={vi.fn()}
       />
     )
 
@@ -416,6 +426,7 @@ describe("EditStaffUserModal", () => {
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
         offices={mockOffices}
+        openConfirmArchiveUserModal={vi.fn()}
       />
     )
 
@@ -450,6 +461,7 @@ describe("EditStaffUserModal", () => {
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
         offices={mockOffices}
+        openConfirmArchiveUserModal={vi.fn()}
       />
     )
 
@@ -487,6 +499,7 @@ describe("EditStaffUserModal", () => {
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
         offices={mockOffices}
+        openConfirmArchiveUserModal={vi.fn()}
       />
     )
 
@@ -510,6 +523,7 @@ describe("EditStaffUserModal", () => {
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
         offices={mockOffices}
+        openConfirmArchiveUserModal={vi.fn()}
       />
     )
 
@@ -550,6 +564,7 @@ describe("EditStaffUserModal", () => {
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
         offices={mockOffices}
+        openConfirmArchiveUserModal={vi.fn()}
       />
     )
 
@@ -563,6 +578,7 @@ describe("EditStaffUserModal", () => {
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
         offices={mockOffices}
+        openConfirmArchiveUserModal={vi.fn()}
       />
     )
 
@@ -580,6 +596,7 @@ describe("EditStaffUserModal", () => {
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
         offices={mockOffices}
+        openConfirmArchiveUserModal={vi.fn()}
       />
     )
 
@@ -609,6 +626,7 @@ describe("EditStaffUserModal", () => {
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
         offices={mockOffices}
+        openConfirmArchiveUserModal={vi.fn()}
       />
     )
 
@@ -634,6 +652,7 @@ describe("EditStaffUserModal", () => {
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
         offices={mockOffices}
+        openConfirmArchiveUserModal={vi.fn()}
       />
     )
 
@@ -657,6 +676,7 @@ describe("EditStaffUserModal", () => {
         updateStaffUser={mockupdateStaffUser}
         revalidateTable={mockRevalidateTable}
         offices={mockOffices}
+        openConfirmArchiveUserModal={vi.fn()}
       />
     )
 
