@@ -4,19 +4,24 @@ import { Transition } from "@headlessui/react"
 import { Bars3Icon } from "@heroicons/react/24/solid"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useState, cache } from "react"
 import { Loginout, SvgBcLogo } from "@/components"
-import type { StaffUser } from "@/generated/prisma/client"
+import type { StaffUser, Counter, Location } from "@/generated/prisma/client"
 import { useAuth } from "@/hooks"
 import { AvailabilitySwitch } from "./availability"
 import { Navigation } from "./navigation"
+import { CounterButton } from "./counter"
 
 type HeaderProps = {
   toggleAvailableBySub: (sub: string, isAvailable: boolean) => void
   getStaffUserBySub: (sub: string) => Promise<StaffUser | null>
+  getCounterById: (id: string) => Promise<Counter | null>
+  getLocationById: (id: string) => Promise<Location | null>
 }
 
-export const Header = ({ toggleAvailableBySub, getStaffUserBySub }: HeaderProps) => {
+// const getUser = cache(getStaffUserBySub(sub))
+
+export const Header = ({ toggleAvailableBySub, getStaffUserBySub, getCounterById, getLocationById }: HeaderProps) => {
   const pathname = usePathname()
   const [showNavList, setShowNavList] = useState(false)
 
@@ -59,12 +64,17 @@ export const Header = ({ toggleAvailableBySub, getStaffUserBySub }: HeaderProps)
         {/** below is bcds-header--container class */}
         <div className="flex flex-row gap-sm grow max-w-[1200px] justify-between">
           <BCGovLogo />
-          <div className="flex flex-row  justify-around gap-sm px-sm items-center">
+          <div className="flex flex-row justify-around gap-md px-sm items-center">
             <AvailabilitySwitch
               toggleAvailableBySub={toggleAvailableBySub}
               getStaffUserBySub={getStaffUserBySub}
             />
-            {/** Display navagation as a hamburger icon button on mobile devices */}
+            <CounterButton
+              getStaffUserBySub={getStaffUserBySub}
+              getCounterById={getCounterById}
+              getLocationById={getLocationById}
+            />
+            {/** Display navigation as a hamburger icon button on mobile devices */}
             {useAuth().isAuthenticated && (
               <div className="contents md:hidden" data-testid="hamburgerNav-parent">
                 <HamburgerNav />

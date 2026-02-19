@@ -1,1 +1,2 @@
-export { getCounterById, getCounterByName } from "./read"
+export { getCounterById } from "./getCounterById"
+export { getCounterByName } from "./getCounterByName"

@@ -10,11 +10,3 @@ export async function getCounterById(id: string): Promise<Counter | null> {
 
   return counter
 }
-
-export async function getCounterByName(counterName: string): Promise<Counter | null> {
-  const counter = await prisma.counter.findFirst({
-    where: { name: counterName },
-  })
-
-  return counter
-}

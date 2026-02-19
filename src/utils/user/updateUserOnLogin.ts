@@ -8,7 +8,7 @@ import { insertStaffUser } from "@/lib/prisma/staff_user/insertStaffUser"
 import { updateStaffUser } from "@/lib/prisma/staff_user/updateStaffUser"
 import { decodeJWT } from "@/utils/auth/jwt/decodeJWT"
 import { assignNewRoleFromCSR } from "./assignNewRoleFromCSR"
-import { getCounterByName } from "@/lib/prisma/counter/read"
+import { getCounterByName } from "@/lib/prisma/counter/getCounterById"
 
 export const updateUserOnLogin = async (accessToken: string) => {
   const jwt = decodeJWT(accessToken)
