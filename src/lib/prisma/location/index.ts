@@ -1,4 +1,5 @@
 export { createLocation } from "./create"
-export { getAllLocations, getLocationById } from "./read"
+export { getAllLocations } from "./getAllLocations"
+export { getLocationById } from "./getLocationById"
 export { deleteLocation } from "./remove"
 export { updateLocation } from "./update"
