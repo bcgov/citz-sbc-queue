@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import type { CSR, Location, StaffUser } from "@/generated/prisma/client"
+import type { Counter, CSR, Location, StaffUser } from "@/generated/prisma/client"
 import { getCounterByName } from "@/lib/prisma/counter/read"
 import { getCSRByUsername } from "@/lib/prisma/legacy/csr/getCSRByUsername"
 import { getLocationByLegacyOfficeId } from "@/lib/prisma/location/getLocationByLegacyOfficeId"
@@ -92,6 +92,7 @@ describe("updateUserOnLogin", () => {
     vi.mocked(getCSRByUsername).mockResolvedValueOnce(csr)
     vi.mocked(assignNewRoleFromCSR).mockResolvedValueOnce("SDM")
     vi.mocked(getLocationByLegacyOfficeId).mockResolvedValueOnce({ id: "loc-id-1" } as Location)
+    vi.mocked(getCounterByName).mockResolvedValueOnce({ id: "counter-id-1" } as Counter)
 
     await updateUserOnLogin("token")
 
@@ -108,6 +109,7 @@ describe("updateUserOnLogin", () => {
         role: "SDM",
         isActive: true,
         location: { connect: { id: "loc-id-1" } },
+        counter: { connect: { id: "counter-id-1" } },
         deletedAt: null,
         isFinanceDesignate: true,
         isIta2Designate: false,
@@ -122,6 +124,7 @@ describe("updateUserOnLogin", () => {
     vi.mocked(getStaffUserBySub).mockResolvedValueOnce(null)
     vi.mocked(getCSRByUsername).mockResolvedValueOnce(null)
     vi.mocked(assignNewRoleFromCSR).mockResolvedValueOnce("CSR")
+    vi.mocked(getCounterByName).mockResolvedValueOnce(null)
 
     await updateUserOnLogin("token")
 
@@ -138,6 +141,7 @@ describe("updateUserOnLogin", () => {
         role: "CSR",
         isActive: true,
         location: undefined,
+        counter: undefined,
         deletedAt: null,
         isFinanceDesignate: false,
         isIta2Designate: false,
