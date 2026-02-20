@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
+import SelectIcon from "@/components/common/select/SelectIcon"
 
 type Option = {
   key: string
@@ -139,27 +140,33 @@ export const MultiSelect = ({
         {placeholder}
       </label>
 
-      {/** biome-ignore lint/a11y/useSemanticElements: <Custom component> */}
-      <input
-        id={id}
-        type="search"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        ref={inputRef}
-        onKeyDown={onInputKeyDown}
-        disabled={disabled}
-        placeholder={placeholder}
-        role="combobox"
-        aria-controls={`${id ?? "multi-select"}-list`}
-        aria-expanded={Boolean(lower || focusedWithin)}
-        aria-activedescendant={
-          activeIndex !== null && visibleOptions[activeIndex]
-            ? `${id ?? "multi-select"}-opt-${visibleOptions[activeIndex].key}`
-            : undefined
-        }
-        className="mt-xs block w-full rounded-md border border-border-dark px-sm py-xs text-xs text-typography-primary disabled:cursor-not-allowed disabled:bg-gray-100"
-        aria-label={placeholder}
-      />
+      <div className="relative">
+        {/** biome-ignore lint/a11y/useSemanticElements: <Custom select> */}
+        <input
+          id={id}
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          ref={inputRef}
+          onKeyDown={onInputKeyDown}
+          disabled={disabled}
+          placeholder={placeholder}
+          role="combobox"
+          aria-controls={`${id ?? "multi-select"}-list`}
+          aria-expanded={Boolean(lower || focusedWithin)}
+          aria-activedescendant={
+            activeIndex !== null && visibleOptions[activeIndex]
+              ? `${id ?? "multi-select"}-opt-${visibleOptions[activeIndex].key}`
+              : undefined
+          }
+          className="mt-xs block w-full rounded-md border border-border-dark px-sm py-xs pr-9 text-xs text-typography-primary disabled:cursor-not-allowed disabled:bg-gray-100"
+          aria-label={placeholder}
+        />
+
+        <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+          <SelectIcon />
+        </span>
+      </div>
 
       {lower || focusedWithin ? (
         // biome-ignore lint/a11y/useSemanticElements: <Custom component>
