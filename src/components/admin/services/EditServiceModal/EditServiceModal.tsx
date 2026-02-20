@@ -9,18 +9,19 @@ import {
   DialogTitle,
   Modal,
 } from "@/components/common/dialog"
-import type { Location, Service } from "@/generated/prisma/client"
-import { ServiceForm } from "./ServiceForm"
+import type { Location } from "@/generated/prisma/client"
+import type { ServiceWithRelations } from "@/lib/prisma/service/types"
+import { ServiceForm } from "../ServiceForm"
 
 type EditServiceModalProps = {
   open: boolean
   onClose: () => void
-  service: Service | null
+  service: ServiceWithRelations | null
   offices: Location[]
   updateService: (
-    service: Partial<Service>,
-    prevService: Partial<Service>
-  ) => Promise<Service | null>
+    service: Partial<ServiceWithRelations>,
+    prevService: Partial<ServiceWithRelations>
+  ) => Promise<ServiceWithRelations | null>
   revalidateTable: () => Promise<void>
 }
 
@@ -33,8 +34,8 @@ export const EditServiceModal = ({
   revalidateTable,
 }: EditServiceModalProps) => {
   const [isSaving, setIsSaving] = useState(false)
-  const [formData, setFormData] = useState<Service | null>(null)
-  const [previousService, setPreviousService] = useState<Service | null>(null)
+  const [formData, setFormData] = useState<ServiceWithRelations | null>(null)
+  const [previousService, setPreviousService] = useState<ServiceWithRelations | null>(null)
 
   useEffect(() => {
     if (open && service) {
@@ -76,7 +77,12 @@ export const EditServiceModal = ({
             </div>
           )}
 
-          <ServiceForm service={formData} setFormData={setFormData} isReadonly={isReadonly} />
+          <ServiceForm
+            service={formData}
+            offices={offices}
+            setFormData={setFormData}
+            isReadonly={isReadonly}
+          />
         </form>
       </DialogBody>
 

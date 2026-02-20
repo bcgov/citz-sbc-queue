@@ -9,6 +9,7 @@ type Option = {
 
 type MultiSelectProps = {
   id?: string
+  label: string
   options: Option[]
   selected: string[]
   onChange: (selected: string[]) => void
@@ -18,6 +19,7 @@ type MultiSelectProps = {
 
 export const MultiSelect = ({
   id,
+  label,
   options,
   selected,
   onChange,
@@ -136,7 +138,7 @@ export const MultiSelect = ({
   return (
     <div ref={rootRef}>
       <label className="block text-xs font-medium text-typography-primary" htmlFor={id}>
-        {placeholder}
+        {label}
       </label>
 
       {/** biome-ignore lint/a11y/useSemanticElements: <Custom component> */}
@@ -158,7 +160,7 @@ export const MultiSelect = ({
             : undefined
         }
         className="mt-xs block w-full rounded-md border border-border-dark px-sm py-xs text-xs text-typography-primary disabled:cursor-not-allowed disabled:bg-gray-100"
-        aria-label={placeholder}
+        aria-label={label}
       />
 
       {lower || focusedWithin ? (
@@ -166,7 +168,7 @@ export const MultiSelect = ({
         <div
           id={`${id ?? "multi-select"}-list`}
           role="listbox"
-          aria-label={placeholder}
+          aria-label={label}
           className="mt-xs max-h-48 overflow-auto rounded-md border border-border-dark bg-white"
         >
           {visibleOptions.length === 0 ? (
@@ -245,6 +247,7 @@ export const MultiSelect = ({
                 <button
                   type="button"
                   aria-label={`Remove ${o.label}`}
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={(e) => remove(e as React.MouseEvent, o.key)}
                   className="inline-flex px-2 h-5 items-center justify-center rounded-full border border-border-light bg-button-secondary text-icon-primary hover:bg-button-danger hover:text-white text-sm font-semibold"
                 >

@@ -1,10 +1,14 @@
 import type { Dispatch, SetStateAction } from "react"
+import { useMemo } from "react"
 import { Switch, TextArea, TextField } from "@/components/common"
-import type { Service } from "@/generated/prisma/client"
+import { MultiSelect } from "@/components/common/select/MultiSelect"
+import type { Location } from "@/generated/prisma/client"
+import type { ServiceWithRelations } from "@/lib/prisma/service/types"
 
 type ServiceFormProps = {
-  service: Service
-  setFormData: Dispatch<SetStateAction<Service | null>>
+  service: ServiceWithRelations
+  offices: Location[]
+  setFormData: Dispatch<SetStateAction<ServiceWithRelations | null>>
   isReadonly: boolean
 }
 
@@ -13,10 +17,14 @@ type ServiceFormProps = {
  *
  * @param props - The properties object.
  * @property props.service - The service being edited.
+ * @property props.offices - List of office locations.
  * @property props.setFormData - Function to update the form data state.
  * @property props.isReadonly - Whether the section inputs are read-only.
  */
-export const ServiceForm = ({ service, setFormData, isReadonly }: ServiceFormProps) => {
+export const ServiceForm = ({ service, offices, setFormData, isReadonly }: ServiceFormProps) => {
+  const officeOptions = useMemo(() => offices.map((o) => ({ key: o.id, label: o.name })), [offices])
+
+  const selectedOfficeIds = service.locations ? service.locations.map((l) => l.id) : []
   return (
     <div className="flex flex-col gap-2">
       <div className="grid grid-cols-7 gap-2">
@@ -77,6 +85,29 @@ export const ServiceForm = ({ service, setFormData, isReadonly }: ServiceFormPro
           maxLength={1000}
           className="col-span-2"
         />
+      </div>
+
+      <div>
+        <div className="mt-xs">
+          <MultiSelect
+            id="service-offices"
+            label="Offices"
+            options={officeOptions}
+            selected={selectedOfficeIds}
+            onChange={(selected) =>
+              setFormData((s) =>
+                s
+                  ? {
+                      ...s,
+                      locations: selected.map((id) => offices.find((o) => o.id === id) as Location),
+                    }
+                  : s
+              )
+            }
+            placeholder="Select offices"
+            disabled={isReadonly}
+          />
+        </div>
       </div>
     </div>
   )

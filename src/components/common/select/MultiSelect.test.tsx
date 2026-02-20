@@ -15,6 +15,7 @@ function Wrapper(props: { initial?: string[] }) {
   return (
     <MultiSelect
       id="test-multi"
+      label="Search options"
       options={options}
       selected={selected}
       onChange={setSelected}
