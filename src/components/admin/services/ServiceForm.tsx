@@ -7,9 +7,9 @@ import type { ServiceWithRelations } from "@/lib/prisma/service/types"
 
 type ServiceFormProps = {
   initialCode?: string
-  service: ServiceWithRelations
+  service: Partial<ServiceWithRelations>
   offices: Location[]
-  setFormData: Dispatch<SetStateAction<ServiceWithRelations | null>>
+  setFormData: Dispatch<SetStateAction<Partial<ServiceWithRelations> | null>>
   doesServiceCodeExist: (code: string) => Promise<boolean>
   isReadonly: boolean
 }
@@ -76,7 +76,7 @@ export const ServiceForm = ({
         <TextField
           id="service-code"
           label="Code"
-          value={service.code}
+          value={service.code || ""}
           onChange={(v) => setFormData((s) => (s ? { ...s, code: v.replace(/\s/g, "") } : s))}
           disabled={isReadonly}
           required
@@ -86,7 +86,7 @@ export const ServiceForm = ({
         <TextField
           id="service-ticketPrefix"
           label="Ticket Prefix"
-          value={service.ticketPrefix}
+          value={service.ticketPrefix || ""}
           onChange={(v) => setFormData((s) => (s ? { ...s, ticketPrefix: v } : s))}
           disabled={isReadonly}
           required
@@ -96,7 +96,7 @@ export const ServiceForm = ({
         <div className="flex flex-col justify-center gap-1">
           <p className="block text-xs font-medium text-typography-primary">Back Office</p>
           <Switch
-            checked={service.backOffice}
+            checked={service.backOffice || false}
             onChange={(checked) => setFormData((s) => (s ? { ...s, backOffice: checked } : s))}
             disabled={isReadonly}
           />
@@ -106,7 +106,7 @@ export const ServiceForm = ({
         <TextField
           id="service-name"
           label="Name"
-          value={service.name}
+          value={service.name || ""}
           onChange={(v) => setFormData((s) => (s ? { ...s, name: v } : s))}
           disabled={isReadonly}
           required
@@ -115,7 +115,7 @@ export const ServiceForm = ({
         <TextField
           id="service-publicName"
           label="Public Name"
-          value={service.publicName}
+          value={service.publicName || ""}
           onChange={(v) => setFormData((s) => (s ? { ...s, publicName: v } : s))}
           disabled={isReadonly}
           required
@@ -124,7 +124,7 @@ export const ServiceForm = ({
         <TextArea
           id="service-description"
           label="Description"
-          value={service.description}
+          value={service.description || ""}
           onChange={(v) => setFormData((s) => (s ? { ...s, description: v } : s))}
           disabled={isReadonly}
           maxLength={1000}
