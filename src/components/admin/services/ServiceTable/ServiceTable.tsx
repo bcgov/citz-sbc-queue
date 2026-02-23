@@ -6,6 +6,7 @@ import { Switch } from "@/components/common/switch"
 import type { Location } from "@/generated/prisma/client"
 import { useDialog } from "@/hooks"
 import type { ServiceWithRelations } from "@/lib/prisma/service/types"
+import { CreateServiceModal } from "../CreateServiceModal"
 import { EditServiceModal } from "../EditServiceModal"
 import { columns } from "./columns"
 
@@ -16,6 +17,7 @@ export type ServiceTableProps = {
     service: Partial<ServiceWithRelations>,
     prevService: Partial<ServiceWithRelations>
   ) => Promise<ServiceWithRelations | null>
+  insertService: (service: Partial<ServiceWithRelations>) => Promise<ServiceWithRelations | null>
   doesServiceCodeExist: (code: string) => Promise<boolean>
   revalidateTable: () => Promise<void>
 }
@@ -24,6 +26,7 @@ export const ServiceTable = ({
   services,
   offices,
   updateService,
+  insertService,
   doesServiceCodeExist,
   revalidateTable,
 }: ServiceTableProps) => {
@@ -31,6 +34,11 @@ export const ServiceTable = ({
     open: editServiceModalOpen,
     openDialog: openEditServiceModal,
     closeDialog: closeEditServiceModal,
+  } = useDialog()
+  const {
+    open: createServiceModalOpen,
+    openDialog: openCreateServiceModal,
+    closeDialog: closeCreateServiceModal,
   } = useDialog()
 
   const [showArchived, setShowArchived] = useState<boolean>(false)
@@ -46,9 +54,12 @@ export const ServiceTable = ({
     : services.filter((service) => service.deletedAt === null)
   return (
     <>
-      <div className="flex justify-end mb-3">
-        <h3 className="mr-2 self-center text-sm font-medium text-gray-700">Show Archived</h3>
+      <div className="flex items-center justify-end mb-3 gap-4">
+        <h3 className="self-center text-sm font-medium text-gray-700">Show Archived</h3>
         <Switch checked={showArchived} onChange={setShowArchived} />
+        <button type="button" onClick={openCreateServiceModal} className="primary">
+          + Create
+        </button>
       </div>
       <DataTable
         data={servicesToShow}
@@ -71,6 +82,14 @@ export const ServiceTable = ({
         service={selectedService}
         offices={offices}
         updateService={updateService}
+        doesServiceCodeExist={doesServiceCodeExist}
+        revalidateTable={revalidateTable}
+      />
+      <CreateServiceModal
+        open={createServiceModalOpen}
+        onClose={closeCreateServiceModal}
+        offices={offices}
+        insertService={insertService}
         doesServiceCodeExist={doesServiceCodeExist}
         revalidateTable={revalidateTable}
       />
