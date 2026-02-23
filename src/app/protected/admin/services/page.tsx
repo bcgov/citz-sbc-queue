@@ -1,5 +1,6 @@
 import { revalidatePath } from "next/cache"
 import { ServiceTable } from "@/components/admin/services/ServiceTable"
+import { doesServiceCodeExist } from "@/lib/prisma/service/doesServiceCodeExist"
 import { getAllServices } from "@/lib/prisma/service/getAllServices"
 import { updateService } from "@/lib/prisma/service/updateService"
 import { getAllLocations } from "@/utils"
@@ -23,6 +24,7 @@ export default async function Page() {
         services={services}
         updateService={updateService}
         offices={offices}
+        doesServiceCodeExist={doesServiceCodeExist}
         revalidateTable={revalidateTable}
       />
     </div>

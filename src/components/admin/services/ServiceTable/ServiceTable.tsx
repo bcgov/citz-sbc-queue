@@ -16,6 +16,7 @@ export type ServiceTableProps = {
     service: Partial<ServiceWithRelations>,
     prevService: Partial<ServiceWithRelations>
   ) => Promise<ServiceWithRelations | null>
+  doesServiceCodeExist: (code: string) => Promise<boolean>
   revalidateTable: () => Promise<void>
 }
 
@@ -23,6 +24,7 @@ export const ServiceTable = ({
   services,
   offices,
   updateService,
+  doesServiceCodeExist,
   revalidateTable,
 }: ServiceTableProps) => {
   const {
@@ -69,6 +71,7 @@ export const ServiceTable = ({
         service={selectedService}
         offices={offices}
         updateService={updateService}
+        doesServiceCodeExist={doesServiceCodeExist}
         revalidateTable={revalidateTable}
       />
     </>
