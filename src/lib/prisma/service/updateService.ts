@@ -16,8 +16,9 @@ export const updateService = async (
   const { code, locations, ...data } = service
   if (!code && !prevService.code) return null
 
-  // Use provided code or fall back to previous service's code
-  const codeToUpdate = code || prevService.code
+  // When changing the primary key `code`, we must locate the row by the previous code.
+  // Use previous code if available, otherwise use the provided code.
+  const codeToUpdate = prevService.code ?? code
 
   // Update locations if provided, otherwise keep existing relations
   const locationData = locations
@@ -30,7 +31,13 @@ export const updateService = async (
 
   const newService = await prisma.service.update({
     where: { code: codeToUpdate },
-    data: { ...data, ...locationData, updatedAt: new Date() },
+    // If a new code was provided (and it's different), include it in the update data
+    data: {
+      ...(code && code !== codeToUpdate ? { code } : {}),
+      ...data,
+      ...locationData,
+      updatedAt: new Date(),
+    },
     include: { locations: true },
   })
 

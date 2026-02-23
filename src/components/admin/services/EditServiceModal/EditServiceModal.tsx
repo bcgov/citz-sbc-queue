@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { z } from "zod"
 import {
   CloseButton,
   DialogActions,
@@ -22,6 +23,7 @@ type EditServiceModalProps = {
     service: Partial<ServiceWithRelations>,
     prevService: Partial<ServiceWithRelations>
   ) => Promise<ServiceWithRelations | null>
+  doesServiceCodeExist: (code: string) => Promise<boolean>
   revalidateTable: () => Promise<void>
 }
 
@@ -31,11 +33,37 @@ export const EditServiceModal = ({
   service,
   offices,
   updateService,
+  doesServiceCodeExist,
   revalidateTable,
 }: EditServiceModalProps) => {
   const [isSaving, setIsSaving] = useState(false)
   const [formData, setFormData] = useState<ServiceWithRelations | null>(null)
   const [previousService, setPreviousService] = useState<ServiceWithRelations | null>(null)
+  const [isFormValidState, setIsFormValidState] = useState<boolean>(false)
+  const [isFormValidating, setIsFormValidating] = useState<boolean>(false)
+
+  const EditServiceWithRelationsSchema = z.object({
+    name: z.string().min(1, "Name is required"),
+    code: z
+      .string()
+      .min(1, "Code is required")
+      .refine(
+        async (code) => {
+          if (code === previousService?.code) return true
+          return !(await doesServiceCodeExist(code))
+        },
+        { message: "Code already exists" }
+      ),
+    description: z.string(),
+    publicName: z.string().min(1, "Public name is required"),
+    ticketPrefix: z.string().min(1, "Ticket prefix is required"),
+    legacyServiceId: z.number().nullable(),
+    backOffice: z.boolean(),
+    deletedAt: z.date().nullable(),
+    createdAt: z.date(),
+    updatedAt: z.date(),
+    locations: z.array(z.any()),
+  })
 
   useEffect(() => {
     if (open && service) {
@@ -43,6 +71,34 @@ export const EditServiceModal = ({
       setPreviousService(service)
     }
   }, [open, service])
+
+  // Validate formData asynchronously and update local state instead of calling async validators during render
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <>
+  useEffect(() => {
+    if (!formData) {
+      setIsFormValidState(false)
+      setIsFormValidating(false)
+      return
+    }
+
+    let active = true
+    setIsFormValidating(true)
+
+    EditServiceWithRelationsSchema.parseAsync(formData)
+      .then(() => {
+        if (active) setIsFormValidState(true)
+      })
+      .catch(() => {
+        if (active) setIsFormValidState(false)
+      })
+      .finally(() => {
+        if (active) setIsFormValidating(false)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [formData, previousService, doesServiceCodeExist])
 
   if (!service || !formData || !previousService) return null
 
@@ -81,6 +137,7 @@ export const EditServiceModal = ({
             service={formData}
             offices={offices}
             setFormData={setFormData}
+            doesServiceCodeExist={doesServiceCodeExist}
             isReadonly={isReadonly}
           />
         </form>
@@ -94,7 +151,7 @@ export const EditServiceModal = ({
           type="button"
           className="primary"
           onClick={handleSave}
-          disabled={isReadonly || isSaving}
+          disabled={isReadonly || isSaving || isFormValidating || !isFormValidState}
         >
           {isSaving ? "Saving..." : "Save Changes"}
         </button>
