@@ -25,6 +25,7 @@ type EditServiceModalProps = {
   ) => Promise<ServiceWithRelations | null>
   doesServiceCodeExist: (code: string) => Promise<boolean>
   revalidateTable: () => Promise<void>
+  openConfirmArchiveServiceModal: () => void
 }
 
 export const EditServiceModal = ({
@@ -35,6 +36,7 @@ export const EditServiceModal = ({
   updateService,
   doesServiceCodeExist,
   revalidateTable,
+  openConfirmArchiveServiceModal,
 }: EditServiceModalProps) => {
   const [isSaving, setIsSaving] = useState(false)
   const [formData, setFormData] = useState<Partial<ServiceWithRelations> | null>(null)
@@ -115,6 +117,11 @@ export const EditServiceModal = ({
     }
   }
 
+  const handleOpenArchive = () => {
+    openConfirmArchiveServiceModal()
+    onClose()
+  }
+
   return (
     <Modal open={open} onClose={onClose} size="lg">
       <DialogHeader trailing={<CloseButton onClick={onClose} />}>
@@ -146,6 +153,9 @@ export const EditServiceModal = ({
       <DialogActions>
         <button type="button" className="tertiary" onClick={onClose}>
           Cancel
+        </button>
+        <button type="button" className="secondary danger" onClick={handleOpenArchive}>
+          {isArchived ? "Unarchive" : "Archive"}
         </button>
         <button
           type="button"

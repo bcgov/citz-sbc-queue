@@ -251,15 +251,17 @@ export const MultiSelect = ({
                 >
                   {o.label}
                 </span>
-                <button
-                  type="button"
-                  aria-label={`Remove ${o.label}`}
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={(e) => remove(e as React.MouseEvent, o.key)}
-                  className="inline-flex px-2 h-5 items-center justify-center rounded-full border border-border-light bg-button-secondary text-icon-primary hover:bg-button-danger hover:text-white text-sm font-semibold"
-                >
-                  <span aria-hidden="true">×</span>
-                </button>
+                {!disabled && (
+                  <button
+                    type="button"
+                    aria-label={`Remove ${o.label}`}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={(e) => remove(e as React.MouseEvent, o.key)}
+                    className="inline-flex px-2 h-5 items-center justify-center rounded-full border border-border-light bg-button-secondary text-icon-primary hover:bg-button-danger hover:text-white text-sm font-semibold"
+                  >
+                    <span aria-hidden="true">×</span>
+                  </button>
+                )}
               </div>
             )
           })}

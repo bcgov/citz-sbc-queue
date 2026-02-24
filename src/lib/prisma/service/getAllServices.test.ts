@@ -18,8 +18,20 @@ describe("getAllServices", () => {
 
   it("returns an array of services when services exist", async () => {
     const mockServices = [
-      { id: "1", code: "SVC1", name: "Service 1", createdAt: new Date("2020-01-01"), locations: [] },
-      { id: "2", code: "SVC2", name: "Service 2", createdAt: new Date("2021-01-01"), locations: [] },
+      {
+        id: "1",
+        code: "SVC1",
+        name: "Service 1",
+        createdAt: new Date("2020-01-01"),
+        locations: [],
+      },
+      {
+        id: "2",
+        code: "SVC2",
+        name: "Service 2",
+        createdAt: new Date("2021-01-01"),
+        locations: [],
+      },
     ] as unknown as Service[]
 
     // return in unsorted order (older first) so the function's sorting is exercised

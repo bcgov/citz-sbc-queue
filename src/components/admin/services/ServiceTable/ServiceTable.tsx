@@ -6,6 +6,7 @@ import { Switch } from "@/components/common/switch"
 import type { Location } from "@/generated/prisma/client"
 import { useDialog } from "@/hooks"
 import type { ServiceWithRelations } from "@/lib/prisma/service/types"
+import { ConfirmArchiveServiceModal } from "../ConfirmArchiveServiceModal"
 import { CreateServiceModal } from "../CreateServiceModal"
 import { EditServiceModal } from "../EditServiceModal"
 import { columns } from "./columns"
@@ -39,6 +40,11 @@ export const ServiceTable = ({
     open: createServiceModalOpen,
     openDialog: openCreateServiceModal,
     closeDialog: closeCreateServiceModal,
+  } = useDialog()
+  const {
+    open: confirmArchiveServiceModalOpen,
+    openDialog: openConfirmArchiveServiceModal,
+    closeDialog: closeConfirmArchiveServiceModal,
   } = useDialog()
 
   const [showArchived, setShowArchived] = useState<boolean>(false)
@@ -84,6 +90,7 @@ export const ServiceTable = ({
         updateService={updateService}
         doesServiceCodeExist={doesServiceCodeExist}
         revalidateTable={revalidateTable}
+        openConfirmArchiveServiceModal={openConfirmArchiveServiceModal}
       />
       <CreateServiceModal
         open={createServiceModalOpen}
@@ -91,6 +98,13 @@ export const ServiceTable = ({
         offices={offices}
         insertService={insertService}
         doesServiceCodeExist={doesServiceCodeExist}
+        revalidateTable={revalidateTable}
+      />
+      <ConfirmArchiveServiceModal
+        open={confirmArchiveServiceModalOpen}
+        onClose={closeConfirmArchiveServiceModal}
+        service={selectedService}
+        updateService={updateService}
         revalidateTable={revalidateTable}
       />
     </>

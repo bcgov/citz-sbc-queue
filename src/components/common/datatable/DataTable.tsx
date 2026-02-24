@@ -59,7 +59,7 @@ export const DataTable = <T extends Record<string, unknown>>({
     search,
   })
 
-  const renderCellContent = (content: unknown, column: ColumnConfig<T>, row: T): ReactNode => {
+  const renderCellContent = (content: T[keyof T], column: ColumnConfig<T>, row: T): ReactNode => {
     // Use custom render function if provided
     if (column.render) {
       return column.render(content, row)

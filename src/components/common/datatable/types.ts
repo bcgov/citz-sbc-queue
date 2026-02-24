@@ -14,7 +14,7 @@ export type ColumnConfig<T extends Record<string, unknown>> = {
   /** Whether this column can be searched (default: false) */
   searchable?: boolean
   /** Optional custom render function for cell content */
-  render?: (value: unknown, row: T) => ReactNode
+  render?: (value: T[keyof T], row: T) => ReactNode
 }
 
 /**
