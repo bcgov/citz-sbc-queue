@@ -1,13 +1,28 @@
 import "@testing-library/jest-dom"
 import { render, screen } from "@testing-library/react"
-import * as navigation from "next/navigation"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import * as hooks from "@/hooks"
-import Navigation from "./Navigation"
 
+// Mock the NAV_ITEMS module so tests assert against a controlled list
+vi.mock("@/components/common/header/navigation/navItems", () => ({
+  NAV_ITEMS: [
+    { label: "Home", href: "/" },
+    { label: "Appointment Booking", href: "/appointments" },
+    { label: "Queue", href: "/queue" },
+    { label: "Room Bookings", href: "/room-bookings" },
+    { label: "Appointments", href: "/appointments-list" },
+    { label: "Exam Inventory", href: "/exam-inventory" },
+    { label: "Administration", href: "/administration", role: "Administrator" },
+  ],
+}))
+
+// Mock next/navigation before importing it so spies work reliably
 vi.mock("next/navigation", () => ({
   usePathname: vi.fn(),
 }))
+
+import * as navigation from "next/navigation"
+import * as hooks from "@/hooks"
+import Navigation from "./Navigation"
 
 describe("Navigation", () => {
   afterEach(() => {
