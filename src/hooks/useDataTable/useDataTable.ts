@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import type {
   ColumnConfig,
   PaginationConfig,
@@ -152,6 +152,13 @@ export const useDataTable = <T extends Record<string, unknown>>({
 
     setDebounceTimer(timer)
   }
+
+  // Clear any pending debounce timer when the hook is unmounted
+  useEffect(() => {
+    return () => {
+      if (debounceTimer) clearTimeout(debounceTimer)
+    }
+  }, [debounceTimer])
 
   // Handle column header click for sorting
   const handleSort = (key: keyof T) => {
