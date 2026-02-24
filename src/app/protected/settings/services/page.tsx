@@ -15,7 +15,7 @@ export default async function Page() {
 
   const revalidateTable = async () => {
     "use server"
-    revalidatePath("/protected/configuration/services")
+    revalidatePath("/protected/settings/services")
   }
 
   return (

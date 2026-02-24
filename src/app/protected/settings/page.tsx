@@ -5,12 +5,12 @@ import type { ReactNode } from "react"
 const NAV_ITEMS = [
   {
     label: "Users",
-    href: "/protected/configuration/users",
+    href: "/protected/settings/users",
     icon: <UsersIcon className="h-7 w-7 text-blue" />,
   },
   {
     label: "Services",
-    href: "/protected/configuration/services",
+    href: "/protected/settings/services",
     icon: <HandRaisedIcon className="h-7 w-7 text-blue" />,
   },
 ]
@@ -28,7 +28,7 @@ export default async function Page() {
 
   return (
     <div className="space-y-sm">
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Configuration</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-2">Settings</h1>
       <div className="space-y-1">
         {NAV_ITEMS.map((item) => (
           <NavItem key={item.href} href={item.href} label={item.label} icon={item.icon} />

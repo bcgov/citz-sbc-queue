@@ -6,7 +6,7 @@ type NavItem = {
 
 export const NAV_ITEMS: NavItem[] = [
   { label: "Home", href: "/" },
-  { label: "Configuration", href: "/protected/configuration" },
+  { label: "Settings", href: "/protected/settings" },
 ]
 
 export type { NavItem }
