@@ -9,50 +9,46 @@ import {
   DialogTitle,
   Modal,
 } from "@/components/common/dialog"
-import type { Role, StaffUser } from "@/generated/prisma/client"
-import { useEditableRoles } from "@/hooks/useEditableRoles"
+import type { ServiceWithRelations } from "@/lib/prisma/service/types"
 
-type ConfirmArchiveUserModalProps = {
+type ConfirmArchiveServiceModalProps = {
   open: boolean
   onClose: () => void
-  user: StaffUser | null
-  updateStaffUser: (
-    user: Partial<StaffUser>,
-    prevUser: Partial<StaffUser>,
-    availableRoles: Role[]
-  ) => Promise<StaffUser | null>
+  service: ServiceWithRelations | null
+  updateService: (
+    service: Partial<ServiceWithRelations>,
+    prevService: Partial<ServiceWithRelations>
+  ) => Promise<ServiceWithRelations | null>
   revalidateTable: () => Promise<void>
 }
 
-export const ConfirmArchiveUserModal = ({
+export const ConfirmArchiveServiceModal = ({
   open,
   onClose,
-  user,
-  updateStaffUser,
+  service,
+  updateService,
   revalidateTable,
-}: ConfirmArchiveUserModalProps) => {
-  const [formData, setFormData] = useState<StaffUser | null>(null)
-  const [previousUser, setPreviousUser] = useState<StaffUser | null>(null)
+}: ConfirmArchiveServiceModalProps) => {
+  const [formData, setFormData] = useState<ServiceWithRelations | null>(null)
+  const [previousService, setPreviousService] = useState<ServiceWithRelations | null>(null)
   const [archiveConfirmation, setArchiveConfirmation] = useState("")
-  const editableRoles = useEditableRoles()
 
-  const isArchived = user?.deletedAt !== null
+  const isArchived = service?.deletedAt !== null
 
   useEffect(() => {
-    if (open && user) {
-      setFormData(user)
-      setPreviousUser(user)
+    if (open && service) {
+      setFormData(service)
+      setPreviousService(service)
     }
-  }, [open, user])
+  }, [open, service])
 
-  if (!user || !formData || !previousUser) return null
+  if (!service || !formData || !previousService) return null
 
   const handleSave = async () => {
     if (formData) {
-      await updateStaffUser(
+      await updateService(
         { ...formData, deletedAt: isArchived ? null : new Date() },
-        previousUser,
-        editableRoles
+        previousService
       )
       await revalidateTable()
       setArchiveConfirmation("")
@@ -64,7 +60,7 @@ export const ConfirmArchiveUserModal = ({
     <Modal open={open} onClose={onClose} size="sm">
       <DialogHeader trailing={<CloseButton onClick={onClose} />} className="bg-background-danger">
         <DialogTitle className="text-white">
-          {isArchived ? "Unarchive" : "Archive"} User
+          {isArchived ? "Unarchive" : "Archive"} Service
         </DialogTitle>
       </DialogHeader>
 
@@ -72,14 +68,14 @@ export const ConfirmArchiveUserModal = ({
         <form className="space-y-5">
           <div>
             <label
-              htmlFor="archive-user"
+              htmlFor="archive-service"
               className="block text-sm font-medium text-typography-primary"
             >
-              Type "<span className="text-typography-danger">{user.username}</span>" to confirm{" "}
-              {isArchived ? "unarchiving" : "archiving"} this user.
+              Type "<span className="text-typography-danger">{service.name}</span>" to confirm{" "}
+              {isArchived ? "unarchiving" : "archiving"} this service.
             </label>
             <input
-              id="archive-user"
+              id="archive-service"
               value={archiveConfirmation}
               onChange={(e) => setArchiveConfirmation(e.target.value)}
               autoComplete="off"
@@ -97,7 +93,7 @@ export const ConfirmArchiveUserModal = ({
           type="button"
           className="primary danger"
           onClick={handleSave}
-          disabled={archiveConfirmation !== user.username}
+          disabled={archiveConfirmation !== service.name}
         >
           {isArchived ? "Unarchive" : "Archive"}
         </button>
