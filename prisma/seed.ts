@@ -77,6 +77,53 @@ async function main() {
         longitude: -123.377106,
       }
     })
+
+    // --- Example services ---
+    const serviceBcServicesCard = await prisma.service.create({
+      data: {
+        code: "BCS",
+        name: "BC Services Card Renewal",
+        description: "Renewal service for BC Services Card and provincial identity verification.",
+        publicName: "BC Services Card Renewal",
+        ticketPrefix: "BC",
+        backOffice: false
+      }
+    })
+
+    const serviceVehicleRegistration = await prisma.service.create({
+      data: {
+        code: "VRN",
+        name: "Vehicle Registration Renewal",
+        description: "Service for renewing vehicle registration and related provincial paperwork.",
+        publicName: "Vehicle Registration",
+        ticketPrefix: "VR",
+        backOffice: false
+      }
+    })
+
+    // Connect services to existing locations by legacy office number
+    await prisma.location.update({
+      where: { legacyOfficeNumber: 94 },
+      data: { services: { connect: { code: serviceBcServicesCard.code } } }
+    })
+
+    await prisma.location.update({
+      where: { legacyOfficeNumber: 999 },
+      data: { services: { connect: { code: serviceVehicleRegistration.code } } }
+    })
+
+    // --- Example service category ---
+    const categoryIdentity = await prisma.serviceCategory.create({
+      data: {
+        name: "Identity & Licensing",
+      }
+    })
+
+    // Link the category to the BC Services Card service
+    await prisma.service.update({
+      where: { code: serviceBcServicesCard.code },
+      data: { categories: { connect: { id: categoryIdentity.id } } }
+    })
   } catch (error) {
 
     console.error("❌ Seeding database failed:", error)
