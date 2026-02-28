@@ -9,23 +9,33 @@ async function main() {
 
   try{
 
-    // seed and return results for counter types
-    const counter = await prisma.counter.create({
-      data: {name: "Counter"}
+    // upsert counter types (idempotent by unique name)
+    const counter = await prisma.counter.upsert({
+      where: { name: "Counter" },
+      update: {},
+      create: { name: "Counter" },
     })
-    const reception = await prisma.counter.create({
-      data: {name: "Reception"}
+    const reception = await prisma.counter.upsert({
+      where: { name: "Reception" },
+      update: {},
+      create: { name: "Reception" },
     })
-    const quickTransaction = await prisma.counter.create({
-      data: {name: "Quick Transaction"}
+    const quickTransaction = await prisma.counter.upsert({
+      where: { name: "Quick Transaction" },
+      update: {},
+      create: { name: "Quick Transaction" },
     })
-    const training = await prisma.counter.create({
-      data: {name: "Training"}
+    const training = await prisma.counter.upsert({
+      where: { name: "Training" },
+      update: {},
+      create: { name: "Training" },
     })
 
-    // create location "test Office" with connection to all counters
-    await prisma.location.create({
-      data: {
+    // upsert location "Test Office" with connection to all counters
+    await prisma.location.upsert({
+      where: { legacyOfficeNumber: 999 },
+      update: {},
+      create: {
         legacyOfficeNumber: 999,
         name: "Test Office",
         timezone: "America/Dawson_Creek",
@@ -36,17 +46,20 @@ async function main() {
         longitude: -123.377106,
         counters: {
           connect: [
-          { id: counter.id },
-          { id: reception.id },
-          { id: quickTransaction.id },
-          { id: training.id }]
-        }
-      }
+            { id: counter.id },
+            { id: reception.id },
+            { id: quickTransaction.id },
+            { id: training.id },
+          ],
+        },
+      },
     })
 
-    // create location "Victoria" with connection to reception and counter counter type
-    await prisma.location.create({
-      data: {
+    // upsert location "Victoria" with connection to reception and counter counter type
+    await prisma.location.upsert({
+      where: { legacyOfficeNumber: 94 },
+      update: {},
+      create: {
         legacyOfficeNumber: 94,
         name: "Victoria",
         timezone: "America/Vancouver",
@@ -57,16 +70,18 @@ async function main() {
         longitude: -123.377106,
         counters: {
           connect: [
-              {id: counter.id},
-              {id: reception.id},
-          ]
-        }
-      }
+            { id: counter.id },
+            { id: reception.id },
+          ],
+        },
+      },
     })
 
-    // create location "Nanaimo" with no connections to counters
-    await prisma.location.create({
-      data: {
+    // upsert location "Nanaimo" with no connections to counters
+    await prisma.location.upsert({
+      where: { legacyOfficeNumber: 701 },
+      update: {},
+      create: {
         legacyOfficeNumber: 701,
         name: "Nanaimo",
         timezone: "America/Vancouver",
@@ -75,54 +90,56 @@ async function main() {
         phoneNumber: "250-555-0300",
         latitude: 48.458359,
         longitude: -123.377106,
-      }
+      },
     })
 
     // --- Example services ---
-    const serviceBcServicesCard = await prisma.service.create({
-      data: {
+    const serviceBcServicesCard = await prisma.service.upsert({
+      where: { code: "BCS" },
+      update: {},
+      create: {
         code: "BCS",
         name: "BC Services Card Renewal",
         description: "Renewal service for BC Services Card and provincial identity verification.",
         publicName: "BC Services Card Renewal",
         ticketPrefix: "BC",
-        backOffice: false
-      }
+        backOffice: false,
+      },
     })
 
-    const serviceVehicleRegistration = await prisma.service.create({
-      data: {
+    const serviceVehicleRegistration = await prisma.service.upsert({
+      where: { code: "VRN" },
+      update: {},
+      create: {
         code: "VRN",
         name: "Vehicle Registration Renewal",
         description: "Service for renewing vehicle registration and related provincial paperwork.",
         publicName: "Vehicle Registration",
         ticketPrefix: "VR",
-        backOffice: false
-      }
+        backOffice: false,
+      },
     })
 
     // Connect services to existing locations by legacy office number
     await prisma.location.update({
       where: { legacyOfficeNumber: 94 },
-      data: { services: { connect: { code: serviceBcServicesCard.code } } }
+      data: { services: { connect: { code: serviceBcServicesCard.code } } },
     })
 
     await prisma.location.update({
       where: { legacyOfficeNumber: 999 },
-      data: { services: { connect: { code: serviceVehicleRegistration.code } } }
+      data: { services: { connect: { code: serviceVehicleRegistration.code } } },
     })
 
-    // --- Example service category ---
-    const categoryIdentity = await prisma.serviceCategory.create({
-      data: {
-        name: "Identity & Licensing",
-      }
-    })
+    // --- Example service category (no unique constraint on name, use findFirst) ---
+    const categoryIdentity =
+      (await prisma.serviceCategory.findFirst({ where: { name: "Identity & Licensing" } })) ??
+      (await prisma.serviceCategory.create({ data: { name: "Identity & Licensing" } }))
 
     // Link the category to the BC Services Card service
     await prisma.service.update({
       where: { code: serviceBcServicesCard.code },
-      data: { categories: { connect: { id: categoryIdentity.id } } }
+      data: { categories: { connect: { id: categoryIdentity.id } } },
     })
   } catch (error) {
 
