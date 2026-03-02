@@ -28,6 +28,7 @@ describe("EditServiceCategoryModal", () => {
     const onClose = vi.fn()
     const updateServiceCategory = vi.fn().mockResolvedValue(serviceCategory)
     const revalidateTable = vi.fn().mockResolvedValue(undefined)
+    const openConfirmArchiveServiceCategoryModal = vi.fn()
 
     render(
       <EditServiceCategoryModal
@@ -37,6 +38,7 @@ describe("EditServiceCategoryModal", () => {
         services={services}
         updateServiceCategory={updateServiceCategory}
         revalidateTable={revalidateTable}
+        openConfirmArchiveServiceCategoryModal={openConfirmArchiveServiceCategoryModal}
       />
     )
 
@@ -50,6 +52,7 @@ describe("EditServiceCategoryModal", () => {
     const onClose = vi.fn()
     const updateServiceCategory = vi.fn().mockResolvedValue(serviceCategory)
     const revalidateTable = vi.fn().mockResolvedValue(undefined)
+    const openConfirmArchiveServiceCategoryModal = vi.fn()
 
     render(
       <EditServiceCategoryModal
@@ -59,6 +62,7 @@ describe("EditServiceCategoryModal", () => {
         services={services}
         updateServiceCategory={updateServiceCategory}
         revalidateTable={revalidateTable}
+        openConfirmArchiveServiceCategoryModal={openConfirmArchiveServiceCategoryModal}
       />
     )
 
