@@ -120,27 +120,45 @@ async function main() {
       },
     })
 
-    // Connect services to existing locations by legacy office number
-    await prisma.location.update({
+    // Connect services to existing locations by legacy office number (idempotent)
+    const locVictoria = await prisma.location.findUnique({
       where: { legacyOfficeNumber: 94 },
-      data: { services: { connect: { code: serviceBcServicesCard.code } } },
+      include: { services: true },
     })
+    if (locVictoria && !locVictoria.services.some((s) => s.code === serviceBcServicesCard.code)) {
+      await prisma.location.update({
+        where: { legacyOfficeNumber: 94 },
+        data: { services: { connect: { code: serviceBcServicesCard.code } } },
+      })
+    }
 
-    await prisma.location.update({
+    const locTestOffice = await prisma.location.findUnique({
       where: { legacyOfficeNumber: 999 },
-      data: { services: { connect: { code: serviceVehicleRegistration.code } } },
+      include: { services: true },
     })
+    if (locTestOffice && !locTestOffice.services.some((s) => s.code === serviceVehicleRegistration.code)) {
+      await prisma.location.update({
+        where: { legacyOfficeNumber: 999 },
+        data: { services: { connect: { code: serviceVehicleRegistration.code } } },
+      })
+    }
 
     // --- Example service category (no unique constraint on name, use findFirst) ---
     const categoryIdentity =
       (await prisma.serviceCategory.findFirst({ where: { name: "Identity & Licensing" } })) ??
       (await prisma.serviceCategory.create({ data: { name: "Identity & Licensing" } }))
 
-    // Link the category to the BC Services Card service
-    await prisma.service.update({
+    // Link the category to the BC Services Card service (idempotent)
+    const svc = await prisma.service.findUnique({
       where: { code: serviceBcServicesCard.code },
-      data: { categories: { connect: { id: categoryIdentity.id } } },
+      include: { categories: true },
     })
+    if (svc && !svc.categories.some((c) => c.id === categoryIdentity.id)) {
+      await prisma.service.update({
+        where: { code: serviceBcServicesCard.code },
+        data: { categories: { connect: { id: categoryIdentity.id } } },
+      })
+    }
   } catch (error) {
 
     console.error("❌ Seeding database failed:", error)
