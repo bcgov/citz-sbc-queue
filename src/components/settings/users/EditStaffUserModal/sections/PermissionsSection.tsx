@@ -41,7 +41,9 @@ export const PermissionsSection = ({ user, setFormData, disabled }: PermissionsS
       id="isFinanceDesignate"
       label="Finance Designate"
       checked={user.isFinanceDesignate}
-      onChange={(checked) => setFormData((prev) => prev && { ...prev, isFinanceDesignate: checked })}
+      onChange={(checked) =>
+        setFormData((prev) => prev && { ...prev, isFinanceDesignate: checked })
+      }
       disabled={disabled ?? false}
     />
 
