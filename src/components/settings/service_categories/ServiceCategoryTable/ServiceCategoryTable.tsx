@@ -5,8 +5,10 @@ import { DataTable } from "@/components/common/datatable"
 import { Switch } from "@/components/common/switch"
 import type { Service } from "@/generated/prisma/client"
 import { useDialog } from "@/hooks/useDialog"
+import { insertServiceCategory } from "@/lib/prisma/service_category/insertServiceCategory"
 import type { ServiceCategoryWithRelations } from "@/lib/prisma/service_category/types"
 import { updateServiceCategory } from "@/lib/prisma/service_category/updateServiceCategory"
+import { CreateServiceCategoryModal } from "../CreateServiceCategoryModal"
 import { EditServiceCategoryModal } from "../EditServiceCategoryModal"
 import { columns } from "./columns"
 
@@ -25,6 +27,11 @@ export const ServiceCategoryTable = ({
     open: editServiceCategoryModalOpen,
     openDialog: openEditServiceCategoryModal,
     closeDialog: closeEditServiceCategoryModal,
+  } = useDialog()
+  const {
+    open: createServiceCategoryModalOpen,
+    openDialog: openCreateServiceCategoryModal,
+    closeDialog: closeCreateServiceCategoryModal,
   } = useDialog()
 
   const [showArchived, setShowArchived] = useState<boolean>(false)
@@ -46,7 +53,7 @@ export const ServiceCategoryTable = ({
       <div className="flex items-center justify-end mb-3 gap-4">
         <h3 className="self-center text-sm font-medium text-gray-700">Show Archived</h3>
         <Switch checked={showArchived} onChange={setShowArchived} />
-        <button type="button" className="primary">
+        <button type="button" onClick={openCreateServiceCategoryModal} className="primary">
           + Create
         </button>
       </div>
@@ -71,6 +78,13 @@ export const ServiceCategoryTable = ({
         serviceCategory={selectedServiceCategory}
         services={services}
         updateServiceCategory={updateServiceCategory}
+        revalidateTable={revalidateTable}
+      />
+      <CreateServiceCategoryModal
+        open={createServiceCategoryModalOpen}
+        onClose={closeCreateServiceCategoryModal}
+        services={services}
+        insertServiceCategory={insertServiceCategory}
         revalidateTable={revalidateTable}
       />
     </>
