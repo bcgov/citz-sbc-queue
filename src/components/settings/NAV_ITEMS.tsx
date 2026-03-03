@@ -1,4 +1,4 @@
-import { HandRaisedIcon, UsersIcon } from "@heroicons/react/24/outline"
+import { FolderOpenIcon, HandRaisedIcon, UsersIcon } from "@heroicons/react/24/outline"
 
 export const NAV_ITEMS = [
   {
@@ -10,5 +10,10 @@ export const NAV_ITEMS = [
     label: "Services",
     href: "/protected/settings/services",
     icon: <HandRaisedIcon className="h-7 w-7 text-blue" />,
+  },
+  {
+    label: "Service Categories",
+    href: "/protected/settings/service-categories",
+    icon: <FolderOpenIcon className="h-7 w-7 text-blue" />,
   },
 ]

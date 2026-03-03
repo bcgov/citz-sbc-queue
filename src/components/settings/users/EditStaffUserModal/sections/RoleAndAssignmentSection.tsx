@@ -11,15 +11,6 @@ type RoleAndAssignmentSectionProps = {
   disabled?: boolean
 }
 
-/**
- * RoleAndAssignmentSection component displays role and office assignment options for a staff user.
- *
- * @param props - The properties object.
- * @property props.user - The staff user whose role and assignment are being edited.
- * @property props.setFormData - Function to update the form data state.
- * @property props.availableRoles - List of roles that can be assigned.
- * @property props.disabled - Whether the section inputs are disabled.
- */
 export const RoleAndAssignmentSection = ({
   user,
   offices,

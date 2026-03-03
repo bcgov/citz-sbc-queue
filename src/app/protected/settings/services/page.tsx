@@ -1,5 +1,5 @@
 import { revalidatePath } from "next/cache"
-import { ServiceTable } from "@/components/admin/services/ServiceTable"
+import { ServiceTable } from "@/components/settings/services/ServiceTable"
 import { doesServiceCodeExist } from "@/lib/prisma/service/doesServiceCodeExist"
 import { getAllServices } from "@/lib/prisma/service/getAllServices"
 import { insertService } from "@/lib/prisma/service/insertService"

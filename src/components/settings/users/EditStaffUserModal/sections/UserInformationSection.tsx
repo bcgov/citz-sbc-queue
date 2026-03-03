@@ -5,12 +5,6 @@ type UserInformationSectionProps = {
   user: StaffUser
 }
 
-/**
- * UserInformationSection component displays user information details for a staff user.
- *
- * @param props - The properties object.
- * @property props.user - The staff user whose information is being displayed.
- */
 export const UserInformationSection = ({ user }: UserInformationSectionProps) => (
   <Section title="User Information" disabled={false}>
     <div className="flex flex-row justify-between text-sm">
