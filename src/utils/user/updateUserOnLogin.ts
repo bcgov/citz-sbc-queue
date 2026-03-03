@@ -1,6 +1,7 @@
 "use server"
 
 import type { Role } from "@/generated/prisma/enums"
+import { getCounterByName } from "@/lib/prisma/counter/read"
 import { getCSRByUsername } from "@/lib/prisma/legacy/csr/getCSRByUsername"
 import { getLocationByLegacyOfficeId } from "@/lib/prisma/location/getLocationByLegacyOfficeId"
 import { getStaffUserBySub } from "@/lib/prisma/staff_user/getStaffUserBySub"
@@ -8,7 +9,6 @@ import { insertStaffUser } from "@/lib/prisma/staff_user/insertStaffUser"
 import { updateStaffUser } from "@/lib/prisma/staff_user/updateStaffUser"
 import { decodeJWT } from "@/utils/auth/jwt/decodeJWT"
 import { assignNewRoleFromCSR } from "./assignNewRoleFromCSR"
-import { getCounterByName } from "@/lib/prisma/counter/read"
 
 export const updateUserOnLogin = async (accessToken: string) => {
   const jwt = decodeJWT(accessToken)

@@ -7,8 +7,9 @@ vi.mock("../ServiceForm", () => ({
   ServiceForm: () => <div>ServiceFormStub</div>,
 }))
 
-import type { Location, ServiceCategory } from "@/generated/prisma/client"
+import type { LocationWithRelations } from "@/lib/prisma/location/types"
 import type { ServiceWithRelations } from "@/lib/prisma/service/types"
+import type { ServiceCategoryWithRelations } from "@/lib/prisma/service_category/types"
 import { EditServiceModal } from "./EditServiceModal"
 
 describe("EditServiceModal", () => {
@@ -44,8 +45,8 @@ describe("EditServiceModal", () => {
     categories: [],
   } as unknown as ServiceWithRelations
 
-  const offices = [{ id: "o1", name: "Office 1" }] as unknown as Location[]
-  const categories = [] as unknown as ServiceCategory[]
+  const locations = [{ id: "o1", name: "Office 1" }] as unknown as LocationWithRelations[]
+  const categories = [] as unknown as ServiceCategoryWithRelations[]
 
   it("renders modal title when open with a service", async () => {
     const onClose = vi.fn()
@@ -59,7 +60,7 @@ describe("EditServiceModal", () => {
         open={true}
         onClose={onClose}
         service={service}
-        offices={offices}
+        locations={locations}
         categories={categories}
         updateService={updateService}
         doesServiceCodeExist={doesServiceCodeExist}
@@ -84,7 +85,7 @@ describe("EditServiceModal", () => {
         open={true}
         onClose={onClose}
         service={service}
-        offices={offices}
+        locations={locations}
         categories={categories}
         updateService={updateService}
         doesServiceCodeExist={doesServiceCodeExist}
@@ -109,7 +110,7 @@ describe("EditServiceModal", () => {
         open={true}
         onClose={onClose}
         service={service}
-        offices={offices}
+        locations={locations}
         categories={categories}
         updateService={updateService}
         doesServiceCodeExist={doesServiceCodeExist}

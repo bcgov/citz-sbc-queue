@@ -1,11 +1,11 @@
 import { revalidatePath } from "next/cache"
 import { ServiceTable } from "@/components/settings/services/ServiceTable"
+import { getAllLocations } from "@/lib/prisma/location/getAllLocations"
 import { doesServiceCodeExist } from "@/lib/prisma/service/doesServiceCodeExist"
 import { getAllServices } from "@/lib/prisma/service/getAllServices"
 import { insertService } from "@/lib/prisma/service/insertService"
 import { updateService } from "@/lib/prisma/service/updateService"
 import { getAllServiceCategories } from "@/lib/prisma/service_category/getAllServiceCategories"
-import { getAllLocations } from "@/utils"
 
 // This page should always be rendered dynamically to ensure fresh data
 export const dynamic = "force-dynamic"
@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic"
 export default async function Page() {
   const services = await getAllServices()
   const categories = await getAllServiceCategories()
-  const offices = await getAllLocations()
+  const locations = await getAllLocations()
 
   const revalidateTable = async () => {
     "use server"
@@ -27,7 +27,7 @@ export default async function Page() {
         services={services}
         updateService={updateService}
         insertService={insertService}
-        offices={offices}
+        locations={locations}
         categories={categories}
         doesServiceCodeExist={doesServiceCodeExist}
         revalidateTable={revalidateTable}

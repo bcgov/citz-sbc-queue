@@ -2,14 +2,15 @@ import type { Dispatch, SetStateAction } from "react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { Notice, Switch, TextArea, TextField } from "@/components/common"
 import { MultiSelect } from "@/components/common/select/MultiSelect"
-import type { Location, ServiceCategory } from "@/generated/prisma/client"
+import type { LocationWithRelations } from "@/lib/prisma/location/types"
 import type { ServiceWithRelations } from "@/lib/prisma/service/types"
+import type { ServiceCategoryWithRelations } from "@/lib/prisma/service_category/types"
 
 type ServiceFormProps = {
   initialCode?: string
   service: Partial<ServiceWithRelations>
-  offices: Location[]
-  categories: ServiceCategory[]
+  locations: LocationWithRelations[]
+  categories: ServiceCategoryWithRelations[]
   setFormData: Dispatch<SetStateAction<Partial<ServiceWithRelations> | null>>
   doesServiceCodeExist: (code: string) => Promise<boolean>
   isReadonly: boolean
@@ -21,7 +22,7 @@ type ServiceFormProps = {
  * @param props - The properties object.
  * @property props.initialCode - The initial code of the service, used to determine if the code has changed.
  * @property props.service - The service being edited.
- * @property props.offices - List of office locations.
+ * @property props.locations - List of office locations.
  * @property props.categories - List of service categories.
  * @property props.setFormData - Function to update the form data state.
  * @property props.doesServiceCodeExist - Function to check if a service code already exists.
@@ -30,7 +31,7 @@ type ServiceFormProps = {
 export const ServiceForm = ({
   initialCode,
   service,
-  offices,
+  locations,
   categories,
   setFormData,
   doesServiceCodeExist,
@@ -40,7 +41,7 @@ export const ServiceForm = ({
   const initialCodeRef = useRef<string | undefined>(initialCode ?? service.code)
 
   const selectedOfficeIds = service.locations ? service.locations.map((l) => l.id) : []
-  const availableOffices = offices.filter(
+  const availableOffices = locations.filter(
     (office) => office.deletedAt === null || selectedOfficeIds.includes(office.id)
   )
   const officeOptions = useMemo(
@@ -161,7 +162,9 @@ export const ServiceForm = ({
               s
                 ? {
                     ...s,
-                    locations: selected.map((id) => offices.find((o) => o.id === id) as Location),
+                    locations: selected.map(
+                      (id) => locations.find((o) => o.id === id) as LocationWithRelations
+                    ),
                   }
                 : s
             )
@@ -180,7 +183,7 @@ export const ServiceForm = ({
                 ? {
                     ...s,
                     categories: selected.map(
-                      (id) => categories.find((c) => c.id === id) as ServiceCategory
+                      (id) => categories.find((c) => c.id === id) as ServiceCategoryWithRelations
                     ),
                   }
                 : s

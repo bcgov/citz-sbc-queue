@@ -10,16 +10,17 @@ import {
   DialogTitle,
   Modal,
 } from "@/components/common/dialog"
-import type { Location, ServiceCategory } from "@/generated/prisma/client"
+import type { LocationWithRelations } from "@/lib/prisma/location/types"
 import type { ServiceWithRelations } from "@/lib/prisma/service/types"
+import type { ServiceCategoryWithRelations } from "@/lib/prisma/service_category/types"
 import { ServiceForm } from "../ServiceForm"
 
 type EditServiceModalProps = {
   open: boolean
   onClose: () => void
   service: ServiceWithRelations | null
-  offices: Location[]
-  categories: ServiceCategory[]
+  locations: LocationWithRelations[]
+  categories: ServiceCategoryWithRelations[]
   updateService: (
     service: Partial<ServiceWithRelations>,
     prevService: Partial<ServiceWithRelations>
@@ -33,7 +34,7 @@ export const EditServiceModal = ({
   open,
   onClose,
   service,
-  offices,
+  locations,
   categories,
   updateService,
   doesServiceCodeExist,
@@ -45,6 +46,8 @@ export const EditServiceModal = ({
   const [previousService, setPreviousService] = useState<Partial<ServiceWithRelations> | null>(null)
   const [isFormValidState, setIsFormValidState] = useState<boolean>(false)
   const [isFormValidating, setIsFormValidating] = useState<boolean>(false)
+
+  const hasMadeChanges = JSON.stringify(formData) !== JSON.stringify(previousService)
 
   const EditServiceWithRelationsSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -145,7 +148,7 @@ export const EditServiceModal = ({
 
           <ServiceForm
             service={formData}
-            offices={offices}
+            locations={locations}
             categories={categories}
             setFormData={setFormData}
             doesServiceCodeExist={doesServiceCodeExist}
@@ -165,7 +168,9 @@ export const EditServiceModal = ({
           type="button"
           className="primary"
           onClick={handleSave}
-          disabled={isReadonly || isSaving || isFormValidating || !isFormValidState}
+          disabled={
+            isReadonly || isSaving || isFormValidating || !isFormValidState || !hasMadeChanges
+          }
         >
           {isSaving ? "Saving..." : "Save Changes"}
         </button>

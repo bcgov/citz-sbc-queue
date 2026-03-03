@@ -4,15 +4,13 @@ import { prisma } from "@/utils/db/prisma"
 import type { LocationWithRelations } from "./types"
 
 /**
- * Function to retrieve a location and their relations by their legacy office identifier.
- * @param legacyOfficeNumber The legacy office identifier of the location
+ * Function to retrieve a location and their relations by their identifier.
+ * @param id The identifier of the location
  * @returns Promise resolving to a LocationWithRelations object or null if not found
  */
-export const getLocationByLegacyOfficeId = async (
-  legacyOfficeNumber: number
-): Promise<LocationWithRelations | null> => {
+export const getLocationById = async (id: string): Promise<LocationWithRelations | null> => {
   const location = await prisma.location.findUnique({
-    where: { legacyOfficeNumber },
+    where: { id },
     include: { services: true, counters: true, staffUsers: true },
   })
   return location

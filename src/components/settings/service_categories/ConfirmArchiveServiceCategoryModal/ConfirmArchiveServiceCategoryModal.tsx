@@ -18,8 +18,7 @@ type ConfirmArchiveServiceCategoryModalProps = {
   serviceCategory: ServiceCategoryWithRelations | null
   serviceCategories?: ServiceCategoryWithRelations[]
   updateServiceCategory: (
-    serviceCategory: Partial<ServiceCategoryWithRelations>,
-    prevServiceCategory: Partial<ServiceCategoryWithRelations>
+    serviceCategory: Partial<ServiceCategoryWithRelations>
   ) => Promise<ServiceCategoryWithRelations | null>
   revalidateTable: () => Promise<void>
 }
@@ -59,10 +58,7 @@ export const ConfirmArchiveServiceCategoryModal = ({
       if (!isArchived && hasServices) {
         if (serviceAction === "remove") {
           // Detach services
-          await updateServiceCategory(
-            { ...formData, deletedAt: new Date(), services: [] },
-            previousServiceCategory
-          )
+          await updateServiceCategory({ ...formData, deletedAt: new Date(), services: [] })
         } else if (serviceAction === "reassign" && newCategoryId) {
           // Reassign services to the new category
           const newCategory = serviceCategories.find((c) => c.id === newCategoryId)
@@ -77,22 +73,13 @@ export const ConfirmArchiveServiceCategoryModal = ({
             )
 
             // Update the new category to include the transferred services
-            await updateServiceCategory(
-              { id: newCategoryId, services: uniqueServices },
-              newCategory
-            )
+            await updateServiceCategory({ id: newCategoryId, services: uniqueServices })
           }
           // Now archive the current category and detach its services
-          await updateServiceCategory(
-            { ...formData, deletedAt: new Date(), services: [] },
-            previousServiceCategory
-          )
+          await updateServiceCategory({ ...formData, deletedAt: new Date(), services: [] })
         }
       } else {
-        await updateServiceCategory(
-          { ...formData, deletedAt: isArchived ? null : new Date() },
-          previousServiceCategory
-        )
+        await updateServiceCategory({ ...formData, deletedAt: isArchived ? null : new Date() })
       }
 
       await revalidateTable()

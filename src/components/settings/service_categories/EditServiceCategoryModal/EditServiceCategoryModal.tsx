@@ -20,8 +20,7 @@ type EditServiceCategoryModalProps = {
   serviceCategory: ServiceCategoryWithRelations | null
   services: Service[]
   updateServiceCategory: (
-    serviceCategory: Partial<ServiceCategoryWithRelations>,
-    prevServiceCategory: Partial<ServiceCategoryWithRelations>
+    serviceCategory: Partial<ServiceCategoryWithRelations>
   ) => Promise<ServiceCategoryWithRelations | null>
   revalidateTable: () => Promise<void>
   openConfirmArchiveServiceCategoryModal: () => void
@@ -38,8 +37,6 @@ export const EditServiceCategoryModal = ({
 }: EditServiceCategoryModalProps) => {
   const [isSaving, setIsSaving] = useState(false)
   const [formData, setFormData] = useState<Partial<ServiceCategoryWithRelations> | null>(null)
-  const [previousServiceCategory, setPreviousServiceCategory] =
-    useState<Partial<ServiceCategoryWithRelations> | null>(null)
   const [isFormValidState, setIsFormValidState] = useState<boolean>(false)
   const [isFormValidating, setIsFormValidating] = useState<boolean>(false)
 
@@ -54,7 +51,6 @@ export const EditServiceCategoryModal = ({
   useEffect(() => {
     if (open && serviceCategory) {
       setFormData(serviceCategory)
-      setPreviousServiceCategory(serviceCategory)
     }
   }, [open, serviceCategory])
 
@@ -84,17 +80,19 @@ export const EditServiceCategoryModal = ({
     return () => {
       active = false
     }
-  }, [formData, previousServiceCategory])
+  }, [formData])
 
-  if (!serviceCategory || !formData || !previousServiceCategory) return null
+  if (!serviceCategory || !formData) return null
 
   const isArchived = serviceCategory.deletedAt !== null
   const isReadonly = isArchived
 
+  const hasMadeChanges = JSON.stringify(formData) !== JSON.stringify(serviceCategory)
+
   const handleSave = async () => {
     if (formData && !isReadonly) {
       setIsSaving(true)
-      await updateServiceCategory(formData, previousServiceCategory)
+      await updateServiceCategory(formData)
       await revalidateTable()
       onClose()
       setIsSaving(false)
@@ -144,7 +142,9 @@ export const EditServiceCategoryModal = ({
           type="button"
           className="primary"
           onClick={handleSave}
-          disabled={isReadonly || isSaving || isFormValidating || !isFormValidState}
+          disabled={
+            isReadonly || isSaving || isFormValidating || !isFormValidState || !hasMadeChanges
+          }
         >
           {isSaving ? "Saving..." : "Save Changes"}
         </button>

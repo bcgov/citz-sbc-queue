@@ -10,15 +10,16 @@ import {
   DialogTitle,
   Modal,
 } from "@/components/common/dialog"
-import type { Location, ServiceCategory } from "@/generated/prisma/client"
+import type { LocationWithRelations } from "@/lib/prisma/location/types"
 import type { ServiceWithRelations } from "@/lib/prisma/service/types"
+import type { ServiceCategoryWithRelations } from "@/lib/prisma/service_category/types"
 import { ServiceForm } from "../ServiceForm"
 
 type CreateServiceModalProps = {
   open: boolean
   onClose: () => void
-  offices: Location[]
-  categories: ServiceCategory[]
+  locations: LocationWithRelations[]
+  categories: ServiceCategoryWithRelations[]
   insertService: (service: Partial<ServiceWithRelations>) => Promise<ServiceWithRelations | null>
   doesServiceCodeExist: (code: string) => Promise<boolean>
   revalidateTable: () => Promise<void>
@@ -27,7 +28,7 @@ type CreateServiceModalProps = {
 export const CreateServiceModal = ({
   open,
   onClose,
-  offices,
+  locations,
   categories,
   insertService,
   doesServiceCodeExist,
@@ -51,6 +52,7 @@ export const CreateServiceModal = ({
         backOffice: false,
         deletedAt: null,
         locations: [],
+        categories: [],
       })
     } else {
       setFormData(null)
@@ -131,7 +133,7 @@ export const CreateServiceModal = ({
         <form className="space-y-5">
           <ServiceForm
             service={formData}
-            offices={offices}
+            locations={locations}
             categories={categories}
             setFormData={setFormData}
             doesServiceCodeExist={doesServiceCodeExist}

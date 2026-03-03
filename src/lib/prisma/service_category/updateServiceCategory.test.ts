@@ -28,7 +28,7 @@ describe("updateServiceCategory", () => {
       mockCategory as ServiceCategoryWithRelations
     )
 
-    const result = await updateServiceCategory(input as ServiceCategoryWithRelations, {})
+    const result = await updateServiceCategory(input as ServiceCategoryWithRelations)
 
     expect(result).toEqual(mockCategory)
     expect(prisma.serviceCategory.update).toHaveBeenCalledWith({
@@ -50,7 +50,7 @@ describe("updateServiceCategory", () => {
       mockCategory as unknown as ServiceCategoryWithRelations
     )
 
-    const result = await updateServiceCategory(input as ServiceCategoryWithRelations, {})
+    const result = await updateServiceCategory(input as ServiceCategoryWithRelations)
 
     expect(result).toEqual(mockCategory)
     expect(prisma.serviceCategory.update).toHaveBeenCalledWith({
@@ -60,8 +60,8 @@ describe("updateServiceCategory", () => {
     })
   })
 
-  it("returns null when no id provided and no prevServiceCategory.id", async () => {
-    const result = await updateServiceCategory({}, {})
+  it("returns null when no id provided", async () => {
+    const result = await updateServiceCategory({})
     expect(result).toBeNull()
     expect(prisma.serviceCategory.update).not.toHaveBeenCalled()
   })
