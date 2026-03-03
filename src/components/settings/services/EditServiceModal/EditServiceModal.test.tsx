@@ -7,7 +7,7 @@ vi.mock("../ServiceForm", () => ({
   ServiceForm: () => <div>ServiceFormStub</div>,
 }))
 
-import type { Location } from "@/generated/prisma/client"
+import type { Location, ServiceCategory } from "@/generated/prisma/client"
 import type { ServiceWithRelations } from "@/lib/prisma/service/types"
 import { EditServiceModal } from "./EditServiceModal"
 
@@ -41,9 +41,11 @@ describe("EditServiceModal", () => {
         legacyOfficeNumber: null,
       },
     ],
+    categories: [],
   } as unknown as ServiceWithRelations
 
   const offices = [{ id: "o1", name: "Office 1" }] as unknown as Location[]
+  const categories = [] as unknown as ServiceCategory[]
 
   it("renders modal title when open with a service", async () => {
     const onClose = vi.fn()
@@ -58,6 +60,7 @@ describe("EditServiceModal", () => {
         onClose={onClose}
         service={service}
         offices={offices}
+        categories={categories}
         updateService={updateService}
         doesServiceCodeExist={doesServiceCodeExist}
         revalidateTable={revalidateTable}
@@ -76,12 +79,13 @@ describe("EditServiceModal", () => {
     const doesServiceCodeExist = vi.fn().mockResolvedValue(false)
     const openConfirmArchiveServiceModal = vi.fn()
 
-    render(
+    const { rerender } = render(
       <EditServiceModal
         open={true}
         onClose={onClose}
         service={service}
         offices={offices}
+        categories={categories}
         updateService={updateService}
         doesServiceCodeExist={doesServiceCodeExist}
         revalidateTable={revalidateTable}
@@ -95,14 +99,27 @@ describe("EditServiceModal", () => {
     fireEvent.click(screen.getByText("Cancel"))
     expect(onClose).toHaveBeenCalled()
 
-    // Test Save path without re-rendering (avoid duplicate DOM nodes)
+    // Re-render to test the save path with async validation resolution
     onClose.mockReset()
     updateService.mockReset()
     revalidateTable.mockReset()
-    doesServiceCodeExist.mockReset()
 
-    // wait for async validation to complete so Save is enabled
-    await waitFor(() => expect(screen.getByText("Save Changes")).toBeEnabled())
+    rerender(
+      <EditServiceModal
+        open={true}
+        onClose={onClose}
+        service={service}
+        offices={offices}
+        categories={categories}
+        updateService={updateService}
+        doesServiceCodeExist={doesServiceCodeExist}
+        revalidateTable={revalidateTable}
+        openConfirmArchiveServiceModal={openConfirmArchiveServiceModal}
+      />
+    )
+
+    // wait for async validation to complete, which should enable Save
+    await waitFor(() => expect(screen.getByText("Save Changes")).toBeEnabled(), { timeout: 2000 })
     fireEvent.click(screen.getByText("Save Changes"))
 
     await waitFor(() => expect(updateService).toHaveBeenCalled())

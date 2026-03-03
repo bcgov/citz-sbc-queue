@@ -10,7 +10,7 @@ import {
   DialogTitle,
   Modal,
 } from "@/components/common/dialog"
-import type { Location } from "@/generated/prisma/client"
+import type { Location, ServiceCategory } from "@/generated/prisma/client"
 import type { ServiceWithRelations } from "@/lib/prisma/service/types"
 import { ServiceForm } from "../ServiceForm"
 
@@ -19,6 +19,7 @@ type EditServiceModalProps = {
   onClose: () => void
   service: ServiceWithRelations | null
   offices: Location[]
+  categories: ServiceCategory[]
   updateService: (
     service: Partial<ServiceWithRelations>,
     prevService: Partial<ServiceWithRelations>
@@ -33,6 +34,7 @@ export const EditServiceModal = ({
   onClose,
   service,
   offices,
+  categories,
   updateService,
   doesServiceCodeExist,
   revalidateTable,
@@ -65,6 +67,7 @@ export const EditServiceModal = ({
     createdAt: z.date(),
     updatedAt: z.date(),
     locations: z.array(z.any()),
+    categories: z.array(z.any()),
   })
 
   useEffect(() => {
@@ -143,6 +146,7 @@ export const EditServiceModal = ({
           <ServiceForm
             service={formData}
             offices={offices}
+            categories={categories}
             setFormData={setFormData}
             doesServiceCodeExist={doesServiceCodeExist}
             isReadonly={isReadonly}

@@ -16,16 +16,22 @@ export const insertService = async (
     throw new Error("Code, Ticket Prefix, Name, and Public Name are required to insert a service.")
   }
 
-  const { locations, ...rest } = service
+  const { locations, categories, ...rest } = service
 
-  // map locations to Prisma connect shape when provided
+  // map locations and categories to Prisma connect shape when provided
   const data: Prisma.ServiceCreateInput = {
     ...(rest as Prisma.ServiceCreateInput),
     ...(locations && locations.length > 0
       ? { locations: { connect: locations.map((l) => ({ id: l.id })) } }
       : {}),
+    ...(categories && categories.length > 0
+      ? { categories: { connect: categories.map((c) => ({ id: c.id })) } }
+      : {}),
   }
 
-  const newService = await prisma.service.create({ data, include: { locations: true } })
+  const newService = await prisma.service.create({
+    data,
+    include: { locations: true, categories: true },
+  })
   return newService
 }

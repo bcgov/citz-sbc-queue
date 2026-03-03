@@ -33,7 +33,7 @@ describe("updateService", () => {
     expect(prisma.service.update).toHaveBeenCalledWith({
       where: { code: "SVC1" },
       data: { name: "Updated", updatedAt: expect.any(Date) },
-      include: { locations: true },
+      include: { locations: true, categories: true },
     })
   })
 
@@ -55,7 +55,7 @@ describe("updateService", () => {
     expect(prisma.service.update).toHaveBeenCalledWith({
       where: { code: "OLD" },
       data: { name: "Updated2", updatedAt: expect.any(Date) },
-      include: { locations: true },
+      include: { locations: true, categories: true },
     })
   })
 

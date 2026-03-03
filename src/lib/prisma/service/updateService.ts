@@ -13,7 +13,7 @@ export const updateService = async (
   service: Partial<ServiceWithRelations>,
   prevService: Partial<ServiceWithRelations>
 ): Promise<ServiceWithRelations | null> => {
-  const { code, locations, ...data } = service
+  const { code, locations, categories, ...data } = service
   if (!code && !prevService.code) return null
 
   // When changing the primary key `code`, we must locate the row by the previous code.
@@ -29,6 +29,15 @@ export const updateService = async (
       }
     : {}
 
+  // Update categories if provided, otherwise keep existing relations
+  const categoryData = categories
+    ? {
+        categories: {
+          set: categories.map((cat) => ({ id: cat.id })),
+        },
+      }
+    : {}
+
   const newService = await prisma.service.update({
     where: { code: codeToUpdate },
     // If a new code was provided (and it's different), include it in the update data
@@ -36,9 +45,10 @@ export const updateService = async (
       ...(code && code !== codeToUpdate ? { code } : {}),
       ...data,
       ...locationData,
+      ...categoryData,
       updatedAt: new Date(),
     },
-    include: { locations: true },
+    include: { locations: true, categories: true },
   })
 
   return newService

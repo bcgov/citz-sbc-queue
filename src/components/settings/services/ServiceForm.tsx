@@ -2,13 +2,14 @@ import type { Dispatch, SetStateAction } from "react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { Notice, Switch, TextArea, TextField } from "@/components/common"
 import { MultiSelect } from "@/components/common/select/MultiSelect"
-import type { Location } from "@/generated/prisma/client"
+import type { Location, ServiceCategory } from "@/generated/prisma/client"
 import type { ServiceWithRelations } from "@/lib/prisma/service/types"
 
 type ServiceFormProps = {
   initialCode?: string
   service: Partial<ServiceWithRelations>
   offices: Location[]
+  categories: ServiceCategory[]
   setFormData: Dispatch<SetStateAction<Partial<ServiceWithRelations> | null>>
   doesServiceCodeExist: (code: string) => Promise<boolean>
   isReadonly: boolean
@@ -21,6 +22,7 @@ type ServiceFormProps = {
  * @property props.initialCode - The initial code of the service, used to determine if the code has changed.
  * @property props.service - The service being edited.
  * @property props.offices - List of office locations.
+ * @property props.categories - List of service categories.
  * @property props.setFormData - Function to update the form data state.
  * @property props.doesServiceCodeExist - Function to check if a service code already exists.
  * @property props.isReadonly - Whether the section inputs are read-only.
@@ -29,15 +31,31 @@ export const ServiceForm = ({
   initialCode,
   service,
   offices,
+  categories,
   setFormData,
   doesServiceCodeExist,
   isReadonly,
 }: ServiceFormProps) => {
-  const officeOptions = useMemo(() => offices.map((o) => ({ key: o.id, label: o.name })), [offices])
-
-  const selectedOfficeIds = service.locations ? service.locations.map((l) => l.id) : []
   const [codeExists, setCodeExists] = useState<boolean | null>(null)
   const initialCodeRef = useRef<string | undefined>(initialCode ?? service.code)
+
+  const selectedOfficeIds = service.locations ? service.locations.map((l) => l.id) : []
+  const availableOffices = offices.filter(
+    (office) => office.deletedAt === null || selectedOfficeIds.includes(office.id)
+  )
+  const officeOptions = useMemo(
+    () => availableOffices.map((o) => ({ key: o.id, label: o.name })),
+    [availableOffices]
+  )
+
+  const selectedCategoryIds = service.categories ? service.categories.map((c) => c.id) : []
+  const availableCategories = categories.filter(
+    (category) => category.deletedAt === null || selectedCategoryIds.includes(category.id)
+  )
+  const categoryOptions = useMemo(
+    () => availableCategories.map((c) => ({ key: c.id, label: c.name })),
+    [availableCategories]
+  )
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <>
   useEffect(() => {
@@ -132,27 +150,45 @@ export const ServiceForm = ({
         />
       </div>
 
-      <div>
-        <div className="mt-xs">
-          <MultiSelect
-            id="service-offices"
-            label="Offices"
-            options={officeOptions}
-            selected={selectedOfficeIds}
-            onChange={(selected) =>
-              setFormData((s) =>
-                s
-                  ? {
-                      ...s,
-                      locations: selected.map((id) => offices.find((o) => o.id === id) as Location),
-                    }
-                  : s
-              )
-            }
-            placeholder="Select offices"
-            disabled={isReadonly}
-          />
-        </div>
+      <div className="mt-xs grid grid-cols-2 gap-2">
+        <MultiSelect
+          id="service-offices"
+          label="Offices"
+          options={officeOptions}
+          selected={selectedOfficeIds}
+          onChange={(selected) =>
+            setFormData((s) =>
+              s
+                ? {
+                    ...s,
+                    locations: selected.map((id) => offices.find((o) => o.id === id) as Location),
+                  }
+                : s
+            )
+          }
+          placeholder="Select offices"
+          disabled={isReadonly}
+        />
+        <MultiSelect
+          id="service-categories"
+          label="Categories"
+          options={categoryOptions}
+          selected={selectedCategoryIds}
+          onChange={(selected) =>
+            setFormData((s) =>
+              s
+                ? {
+                    ...s,
+                    categories: selected.map(
+                      (id) => categories.find((c) => c.id === id) as ServiceCategory
+                    ),
+                  }
+                : s
+            )
+          }
+          placeholder="Select categories"
+          disabled={isReadonly}
+        />
       </div>
     </div>
   )
