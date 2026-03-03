@@ -4,7 +4,10 @@ import { useState } from "react"
 import { DataTable } from "@/components/common/datatable"
 import { Switch } from "@/components/common/switch"
 import type { Service } from "@/generated/prisma/client"
+import { useDialog } from "@/hooks/useDialog"
 import type { ServiceCategoryWithRelations } from "@/lib/prisma/service_category/types"
+import { updateServiceCategory } from "@/lib/prisma/service_category/updateServiceCategory"
+import { EditServiceCategoryModal } from "../EditServiceCategoryModal"
 import { columns } from "./columns"
 
 export type ServiceCategoryTableProps = {
@@ -18,6 +21,12 @@ export const ServiceCategoryTable = ({
   services,
   revalidateTable,
 }: ServiceCategoryTableProps) => {
+  const {
+    open: editServiceCategoryModalOpen,
+    openDialog: openEditServiceCategoryModal,
+    closeDialog: closeEditServiceCategoryModal,
+  } = useDialog()
+
   const [showArchived, setShowArchived] = useState<boolean>(false)
   const [selectedServiceCategory, setSelectedServiceCategory] =
     useState<ServiceCategoryWithRelations | null>(null)
@@ -26,6 +35,7 @@ export const ServiceCategoryTable = ({
 
   const handleRowClick = (serviceCategory: ServiceCategoryWithRelations) => {
     setSelectedServiceCategory(serviceCategory)
+    openEditServiceCategoryModal()
   }
 
   const serviceCategoriesToShow = showArchived
@@ -54,6 +64,14 @@ export const ServiceCategoryTable = ({
         sticky
         emptyMessage="No service categories found."
         onRowClick={handleRowClick}
+      />
+      <EditServiceCategoryModal
+        open={editServiceCategoryModalOpen}
+        onClose={closeEditServiceCategoryModal}
+        serviceCategory={selectedServiceCategory}
+        services={services}
+        updateServiceCategory={updateServiceCategory}
+        revalidateTable={revalidateTable}
       />
     </>
   )
