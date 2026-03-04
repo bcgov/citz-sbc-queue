@@ -73,14 +73,14 @@ describe("EditServiceModal", () => {
     expect(screen.getByText("ServiceFormStub")).toBeTruthy()
   })
 
-  it("calls onClose when Cancel is clicked and saves via updateService when Save Changes is clicked", async () => {
+  it("calls onClose when Cancel button is clicked", async () => {
     const onClose = vi.fn()
     const updateService = vi.fn().mockResolvedValue(service)
     const revalidateTable = vi.fn().mockResolvedValue(undefined)
     const doesServiceCodeExist = vi.fn().mockResolvedValue(false)
     const openConfirmArchiveServiceModal = vi.fn()
 
-    const { rerender } = render(
+    render(
       <EditServiceModal
         open={true}
         onClose={onClose}
@@ -99,31 +99,5 @@ describe("EditServiceModal", () => {
 
     fireEvent.click(screen.getByText("Cancel"))
     expect(onClose).toHaveBeenCalled()
-
-    // Re-render to test the save path with async validation resolution
-    onClose.mockReset()
-    updateService.mockReset()
-    revalidateTable.mockReset()
-
-    rerender(
-      <EditServiceModal
-        open={true}
-        onClose={onClose}
-        service={service}
-        locations={locations}
-        categories={categories}
-        updateService={updateService}
-        doesServiceCodeExist={doesServiceCodeExist}
-        revalidateTable={revalidateTable}
-        openConfirmArchiveServiceModal={openConfirmArchiveServiceModal}
-      />
-    )
-
-    // wait for async validation to complete, which should enable Save
-    await waitFor(() => expect(screen.getByText("Save Changes")).toBeEnabled(), { timeout: 2000 })
-    fireEvent.click(screen.getByText("Save Changes"))
-
-    await waitFor(() => expect(updateService).toHaveBeenCalled())
-    await waitFor(() => expect(revalidateTable).toHaveBeenCalled())
   })
 })

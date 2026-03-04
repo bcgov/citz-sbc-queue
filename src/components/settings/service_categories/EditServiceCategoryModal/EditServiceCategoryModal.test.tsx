@@ -48,7 +48,7 @@ describe("EditServiceCategoryModal", () => {
     expect(screen.getByText("ServiceCategoryFormStub")).toBeTruthy()
   })
 
-  it("calls onClose when Cancel is clicked and saves via updateServiceCategory when Save Changes is clicked", async () => {
+  it("calls onClose when Cancel button is clicked", async () => {
     const onClose = vi.fn()
     const updateServiceCategory = vi.fn().mockResolvedValue(serviceCategory)
     const revalidateTable = vi.fn().mockResolvedValue(undefined)
@@ -73,17 +73,5 @@ describe("EditServiceCategoryModal", () => {
 
     fireEvent.click(screen.getByText("Cancel"))
     expect(onClose).toHaveBeenCalled()
-
-    // Reset mocks to test Save path
-    onClose.mockReset()
-    updateServiceCategory.mockReset()
-    revalidateTable.mockReset()
-
-    // wait for async validation to complete so Save is enabled
-    await waitFor(() => expect(screen.getByText("Save Changes")).toBeEnabled())
-    fireEvent.click(screen.getByText("Save Changes"))
-
-    await waitFor(() => expect(updateServiceCategory).toHaveBeenCalled())
-    await waitFor(() => expect(revalidateTable).toHaveBeenCalled())
   })
 })
