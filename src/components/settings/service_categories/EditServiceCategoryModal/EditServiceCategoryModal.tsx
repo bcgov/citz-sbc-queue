@@ -24,6 +24,7 @@ type EditServiceCategoryModalProps = {
     prevServiceCategory: Partial<ServiceCategoryWithRelations>
   ) => Promise<ServiceCategoryWithRelations | null>
   revalidateTable: () => Promise<void>
+  openConfirmArchiveServiceCategoryModal: () => void
 }
 
 export const EditServiceCategoryModal = ({
@@ -33,6 +34,7 @@ export const EditServiceCategoryModal = ({
   services,
   updateServiceCategory,
   revalidateTable,
+  openConfirmArchiveServiceCategoryModal,
 }: EditServiceCategoryModalProps) => {
   const [isSaving, setIsSaving] = useState(false)
   const [formData, setFormData] = useState<Partial<ServiceCategoryWithRelations> | null>(null)
@@ -99,6 +101,11 @@ export const EditServiceCategoryModal = ({
     }
   }
 
+  const handleOpenArchive = () => {
+    openConfirmArchiveServiceCategoryModal()
+    onClose()
+  }
+
   return (
     <Modal open={open} onClose={onClose} size="md">
       <DialogHeader trailing={<CloseButton onClick={onClose} />}>
@@ -129,6 +136,9 @@ export const EditServiceCategoryModal = ({
       <DialogActions>
         <button type="button" className="tertiary" onClick={onClose}>
           Cancel
+        </button>
+        <button type="button" className="secondary danger" onClick={handleOpenArchive}>
+          {isArchived ? "Unarchive" : "Archive"}
         </button>
         <button
           type="button"

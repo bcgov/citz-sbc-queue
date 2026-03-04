@@ -8,6 +8,7 @@ import { useDialog } from "@/hooks/useDialog"
 import { insertServiceCategory } from "@/lib/prisma/service_category/insertServiceCategory"
 import type { ServiceCategoryWithRelations } from "@/lib/prisma/service_category/types"
 import { updateServiceCategory } from "@/lib/prisma/service_category/updateServiceCategory"
+import { ConfirmArchiveServiceCategoryModal } from "../ConfirmArchiveServiceCategoryModal"
 import { CreateServiceCategoryModal } from "../CreateServiceCategoryModal"
 import { EditServiceCategoryModal } from "../EditServiceCategoryModal"
 import { columns } from "./columns"
@@ -33,12 +34,15 @@ export const ServiceCategoryTable = ({
     openDialog: openCreateServiceCategoryModal,
     closeDialog: closeCreateServiceCategoryModal,
   } = useDialog()
+  const {
+    open: confirmArchiveServiceCategoryModalOpen,
+    openDialog: openConfirmArchiveServiceCategoryModal,
+    closeDialog: closeConfirmArchiveServiceCategoryModal,
+  } = useDialog()
 
   const [showArchived, setShowArchived] = useState<boolean>(false)
   const [selectedServiceCategory, setSelectedServiceCategory] =
     useState<ServiceCategoryWithRelations | null>(null)
-
-  console.log(`Temp log for lint resolution: ${selectedServiceCategory}`)
 
   const handleRowClick = (serviceCategory: ServiceCategoryWithRelations) => {
     setSelectedServiceCategory(serviceCategory)
@@ -79,12 +83,21 @@ export const ServiceCategoryTable = ({
         services={services}
         updateServiceCategory={updateServiceCategory}
         revalidateTable={revalidateTable}
+        openConfirmArchiveServiceCategoryModal={openConfirmArchiveServiceCategoryModal}
       />
       <CreateServiceCategoryModal
         open={createServiceCategoryModalOpen}
         onClose={closeCreateServiceCategoryModal}
         services={services}
         insertServiceCategory={insertServiceCategory}
+        revalidateTable={revalidateTable}
+      />
+      <ConfirmArchiveServiceCategoryModal
+        open={confirmArchiveServiceCategoryModalOpen}
+        onClose={closeConfirmArchiveServiceCategoryModal}
+        serviceCategory={selectedServiceCategory}
+        serviceCategories={serviceCategories}
+        updateServiceCategory={updateServiceCategory}
         revalidateTable={revalidateTable}
       />
     </>

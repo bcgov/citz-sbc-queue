@@ -50,6 +50,7 @@ describe("EditServiceModal", () => {
     const updateService = vi.fn().mockResolvedValue(service)
     const revalidateTable = vi.fn().mockResolvedValue(undefined)
     const doesServiceCodeExist = vi.fn().mockResolvedValue(false)
+    const openConfirmArchiveServiceModal = vi.fn()
 
     render(
       <EditServiceModal
@@ -60,6 +61,7 @@ describe("EditServiceModal", () => {
         updateService={updateService}
         doesServiceCodeExist={doesServiceCodeExist}
         revalidateTable={revalidateTable}
+        openConfirmArchiveServiceModal={openConfirmArchiveServiceModal}
       />
     )
 
@@ -72,6 +74,7 @@ describe("EditServiceModal", () => {
     const updateService = vi.fn().mockResolvedValue(service)
     const revalidateTable = vi.fn().mockResolvedValue(undefined)
     const doesServiceCodeExist = vi.fn().mockResolvedValue(false)
+    const openConfirmArchiveServiceModal = vi.fn()
 
     render(
       <EditServiceModal
@@ -82,6 +85,7 @@ describe("EditServiceModal", () => {
         updateService={updateService}
         doesServiceCodeExist={doesServiceCodeExist}
         revalidateTable={revalidateTable}
+        openConfirmArchiveServiceModal={openConfirmArchiveServiceModal}
       />
     )
 
