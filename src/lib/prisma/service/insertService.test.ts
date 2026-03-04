@@ -38,7 +38,7 @@ describe("insertService", () => {
     expect(result).toEqual(mockService)
     expect(prisma.service.create).toHaveBeenCalledWith({
       data: { ...input },
-      include: { locations: true },
+      include: { locations: true, categories: true },
     })
   })
 

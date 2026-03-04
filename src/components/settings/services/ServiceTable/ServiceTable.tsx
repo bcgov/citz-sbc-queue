@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { DataTable } from "@/components/common/datatable"
 import { Switch } from "@/components/common/switch"
-import type { Location } from "@/generated/prisma/client"
+import type { Location, ServiceCategory } from "@/generated/prisma/client"
 import { useDialog } from "@/hooks"
 import type { ServiceWithRelations } from "@/lib/prisma/service/types"
 import { ConfirmArchiveServiceModal } from "../ConfirmArchiveServiceModal"
@@ -14,6 +14,7 @@ import { columns } from "./columns"
 export type ServiceTableProps = {
   services: ServiceWithRelations[]
   offices: Location[]
+  categories: ServiceCategory[]
   updateService: (
     service: Partial<ServiceWithRelations>,
     prevService: Partial<ServiceWithRelations>
@@ -26,6 +27,7 @@ export type ServiceTableProps = {
 export const ServiceTable = ({
   services,
   offices,
+  categories,
   updateService,
   insertService,
   doesServiceCodeExist,
@@ -87,6 +89,7 @@ export const ServiceTable = ({
         onClose={closeEditServiceModal}
         service={selectedService}
         offices={offices}
+        categories={categories}
         updateService={updateService}
         doesServiceCodeExist={doesServiceCodeExist}
         revalidateTable={revalidateTable}
@@ -96,6 +99,7 @@ export const ServiceTable = ({
         open={createServiceModalOpen}
         onClose={closeCreateServiceModal}
         offices={offices}
+        categories={categories}
         insertService={insertService}
         doesServiceCodeExist={doesServiceCodeExist}
         revalidateTable={revalidateTable}

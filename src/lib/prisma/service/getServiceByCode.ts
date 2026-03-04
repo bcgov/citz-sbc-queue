@@ -9,6 +9,9 @@ import type { ServiceWithRelations } from "./types"
  * @returns Promise resolving to a Service object with its relations or null if not found
  */
 export const getServiceByCode = async (code: string): Promise<ServiceWithRelations | null> => {
-  const service = await prisma.service.findUnique({ where: { code }, include: { locations: true } })
+  const service = await prisma.service.findUnique({
+    where: { code },
+    include: { locations: true, categories: true },
+  })
   return service
 }

@@ -40,7 +40,9 @@ describe("getAllServices", () => {
     const result = await getAllServices()
 
     // should include locations and be sorted by createdAt descending (newest first)
-    expect(prisma.service.findMany).toHaveBeenCalledWith({ include: { locations: true } })
+    expect(prisma.service.findMany).toHaveBeenCalledWith({
+      include: { locations: true, categories: true },
+    })
     expect(result).toEqual([mockServices[1], mockServices[0]])
   })
 

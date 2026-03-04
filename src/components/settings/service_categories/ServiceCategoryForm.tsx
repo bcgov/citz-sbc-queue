@@ -27,9 +27,10 @@ export const ServiceCategoryForm = ({
   setFormData,
   isReadonly,
 }: ServiceCategoryFormProps) => {
+  const availableServices = services.filter((service) => service.deletedAt === null)
   const serviceOptions = useMemo(
-    () => services.map((s) => ({ key: s.code, label: s.name })),
-    [services]
+    () => availableServices.map((s) => ({ key: s.code, label: s.name })),
+    [availableServices]
   )
 
   const selectedServiceCodes = serviceCategory.services
