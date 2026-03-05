@@ -1,5 +1,5 @@
 model Service {
-  code               String   @id
+  code               String   @id @unique()
   name               String   @db.VarChar(250)
   description        String   @db.VarChar(1000)
   publicName         String   @db.VarChar(500) @map("public_name")

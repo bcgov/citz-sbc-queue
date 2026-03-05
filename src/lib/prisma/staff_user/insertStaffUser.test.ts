@@ -31,7 +31,7 @@ describe("insertStaffUser (staff_user)", () => {
       sub: "sub-123",
       username: "j.doe",
       displayName: "J Doe",
-      locationId: null,
+      locationCode: null,
       role: "CSR" as Role,
     }
 
@@ -41,7 +41,7 @@ describe("insertStaffUser (staff_user)", () => {
       legacyCsrId: null,
       username: inputData.username,
       displayName: inputData.displayName,
-      locationId: inputData.locationId,
+      locationCode: inputData.locationCode,
       counterId: null,
       role: "CSR" as Role,
       isActive: true,
@@ -71,7 +71,7 @@ describe("insertStaffUser (staff_user)", () => {
       sub: "s",
       username: "u",
       displayName: "d",
-      locationId: null,
+      locationCode: null,
       role: "CSR" as Role,
     }
     const ssoError = new Error("SSO failed")
@@ -87,7 +87,7 @@ describe("insertStaffUser (staff_user)", () => {
       sub: "s2",
       username: "u2",
       displayName: "d2",
-      locationId: null,
+      locationCode: null,
       role: "CSR" as Role,
     }
     const dbError = new Error("DB failed")
