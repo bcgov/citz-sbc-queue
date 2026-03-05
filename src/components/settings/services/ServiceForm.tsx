@@ -40,12 +40,12 @@ export const ServiceForm = ({
   const [codeExists, setCodeExists] = useState<boolean | null>(null)
   const initialCodeRef = useRef<string | undefined>(initialCode ?? service.code)
 
-  const selectedLocationIds = service.locations ? service.locations.map((l) => l.id) : []
+  const selectedLocationCodes = service.locations ? service.locations.map((l) => l.code) : []
   const availableLocations = locations.filter(
-    (location) => location.deletedAt === null || selectedLocationIds.includes(location.id)
+    (location) => location.deletedAt === null || selectedLocationCodes.includes(location.code)
   )
   const locationOptions = useMemo(
-    () => availableLocations.map((o) => ({ key: o.id, label: o.name })),
+    () => availableLocations.map((o) => ({ key: o.code, label: o.name })),
     [availableLocations]
   )
 
@@ -156,14 +156,14 @@ export const ServiceForm = ({
           id="service-locations"
           label="Locations"
           options={locationOptions}
-          selected={selectedLocationIds}
+          selected={selectedLocationCodes}
           onChange={(selected) =>
             setFormData((s) =>
               s
                 ? {
                     ...s,
                     locations: selected.map(
-                      (id) => locations.find((o) => o.id === id) as LocationWithRelations
+                      (code) => locations.find((o) => o.code === code) as LocationWithRelations
                     ),
                   }
                 : s
