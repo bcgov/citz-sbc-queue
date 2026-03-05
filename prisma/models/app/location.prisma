@@ -1,5 +1,5 @@
 model Location {
-  id                 String   @id @default(uuid())
+  code               String   @id @unique()
   name               String   @db.VarChar(250)
   timezone           String   @db.VarChar(50)
   streetAddress      String   @db.VarChar(500) @map("street_address")
