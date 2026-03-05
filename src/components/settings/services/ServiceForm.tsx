@@ -40,13 +40,13 @@ export const ServiceForm = ({
   const [codeExists, setCodeExists] = useState<boolean | null>(null)
   const initialCodeRef = useRef<string | undefined>(initialCode ?? service.code)
 
-  const selectedOfficeIds = service.locations ? service.locations.map((l) => l.id) : []
-  const availableOffices = locations.filter(
-    (office) => office.deletedAt === null || selectedOfficeIds.includes(office.id)
+  const selectedLocationCodes = service.locations ? service.locations.map((l) => l.code) : []
+  const availableLocations = locations.filter(
+    (location) => location.deletedAt === null || selectedLocationCodes.includes(location.code)
   )
-  const officeOptions = useMemo(
-    () => availableOffices.map((o) => ({ key: o.id, label: o.name })),
-    [availableOffices]
+  const locationOptions = useMemo(
+    () => availableLocations.map((o) => ({ key: o.code, label: o.name })),
+    [availableLocations]
   )
 
   const selectedCategoryIds = service.categories ? service.categories.map((c) => c.id) : []
@@ -153,23 +153,23 @@ export const ServiceForm = ({
 
       <div className="mt-xs grid grid-cols-2 gap-2">
         <MultiSelect
-          id="service-offices"
-          label="Offices"
-          options={officeOptions}
-          selected={selectedOfficeIds}
+          id="service-locations"
+          label="Locations"
+          options={locationOptions}
+          selected={selectedLocationCodes}
           onChange={(selected) =>
             setFormData((s) =>
               s
                 ? {
                     ...s,
                     locations: selected.map(
-                      (id) => locations.find((o) => o.id === id) as LocationWithRelations
+                      (code) => locations.find((o) => o.code === code) as LocationWithRelations
                     ),
                   }
                 : s
             )
           }
-          placeholder="Select offices"
+          placeholder="Select locations"
           disabled={isReadonly}
         />
         <MultiSelect
