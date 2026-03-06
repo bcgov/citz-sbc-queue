@@ -1,6 +1,9 @@
 import { revalidatePath } from "next/cache"
 import { LocationTable } from "@/components/settings/locations/LocationTable"
+import type { Counter } from "@/generated/prisma/client"
+import { doesLocationCodeExist } from "@/lib/prisma/location/doesLocationCodeExist"
 import { getAllLocations } from "@/lib/prisma/location/getAllLocations"
+import { updateLocation } from "@/lib/prisma/location/updateLocation"
 import { getAllServices } from "@/lib/prisma/service/getAllServices"
 import { getAllStaffUsers } from "@/lib/prisma/staff_user/getAllStaffUsers"
 
@@ -10,6 +13,7 @@ export const dynamic = "force-dynamic"
 export default async function Page() {
   const locations = await getAllLocations()
   const services = await getAllServices()
+  const counters = [] as Counter[]
   const staffUsers = await getAllStaffUsers()
 
   const revalidateTable = async () => {
@@ -23,7 +27,10 @@ export default async function Page() {
       <LocationTable
         locations={locations}
         services={services}
+        counters={counters}
         staffUsers={staffUsers}
+        updateLocation={updateLocation}
+        doesLocationCodeExist={doesLocationCodeExist}
         revalidateTable={revalidateTable}
       />
     </div>

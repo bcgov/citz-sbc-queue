@@ -3,6 +3,17 @@ import type { LocationWithRelations } from "@/lib/prisma/location/types"
 
 export const columns: ColumnConfig<LocationWithRelations>[] = [
   {
+    key: "code",
+    label: "Code",
+    sortable: true,
+    searchable: true,
+    render: (value, row) => {
+      return (
+        <span className={row.deletedAt ? "text-typography-danger" : ""}>{value as string}</span>
+      )
+    },
+  },
+  {
     key: "name",
     label: "Name",
     sortable: true,

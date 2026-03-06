@@ -5,7 +5,7 @@ import { Section } from "./Section"
 
 type RoleAndAssignmentSectionProps = {
   user: StaffUser
-  offices: Location[]
+  locations: Location[]
   setFormData: Dispatch<SetStateAction<StaffUser | null>>
   availableRoles: Role[]
   disabled?: boolean
@@ -13,7 +13,7 @@ type RoleAndAssignmentSectionProps = {
 
 export const RoleAndAssignmentSection = ({
   user,
-  offices,
+  locations,
   setFormData,
   availableRoles,
   disabled,
@@ -30,17 +30,17 @@ export const RoleAndAssignmentSection = ({
       />
 
       <SelectInput
-        id="locationId"
-        label="Office"
-        value={user.locationId === null ? undefined : user.locationId}
-        onChange={(value) => setFormData((prev) => prev && { ...prev, locationId: value })}
+        id="locationCode"
+        label="Location"
+        value={user.locationCode === null ? undefined : user.locationCode}
+        onChange={(value) => setFormData((prev) => prev && { ...prev, locationCode: value })}
         disabled={disabled ?? false}
-        options={offices.map((office) => ({
-          value: office.id,
-          label: office.legacyOfficeNumber
-            ? `${office.name} (No. ${office.legacyOfficeNumber})`
-            : office.name,
-        }))}
+        options={locations
+          .filter((location) => location.deletedAt === null)
+          .map((location) => ({
+            value: location.code,
+            label: `${location.name} (${location.code})`,
+          }))}
       />
     </Section>
   )

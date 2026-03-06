@@ -3,30 +3,47 @@
 import { useState } from "react"
 import { DataTable } from "@/components/common/datatable"
 import { Switch } from "@/components/common/switch"
-import type { Service, StaffUser } from "@/generated/prisma/client"
+import type { Counter, StaffUser } from "@/generated/prisma/client"
+import { useDialog } from "@/hooks/useDialog"
 import type { LocationWithRelations } from "@/lib/prisma/location/types"
+import type { ServiceWithRelations } from "@/lib/prisma/service/types"
+import { EditLocationModal } from "../EditLocationModal"
 import { columns } from "./columns"
 
 export type LocationTableProps = {
   locations: LocationWithRelations[]
-  services: Service[]
+  services: ServiceWithRelations[]
+  counters: Counter[]
   staffUsers: StaffUser[]
+  updateLocation: (
+    location: Partial<LocationWithRelations>,
+    prevLocation: Partial<LocationWithRelations>
+  ) => Promise<LocationWithRelations | null>
+  doesLocationCodeExist: (code: string) => Promise<boolean>
   revalidateTable: () => Promise<void>
 }
 
 export const LocationTable = ({
   locations,
   services,
+  counters,
   staffUsers,
+  updateLocation,
+  doesLocationCodeExist,
   revalidateTable,
 }: LocationTableProps) => {
+  const {
+    open: editLocationModalOpen,
+    openDialog: openEditLocationModal,
+    closeDialog: closeEditLocationModal,
+  } = useDialog()
+
   const [showArchived, setShowArchived] = useState<boolean>(false)
   const [selectedLocation, setSelectedLocation] = useState<LocationWithRelations | null>(null)
 
-  console.log(`Temp log - LocationTable: selectedLocation: ${JSON.stringify(selectedLocation)}`)
-
   const handleRowClick = (location: LocationWithRelations) => {
     setSelectedLocation(location)
+    openEditLocationModal()
   }
 
   const locationsToShow = showArchived
@@ -56,6 +73,17 @@ export const LocationTable = ({
         sticky
         emptyMessage="No locations found."
         onRowClick={handleRowClick}
+      />
+      <EditLocationModal
+        open={editLocationModalOpen}
+        onClose={closeEditLocationModal}
+        location={selectedLocation}
+        services={services}
+        counters={counters}
+        staffUsers={staffUsers}
+        updateLocation={updateLocation}
+        doesLocationCodeExist={doesLocationCodeExist}
+        revalidateTable={revalidateTable}
       />
     </>
   )

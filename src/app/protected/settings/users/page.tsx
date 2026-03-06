@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic"
 
 export default async function Page() {
   const users = await getAllStaffUsers()
-  const offices = await getAllLocations()
+  const locations = await getAllLocations()
 
   const revalidateTable = async () => {
     "use server"
@@ -21,7 +21,7 @@ export default async function Page() {
       <h2>Users</h2>
       <StaffUserTable
         users={users}
-        offices={offices}
+        locations={locations}
         updateStaffUser={updateStaffUser}
         revalidateTable={revalidateTable}
       />

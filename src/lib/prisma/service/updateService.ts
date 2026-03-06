@@ -24,7 +24,7 @@ export const updateService = async (
   const locationData = locations
     ? {
         locations: {
-          set: locations.map((loc) => ({ id: loc.id })),
+          set: locations.map((loc) => ({ code: loc.code })),
         },
       }
     : {}

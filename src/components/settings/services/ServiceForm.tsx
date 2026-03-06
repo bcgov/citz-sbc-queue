@@ -41,18 +41,14 @@ export const ServiceForm = ({
   const initialCodeRef = useRef<string | undefined>(initialCode ?? service.code)
 
   const selectedLocationCodes = service.locations ? service.locations.map((l) => l.code) : []
-  const availableLocations = locations.filter(
-    (location) => location.deletedAt === null || selectedLocationCodes.includes(location.code)
-  )
+  const availableLocations = locations.filter((location) => location.deletedAt === null)
   const locationOptions = useMemo(
     () => availableLocations.map((o) => ({ key: o.code, label: o.name })),
     [availableLocations]
   )
 
   const selectedCategoryIds = service.categories ? service.categories.map((c) => c.id) : []
-  const availableCategories = categories.filter(
-    (category) => category.deletedAt === null || selectedCategoryIds.includes(category.id)
-  )
+  const availableCategories = categories.filter((category) => category.deletedAt === null)
   const categoryOptions = useMemo(
     () => availableCategories.map((c) => ({ key: c.id, label: c.name })),
     [availableCategories]
