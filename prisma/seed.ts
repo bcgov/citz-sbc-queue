@@ -36,6 +36,7 @@ async function main() {
       where: { legacyOfficeNumber: 999 },
       update: {},
       create: {
+        code: "999",
         legacyOfficeNumber: 999,
         name: "Test Office",
         timezone: "America/Dawson_Creek",
@@ -60,6 +61,7 @@ async function main() {
       where: { legacyOfficeNumber: 94 },
       update: {},
       create: {
+        code: "94",
         legacyOfficeNumber: 94,
         name: "Victoria",
         timezone: "America/Vancouver",
@@ -82,6 +84,7 @@ async function main() {
       where: { legacyOfficeNumber: 701 },
       update: {},
       create: {
+        code: "701",
         legacyOfficeNumber: 701,
         name: "Nanaimo",
         timezone: "America/Vancouver",

@@ -93,7 +93,7 @@ describe("updateUserOnLogin", () => {
     vi.mocked(getCSRByUsername).mockResolvedValueOnce(csr)
     vi.mocked(assignNewRoleFromCSR).mockResolvedValueOnce("SDM")
     vi.mocked(getLocationByLegacyOfficeId).mockResolvedValueOnce({
-      id: "loc-id-1",
+      code: "loc-id-1",
     } as LocationWithRelations)
     vi.mocked(getCounterByName).mockResolvedValueOnce({ id: "counter-id-1" } as Counter)
 
@@ -111,7 +111,7 @@ describe("updateUserOnLogin", () => {
         displayName: "Test User",
         role: "SDM",
         isActive: true,
-        location: { connect: { id: "loc-id-1" } },
+        location: { connect: { code: "loc-id-1" } },
         counter: { connect: { id: "counter-id-1" } },
         deletedAt: null,
         isFinanceDesignate: true,

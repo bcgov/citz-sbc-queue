@@ -54,7 +54,7 @@ export const updateUserOnLogin = async (accessToken: string) => {
       displayName: display_name,
       role: newRole,
       isActive: true,
-      location: resolvedLocation ? { connect: { id: resolvedLocation.id } } : undefined,
+      location: resolvedLocation ? { connect: { code: resolvedLocation.code } } : undefined,
       counter: defaultCounter ? { connect: { id: defaultCounter.id } } : undefined,
       deletedAt: csrUser ? csrUser.deleted : null,
       isFinanceDesignate: csrUser ? csrUser.financeDesignate === 1 : false,
