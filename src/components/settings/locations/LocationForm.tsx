@@ -1,8 +1,12 @@
+/** biome-ignore-all lint/suspicious/noEmptyBlockStatements: <Read only inputs> */
 import type { Dispatch, SetStateAction } from "react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { Notice, TextField } from "@/components/common"
 import { MultiSelect } from "@/components/common/select/MultiSelect"
+import { SelectInput } from "@/components/common/select/SelectInput"
+import { AddressAutocomplete } from "@/components/geocoder"
 import type { Counter, StaffUser } from "@/generated/prisma/client"
+import type { AddressSuggestion } from "@/hooks"
 import type { LocationWithRelations } from "@/lib/prisma/location/types"
 import type { ServiceWithRelations } from "@/lib/prisma/service/types"
 
@@ -62,6 +66,11 @@ export const LocationForm = ({
     [staffUsers]
   )
 
+  const timezoneOptions = [
+    { value: "America/Vancouver", label: "Pacific Time (America/Vancouver)" },
+    { value: "America/Edmonton", label: "Mountain Time (America/Edmonton)" },
+  ]
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: <>
   useEffect(() => {
     // when the location changes (new location loaded) reset initial code and state
@@ -114,6 +123,76 @@ export const LocationForm = ({
           onChange={(v) => setFormData((s) => (s ? { ...s, name: v } : s))}
           disabled={isReadonly}
           required
+        />
+      </div>
+
+      <div className="mt-xs grid grid-cols-5 gap-2">
+        <div className="col-span-2">
+          <AddressAutocomplete
+            id="location-street-address"
+            label="Street Address"
+            value={location.streetAddress || ""}
+            onSelect={(suggestion: AddressSuggestion) => {
+              // Update the form with the selected address information
+              setFormData((s) =>
+                s
+                  ? {
+                      ...s,
+                      streetAddress: suggestion.streetName ? suggestion.address : "",
+                      latitude: suggestion.coordinates.latitude,
+                      longitude: suggestion.coordinates.longitude,
+                    }
+                  : s
+              )
+            }}
+            placeholder="Search and select address..."
+            disabled={isReadonly}
+          />
+        </div>
+        <div className="col-span-3 flex gap-2">
+          <TextField
+            id="location-latitude"
+            label="Latitude"
+            value={location.latitude?.toString() || ""}
+            onChange={() => {}}
+            disabled
+            className="flex-1"
+          />
+          <TextField
+            id="location-longitude"
+            label="Longitude"
+            value={location.longitude?.toString() || ""}
+            onChange={() => {}}
+            disabled
+            className="flex-1"
+          />
+          <SelectInput
+            id="location-timezone"
+            label="Timezone"
+            value={location.timezone || ""}
+            onChange={(v) => setFormData((s) => (s ? { ...s, timezone: v } : s))}
+            disabled={isReadonly}
+            options={timezoneOptions}
+          />
+        </div>
+      </div>
+
+      <div className="mt-xs grid grid-cols-2 gap-2">
+        <TextField
+          id="location-mail-address"
+          label="Mailing Address"
+          value={location.mailAddress || ""}
+          onChange={(v) => setFormData((s) => (s ? { ...s, mailAddress: v } : s))}
+          disabled={isReadonly}
+          placeholder="Optional mailing address"
+        />
+        <TextField
+          id="location-phone"
+          label="Phone Number"
+          value={location.phoneNumber || ""}
+          onChange={(v) => setFormData((s) => (s ? { ...s, phoneNumber: v } : s))}
+          disabled={isReadonly}
+          placeholder="Optional phone number"
         />
       </div>
 

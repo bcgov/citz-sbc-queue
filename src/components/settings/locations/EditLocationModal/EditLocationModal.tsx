@@ -123,7 +123,7 @@ export const EditLocationModal = ({
   }
 
   return (
-    <Modal open={open} onClose={onClose} size="lg">
+    <Modal open={open} onClose={onClose} size="xl">
       <DialogHeader trailing={<CloseButton onClick={onClose} />}>
         <DialogTitle>Edit Location: {location.code}</DialogTitle>
       </DialogHeader>
