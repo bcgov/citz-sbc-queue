@@ -40,13 +40,13 @@ export const ServiceForm = ({
   const [codeExists, setCodeExists] = useState<boolean | null>(null)
   const initialCodeRef = useRef<string | undefined>(initialCode ?? service.code)
 
-  const selectedOfficeIds = service.locations ? service.locations.map((l) => l.id) : []
-  const availableOffices = locations.filter(
-    (office) => office.deletedAt === null || selectedOfficeIds.includes(office.id)
+  const selectedLocationIds = service.locations ? service.locations.map((l) => l.id) : []
+  const availableLocations = locations.filter(
+    (location) => location.deletedAt === null || selectedLocationIds.includes(location.id)
   )
-  const officeOptions = useMemo(
-    () => availableOffices.map((o) => ({ key: o.id, label: o.name })),
-    [availableOffices]
+  const locationOptions = useMemo(
+    () => availableLocations.map((o) => ({ key: o.id, label: o.name })),
+    [availableLocations]
   )
 
   const selectedCategoryIds = service.categories ? service.categories.map((c) => c.id) : []
@@ -153,10 +153,10 @@ export const ServiceForm = ({
 
       <div className="mt-xs grid grid-cols-2 gap-2">
         <MultiSelect
-          id="service-offices"
-          label="Offices"
-          options={officeOptions}
-          selected={selectedOfficeIds}
+          id="service-locations"
+          label="Locations"
+          options={locationOptions}
+          selected={selectedLocationIds}
           onChange={(selected) =>
             setFormData((s) =>
               s
@@ -169,7 +169,7 @@ export const ServiceForm = ({
                 : s
             )
           }
-          placeholder="Select offices"
+          placeholder="Select locations"
           disabled={isReadonly}
         />
         <MultiSelect
