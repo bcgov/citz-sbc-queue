@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache"
 import { StaffUserTable } from "@/components/settings/users/StaffUserTable"
-import { getAllLocations } from "@/lib/prisma/location"
+import { getAllLocations } from "@/lib/prisma/location/getAllLocations"
 import { getAllStaffUsers } from "@/lib/prisma/staff_user/getAllStaffUsers"
 import { updateStaffUser } from "@/lib/prisma/staff_user/updateStaffUser"
 

@@ -57,6 +57,8 @@ export const EditStaffUserModal = ({
   const isArchived = user.deletedAt !== null
   const isReadonly = isUserHigherRole || isArchived
 
+  const hasMadeChanges = JSON.stringify(formData) !== JSON.stringify(previousUser)
+
   const handleSave = async () => {
     if (formData && !isReadonly) {
       setIsSaving(true)
@@ -126,7 +128,7 @@ export const EditStaffUserModal = ({
           type="button"
           className="primary"
           onClick={handleSave}
-          disabled={isReadonly || isSaving}
+          disabled={isReadonly || isSaving || !hasMadeChanges}
         >
           {isSaving ? "Saving..." : "Save Changes"}
         </button>

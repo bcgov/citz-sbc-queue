@@ -40,9 +40,8 @@ describe("ConfirmArchiveServiceCategoryModal", () => {
     await userEvent.click(archiveButton)
 
     await waitFor(() => expect(updateServiceCategory).toHaveBeenCalled())
-    const [dataArg, prevArg] = updateServiceCategory.mock.calls[0]
+    const [dataArg] = updateServiceCategory.mock.calls[0]
     expect(dataArg).toHaveProperty("deletedAt")
-    expect(prevArg).toEqual(serviceCategory)
     expect(revalidateTable).toHaveBeenCalled()
     expect(onClose).toHaveBeenCalled()
   })
@@ -176,15 +175,13 @@ describe("ConfirmArchiveServiceCategoryModal", () => {
 
     // First call attaches to the new category, second call detaches and archives the old one
     await waitFor(() => expect(updateServiceCategory).toHaveBeenCalledTimes(2))
-    expect(updateServiceCategory).toHaveBeenNthCalledWith(
-      1,
-      { id: "2", services: [{ code: "SVC1" }] },
-      targetCategory
-    )
+    expect(updateServiceCategory).toHaveBeenNthCalledWith(1, {
+      id: "2",
+      services: [{ code: "SVC1" }],
+    })
     expect(updateServiceCategory).toHaveBeenNthCalledWith(
       2,
-      expect.objectContaining({ id: "1", services: [] }), // Archived and detached
-      serviceCategory
+      expect.objectContaining({ id: "1", services: [] }) // Archived and detached
     )
   })
 })
