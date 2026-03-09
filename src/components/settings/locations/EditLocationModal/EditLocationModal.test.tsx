@@ -77,6 +77,7 @@ describe("EditLocationModal", () => {
     const updateLocation = vi.fn().mockResolvedValue(location)
     const revalidateTable = vi.fn().mockResolvedValue(undefined)
     const doesLocationCodeExist = vi.fn().mockResolvedValue(false)
+    const openConfirmArchiveLocationModal = vi.fn()
 
     render(
       <EditLocationModal
@@ -89,6 +90,7 @@ describe("EditLocationModal", () => {
         updateLocation={updateLocation}
         doesLocationCodeExist={doesLocationCodeExist}
         revalidateTable={revalidateTable}
+        openConfirmArchiveLocationModal={openConfirmArchiveLocationModal}
       />
     )
 
@@ -101,6 +103,7 @@ describe("EditLocationModal", () => {
     const updateLocation = vi.fn().mockResolvedValue(location)
     const revalidateTable = vi.fn().mockResolvedValue(undefined)
     const doesLocationCodeExist = vi.fn().mockResolvedValue(false)
+    const openConfirmArchiveLocationModal = vi.fn()
 
     render(
       <EditLocationModal
@@ -113,6 +116,7 @@ describe("EditLocationModal", () => {
         updateLocation={updateLocation}
         doesLocationCodeExist={doesLocationCodeExist}
         revalidateTable={revalidateTable}
+        openConfirmArchiveLocationModal={openConfirmArchiveLocationModal}
       />
     )
 
@@ -127,6 +131,7 @@ describe("EditLocationModal", () => {
     const updateLocation = vi.fn().mockResolvedValue(location)
     const revalidateTable = vi.fn().mockResolvedValue(undefined)
     const doesLocationCodeExist = vi.fn().mockResolvedValue(false)
+    const openConfirmArchiveLocationModal = vi.fn()
 
     const { queryByText } = render(
       <EditLocationModal
@@ -139,6 +144,7 @@ describe("EditLocationModal", () => {
         updateLocation={updateLocation}
         doesLocationCodeExist={doesLocationCodeExist}
         revalidateTable={revalidateTable}
+        openConfirmArchiveLocationModal={openConfirmArchiveLocationModal}
       />
     )
 
@@ -156,6 +162,7 @@ describe("EditLocationModal", () => {
     const updateLocation = vi.fn().mockResolvedValue(archivedLocation)
     const revalidateTable = vi.fn().mockResolvedValue(undefined)
     const doesLocationCodeExist = vi.fn().mockResolvedValue(false)
+    const openConfirmArchiveLocationModal = vi.fn()
 
     render(
       <EditLocationModal
@@ -168,11 +175,94 @@ describe("EditLocationModal", () => {
         updateLocation={updateLocation}
         doesLocationCodeExist={doesLocationCodeExist}
         revalidateTable={revalidateTable}
+        openConfirmArchiveLocationModal={openConfirmArchiveLocationModal}
       />
     )
 
     await waitFor(() =>
       expect(screen.getByText("This location is archived and cannot be edited.")).toBeTruthy()
     )
+  })
+
+  it("shows Archive button with text 'Archive' for active location", async () => {
+    const onClose = vi.fn()
+    const updateLocation = vi.fn().mockResolvedValue(location)
+    const revalidateTable = vi.fn().mockResolvedValue(undefined)
+    const doesLocationCodeExist = vi.fn().mockResolvedValue(false)
+    const openConfirmArchiveLocationModal = vi.fn()
+
+    render(
+      <EditLocationModal
+        open={true}
+        onClose={onClose}
+        location={location}
+        services={services}
+        counters={counters}
+        staffUsers={staffUsers}
+        updateLocation={updateLocation}
+        doesLocationCodeExist={doesLocationCodeExist}
+        revalidateTable={revalidateTable}
+        openConfirmArchiveLocationModal={openConfirmArchiveLocationModal}
+      />
+    )
+
+    await waitFor(() => expect(screen.getByText("Archive")).toBeTruthy())
+  })
+
+  it("calls openConfirmArchiveLocationModal when Archive button is clicked", async () => {
+    const onClose = vi.fn()
+    const updateLocation = vi.fn().mockResolvedValue(location)
+    const revalidateTable = vi.fn().mockResolvedValue(undefined)
+    const doesLocationCodeExist = vi.fn().mockResolvedValue(false)
+    const openConfirmArchiveLocationModal = vi.fn()
+
+    render(
+      <EditLocationModal
+        open={true}
+        onClose={onClose}
+        location={location}
+        services={services}
+        counters={counters}
+        staffUsers={staffUsers}
+        updateLocation={updateLocation}
+        doesLocationCodeExist={doesLocationCodeExist}
+        revalidateTable={revalidateTable}
+        openConfirmArchiveLocationModal={openConfirmArchiveLocationModal}
+      />
+    )
+
+    await waitFor(() => expect(screen.getByText("Archive")).toBeTruthy())
+    fireEvent.click(screen.getByText("Archive"))
+    expect(openConfirmArchiveLocationModal).toHaveBeenCalled()
+  })
+
+  it("shows Unarchive button for archived location", async () => {
+    const archivedLocation = {
+      ...location,
+      deletedAt: new Date(),
+    } as LocationWithRelations
+
+    const onClose = vi.fn()
+    const updateLocation = vi.fn().mockResolvedValue(archivedLocation)
+    const revalidateTable = vi.fn().mockResolvedValue(undefined)
+    const doesLocationCodeExist = vi.fn().mockResolvedValue(false)
+    const openConfirmArchiveLocationModal = vi.fn()
+
+    render(
+      <EditLocationModal
+        open={true}
+        onClose={onClose}
+        location={archivedLocation}
+        services={services}
+        counters={counters}
+        staffUsers={staffUsers}
+        updateLocation={updateLocation}
+        doesLocationCodeExist={doesLocationCodeExist}
+        revalidateTable={revalidateTable}
+        openConfirmArchiveLocationModal={openConfirmArchiveLocationModal}
+      />
+    )
+
+    await waitFor(() => expect(screen.getByText("Unarchive")).toBeTruthy())
   })
 })

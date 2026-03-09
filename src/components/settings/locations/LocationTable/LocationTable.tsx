@@ -7,6 +7,7 @@ import type { Counter, StaffUser } from "@/generated/prisma/client"
 import { useDialog } from "@/hooks/useDialog"
 import type { LocationWithRelations } from "@/lib/prisma/location/types"
 import type { ServiceWithRelations } from "@/lib/prisma/service/types"
+import { ConfirmArchiveLocationModal } from "../ConfirmArchiveLocationModal"
 import { CreateLocationModal } from "../CreateLocationModal"
 import { EditLocationModal } from "../EditLocationModal"
 import { columns } from "./columns"
@@ -46,6 +47,11 @@ export const LocationTable = ({
     open: createLocationModalOpen,
     openDialog: openCreateLocationModal,
     closeDialog: closeCreateLocationModal,
+  } = useDialog()
+  const {
+    open: confirmArchiveLocationModalOpen,
+    openDialog: openConfirmArchiveLocationModal,
+    closeDialog: closeConfirmArchiveLocationModal,
   } = useDialog()
 
   const [showArchived, setShowArchived] = useState<boolean>(false)
@@ -94,6 +100,7 @@ export const LocationTable = ({
         updateLocation={updateLocation}
         doesLocationCodeExist={doesLocationCodeExist}
         revalidateTable={revalidateTable}
+        openConfirmArchiveLocationModal={openConfirmArchiveLocationModal}
       />
       <CreateLocationModal
         open={createLocationModalOpen}
@@ -103,6 +110,13 @@ export const LocationTable = ({
         staffUsers={staffUsers}
         insertLocation={insertLocation}
         doesLocationCodeExist={doesLocationCodeExist}
+        revalidateTable={revalidateTable}
+      />
+      <ConfirmArchiveLocationModal
+        open={confirmArchiveLocationModalOpen}
+        onClose={closeConfirmArchiveLocationModal}
+        location={selectedLocation}
+        updateLocation={updateLocation}
         revalidateTable={revalidateTable}
       />
     </>
