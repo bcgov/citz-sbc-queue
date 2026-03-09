@@ -131,6 +131,7 @@ export const LocationForm = ({
           <AddressAutocomplete
             id="location-street-address"
             label="Street Address"
+            required
             value={location.streetAddress || ""}
             onSelect={(suggestion: AddressSuggestion) => {
               // Update the form with the selected address information
@@ -156,7 +157,6 @@ export const LocationForm = ({
             value={location.latitude?.toString() || ""}
             onChange={() => {}}
             disabled
-            className="flex-1"
           />
           <TextField
             id="location-longitude"
@@ -164,7 +164,6 @@ export const LocationForm = ({
             value={location.longitude?.toString() || ""}
             onChange={() => {}}
             disabled
-            className="flex-1"
           />
           <SelectInput
             id="location-timezone"

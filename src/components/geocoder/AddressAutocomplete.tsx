@@ -87,7 +87,7 @@ export const AddressAutocomplete = ({
     <div className="relative">
       <label htmlFor={id} className="block text-xs font-medium text-typography-primary">
         {label}
-        {required && <span className="ml-xs text-error">*</span>}
+        {required && <span className="ml-xs text-red-600">*</span>}
       </label>
 
       <div className="relative mt-xs">
