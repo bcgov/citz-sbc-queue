@@ -1,7 +1,9 @@
+import "@testing-library/jest-dom"
 import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import * as useGeocodeAutocompleteModule from "@/hooks"
+import * as useAuthModule from "@/hooks/useAuth"
 import { AddressAutocomplete } from "./AddressAutocomplete"
 
 describe("AddressAutocomplete", () => {
@@ -32,6 +34,16 @@ describe("AddressAutocomplete", () => {
     vi.clearAllMocks()
     mockOnSelect.mockClear()
     mockOnChange.mockClear()
+
+    // Mock useAuth hook
+    vi.spyOn(useAuthModule, "useAuth").mockReturnValue({
+      authorizationHeader: "Bearer test-token",
+      user: null,
+      role: null,
+      isAuthenticated: true,
+      logout: vi.fn(),
+      // biome-ignore lint/suspicious/noExplicitAny: <>
+    } as any)
   })
 
   it("renders input with label", () => {
@@ -232,7 +244,7 @@ describe("AddressAutocomplete", () => {
     expect(screen.getByText("Custom error")).toBeInTheDocument()
   })
 
-  it("shows 'No addresses found' when no suggestions and valid input", () => {
+  it("shows 'No addresses found' when no suggestions and valid input", async () => {
     const mockSearch = vi.fn()
     vi.spyOn(useGeocodeAutocompleteModule, "useGeocodeAutocomplete").mockReturnValue({
       suggestions: [],
@@ -246,11 +258,12 @@ describe("AddressAutocomplete", () => {
       <AddressAutocomplete id="address-input" label="Address" value="" onSelect={mockOnSelect} />
     )
 
-    const input = screen.getByRole("combobox") as HTMLInputElement
-    fireEvent.focus(input)
-    fireEvent.change(input, { target: { value: "xyz123" } })
+    const input = screen.getByRole("combobox")
+    await userEvent.type(input, "xyz123")
 
-    expect(screen.getByText("No addresses found")).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText("No addresses found")).toBeInTheDocument()
+    })
   })
 
   it("disables input when disabled prop is true", () => {

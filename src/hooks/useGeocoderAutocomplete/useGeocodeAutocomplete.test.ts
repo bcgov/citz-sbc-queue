@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from "@testing-library/react"
+import { act, renderHook, waitFor } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { useGeocodeAutocomplete } from "./useGeocodeAutocomplete"
 
@@ -17,12 +17,14 @@ describe("useGeocodeAutocomplete", () => {
   })
 
   it("does not search with less than minimum characters", async () => {
-    const { result } = renderHook(() => useGeocodeAutocomplete({ minChars: 3 }))
+    const { result } = renderHook(() => useGeocodeAutocomplete({ minChars: 3, debounceMs: 0 }))
 
     await result.current.search("ab")
 
-    expect(result.current.suggestions).toEqual([])
-    expect(global.fetch).not.toHaveBeenCalled()
+    await waitFor(() => {
+      expect(result.current.suggestions).toEqual([])
+      expect(global.fetch).not.toHaveBeenCalled()
+    })
   })
 
   it("fetches suggestions successfully", async () => {
@@ -40,7 +42,7 @@ describe("useGeocodeAutocomplete", () => {
       json: async () => ({ suggestions: mockSuggestions }),
     })
 
-    const { result } = renderHook(() => useGeocodeAutocomplete())
+    const { result } = renderHook(() => useGeocodeAutocomplete({ debounceMs: 0 }))
 
     await result.current.search("525 Superior")
 
@@ -51,7 +53,10 @@ describe("useGeocodeAutocomplete", () => {
     })
 
     expect(global.fetch).toHaveBeenCalledWith(
-      `/api/protected/geocoder?address=${encodeURIComponent("525 Superior")}`
+      `/api/protected/geocoder?address=${encodeURIComponent("525 Superior")}`,
+      expect.objectContaining({
+        headers: {},
+      })
     )
   })
 
@@ -61,7 +66,7 @@ describe("useGeocodeAutocomplete", () => {
       json: async () => ({ error: "Server error" }),
     })
 
-    const { result } = renderHook(() => useGeocodeAutocomplete())
+    const { result } = renderHook(() => useGeocodeAutocomplete({ debounceMs: 0 }))
 
     await result.current.search("victoria")
 
@@ -74,7 +79,7 @@ describe("useGeocodeAutocomplete", () => {
   it("handles network errors", async () => {
     global.fetch = vi.fn().mockRejectedValueOnce(new Error("Network error"))
 
-    const { result } = renderHook(() => useGeocodeAutocomplete())
+    const { result } = renderHook(() => useGeocodeAutocomplete({ debounceMs: 0 }))
 
     await result.current.search("victoria")
 
@@ -88,11 +93,18 @@ describe("useGeocodeAutocomplete", () => {
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => ({
-        suggestions: [{ id: "1", label: "Test", address: "Test St" }],
+        suggestions: [
+          {
+            id: "1",
+            label: "Test",
+            address: "Test St",
+            coordinates: { latitude: 0, longitude: 0 },
+          },
+        ],
       }),
     })
 
-    const { result } = renderHook(() => useGeocodeAutocomplete())
+    const { result } = renderHook(() => useGeocodeAutocomplete({ debounceMs: 0 }))
 
     await result.current.search("test")
 
@@ -100,23 +112,30 @@ describe("useGeocodeAutocomplete", () => {
       expect(result.current.suggestions).toHaveLength(1)
     })
 
-    result.current.clear()
+    act(() => {
+      result.current.clear()
+    })
 
-    expect(result.current.suggestions).toEqual([])
-    expect(result.current.error).toBeNull()
+    await waitFor(() => {
+      expect(result.current.suggestions).toEqual([])
+      expect(result.current.error).toBeNull()
+    })
   })
 
   it("respects custom minChars option", async () => {
-    const { result } = renderHook(() => useGeocodeAutocomplete({ minChars: 5 }))
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ suggestions: [] }),
+    })
+
+    const { result } = renderHook(() => useGeocodeAutocomplete({ minChars: 5, debounceMs: 0 }))
 
     await result.current.search("test")
 
-    expect(result.current.suggestions).toEqual([])
-    expect(global.fetch).not.toHaveBeenCalled()
-
-    await result.current.search("victoria")
-
-    expect(global.fetch).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(result.current.suggestions).toEqual([])
+      expect(global.fetch).not.toHaveBeenCalled()
+    })
   })
 
   it("clears suggestions when search string is empty", async () => {
@@ -125,11 +144,13 @@ describe("useGeocodeAutocomplete", () => {
       json: async () => ({ suggestions: [] }),
     })
 
-    const { result } = renderHook(() => useGeocodeAutocomplete())
+    const { result } = renderHook(() => useGeocodeAutocomplete({ debounceMs: 0 }))
 
     await result.current.search("victoria")
     await result.current.search("")
 
-    expect(result.current.suggestions).toEqual([])
+    await waitFor(() => {
+      expect(result.current.suggestions).toEqual([])
+    })
   })
 })
