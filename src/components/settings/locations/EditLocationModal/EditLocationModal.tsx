@@ -28,6 +28,7 @@ type EditLocationModalProps = {
   ) => Promise<LocationWithRelations | null>
   doesLocationCodeExist: (code: string) => Promise<boolean>
   revalidateTable: () => Promise<void>
+  openConfirmArchiveLocationModal: () => void
 }
 
 export const EditLocationModal = ({
@@ -40,6 +41,7 @@ export const EditLocationModal = ({
   updateLocation,
   doesLocationCodeExist,
   revalidateTable,
+  openConfirmArchiveLocationModal,
 }: EditLocationModalProps) => {
   const [isSaving, setIsSaving] = useState(false)
   const [formData, setFormData] = useState<Partial<LocationWithRelations> | null>(null)
@@ -140,6 +142,11 @@ export const EditLocationModal = ({
     }
   }
 
+  const handleOpenArchive = () => {
+    openConfirmArchiveLocationModal()
+    onClose()
+  }
+
   return (
     <Modal open={open} onClose={onClose} size="xl">
       <DialogHeader trailing={<CloseButton onClick={onClose} />}>
@@ -173,6 +180,9 @@ export const EditLocationModal = ({
       <DialogActions>
         <button type="button" className="tertiary" onClick={onClose}>
           Cancel
+        </button>
+        <button type="button" className="secondary danger" onClick={handleOpenArchive}>
+          {isArchived ? "Unarchive" : "Archive"}
         </button>
         <button
           type="button"
