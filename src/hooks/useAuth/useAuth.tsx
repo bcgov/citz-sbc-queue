@@ -32,6 +32,7 @@ import { decodeJWTBrowser } from "@/utils/auth/jwt/decodeJWT.browser"
  *   family_name?: string | undefined,
  *   given_name?: string | undefined,
  *   idir_username?: string | undefined,
+ *   authorizationHeader: string | null, // "Bearer <accessToken>" or null if not authenticated
  * }
  */
 export const useAuth = () => {
@@ -57,6 +58,7 @@ export const useAuth = () => {
   }
 
   return {
+    authorizationHeader: session ? `Bearer ${session.accessToken}` : null,
     isAuthenticated: !!session,
     role: (decodedAccessToken?.client_roles?.[0] ?? null) as Role | null,
     hasRole,
@@ -81,6 +83,7 @@ export type UseAuthReturn = {
   idir_username?: string | undefined
   idir_user_guid?: string | undefined
   sub?: string | undefined
+  authorizationHeader: string | null
 }
 
 // Annotate export with the explicit return type for consumers/IDE hints
