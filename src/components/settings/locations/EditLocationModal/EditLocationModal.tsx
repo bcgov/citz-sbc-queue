@@ -65,7 +65,19 @@ export const EditLocationModal = ({
       ),
     streetAddress: z.string(),
     mailAddress: z.string().nullable(),
-    phoneNumber: z.string().nullable(),
+    phoneNumber: z
+      .string()
+      .nullable()
+      .refine(
+        (phone) => {
+          // Allow null or empty string (optional field)
+          if (!phone || phone.trim() === "") return true
+          // Must contain at least 10 digits for a valid phone number
+          const digits = phone.replace(/\D/g, "")
+          return digits.length >= 10
+        },
+        { message: "Phone number must contain at least 10 digits" }
+      ),
     timezone: z.string(),
     latitude: z.number(),
     longitude: z.number(),
