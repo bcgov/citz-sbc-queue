@@ -44,6 +44,7 @@ export const EditLocationModal = ({
   openConfirmArchiveLocationModal,
 }: EditLocationModalProps) => {
   const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState<Partial<LocationWithRelations> | null>(null)
   const [previousLocation, setPreviousLocation] = useState<Partial<LocationWithRelations> | null>(
     null
@@ -134,11 +135,20 @@ export const EditLocationModal = ({
 
   const handleSave = async () => {
     if (formData && !isReadonly) {
-      setIsSaving(true)
-      await updateLocation(formData, previousLocation)
-      await revalidateTable()
-      onClose()
-      setIsSaving(false)
+      try {
+        setIsSaving(true)
+        await updateLocation(formData, previousLocation)
+        await revalidateTable()
+        onClose()
+        setIsSaving(false)
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          setError(e.message)
+        } else {
+          setError("An unknown error occurred")
+        }
+        setIsSaving(false)
+      }
     }
   }
 
@@ -162,6 +172,12 @@ export const EditLocationModal = ({
                   This location is archived and cannot be edited.
                 </p>
               )}
+            </div>
+          )}
+
+          {error && (
+            <div className="flex flex-col gap-1 rounded-md border-l-4 border-l-red-600 bg-red-50 p-4">
+              <p className="text-sm font-medium text-red-800">{error}</p>
             </div>
           )}
 

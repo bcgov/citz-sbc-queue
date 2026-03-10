@@ -39,6 +39,7 @@ export const EditStaffUserModal = ({
   openConfirmArchiveUserModal,
 }: EditStaffUserModalProps) => {
   const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState<StaffUser | null>(null)
   const [previousUser, setPreviousUser] = useState<StaffUser | null>(null)
   const editableRoles = useEditableRoles()
@@ -61,11 +62,20 @@ export const EditStaffUserModal = ({
 
   const handleSave = async () => {
     if (formData && !isReadonly) {
-      setIsSaving(true)
-      await updateStaffUser(formData, previousUser, editableRoles)
-      await revalidateTable()
-      onClose()
-      setIsSaving(false)
+      try {
+        setIsSaving(true)
+        await updateStaffUser(formData, previousUser, editableRoles)
+        await revalidateTable()
+        onClose()
+        setIsSaving(false)
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          setError(e.message)
+        } else {
+          setError("An unknown error occurred")
+        }
+        setIsSaving(false)
+      }
     }
   }
 
@@ -94,6 +104,12 @@ export const EditStaffUserModal = ({
                   This user is archived and cannot be edited.
                 </p>
               )}
+            </div>
+          )}
+
+          {error && (
+            <div className="flex flex-col gap-1 rounded-md border-l-4 border-l-red-600 bg-red-50 p-4">
+              <p className="text-sm font-medium text-red-800">{error}</p>
             </div>
           )}
 
