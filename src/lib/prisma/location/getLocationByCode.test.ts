@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { prisma } from "@/utils/db/prisma"
-import { getLocationById } from "./getLocationById"
+import { getLocationByCode } from "./getLocationByCode"
 import type { LocationWithRelations } from "./types"
 
 vi.mock("@/utils/db/prisma", () => ({
@@ -11,14 +11,14 @@ vi.mock("@/utils/db/prisma", () => ({
   },
 }))
 
-describe("getLocationById", () => {
+describe("getLocationByCode", () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   it("returns a location when found", async () => {
     const mockLocation = {
-      id: "loc1",
+      code: "loc1",
       name: "Office 1",
       timezone: "UTC",
       streetAddress: "123 Test St",
@@ -31,11 +31,11 @@ describe("getLocationById", () => {
       mockLocation as LocationWithRelations
     )
 
-    const result = await getLocationById("loc1")
+    const result = await getLocationByCode("loc1")
 
     expect(result).toEqual(mockLocation)
     expect(prisma.location.findUnique).toHaveBeenCalledWith({
-      where: { id: "loc1" },
+      where: { code: "loc1" },
       include: { services: true, counters: true, staffUsers: true },
     })
   })
@@ -43,11 +43,11 @@ describe("getLocationById", () => {
   it("returns null when location is not found", async () => {
     vi.mocked(prisma.location.findUnique).mockResolvedValueOnce(null)
 
-    const result = await getLocationById("nonexistent")
+    const result = await getLocationByCode("nonexistent")
 
     expect(result).toBeNull()
     expect(prisma.location.findUnique).toHaveBeenCalledWith({
-      where: { id: "nonexistent" },
+      where: { code: "nonexistent" },
       include: { services: true, counters: true, staffUsers: true },
     })
   })

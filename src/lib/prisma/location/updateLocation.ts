@@ -6,13 +6,19 @@ import type { LocationWithRelations } from "./types"
 /**
  * Function to update a location in the database.
  * @param location Data to update the location with
+ * @param prevLocation Previous data of the location
  * @returns Promise resolving to the updated LocationWithRelations object or null if not found
  */
 export const updateLocation = async (
-  location: Partial<LocationWithRelations>
+  location: Partial<LocationWithRelations>,
+  prevLocation: Partial<LocationWithRelations>
 ): Promise<LocationWithRelations | null> => {
-  const { id, services, counters, staffUsers, ...data } = location
-  if (!id) return null
+  const { code, services, counters, staffUsers, ...data } = location
+  if (!code && !prevLocation.code) return null
+
+  // When changing the primary key `code`, we must locate the row by the previous code.
+  // Use previous code if available, otherwise use the provided code.
+  const codeToUpdate = prevLocation.code ?? code
 
   // Update services if provided, otherwise keep existing relations
   const serviceData = services
@@ -40,8 +46,9 @@ export const updateLocation = async (
     : {}
 
   const newLocation = await prisma.location.update({
-    where: { id },
+    where: { code: codeToUpdate },
     data: {
+      ...(code && code !== codeToUpdate ? { code } : {}),
       ...data,
       ...serviceData,
       ...counterData,

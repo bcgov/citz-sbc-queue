@@ -11,7 +11,7 @@ import { columns } from "./columns"
 
 export type UserTableProps = {
   users: StaffUser[]
-  offices: Location[]
+  locations: Location[]
   updateStaffUser: (
     user: Partial<StaffUser>,
     prevUser: Partial<StaffUser>,
@@ -22,7 +22,7 @@ export type UserTableProps = {
 
 export const StaffUserTable = ({
   users,
-  offices,
+  locations,
   updateStaffUser,
   revalidateTable,
 }: UserTableProps) => {
@@ -72,7 +72,7 @@ export const StaffUserTable = ({
         open={editUserModalOpen}
         onClose={closeEditUserModal}
         user={selectedUser}
-        offices={offices}
+        locations={locations}
         updateStaffUser={updateStaffUser}
         revalidateTable={revalidateTable}
         openConfirmArchiveUserModal={openConfirmArchiveUserModal}

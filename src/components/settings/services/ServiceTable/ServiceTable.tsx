@@ -61,6 +61,7 @@ export const ServiceTable = ({
   const servicesToShow = showArchived
     ? services
     : services.filter((service) => service.deletedAt === null)
+
   return (
     <>
       <div className="flex items-center justify-end mb-3 gap-4">

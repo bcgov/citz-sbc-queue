@@ -19,7 +19,7 @@ type EditStaffUserModalProps = {
   open: boolean
   onClose: () => void
   user: StaffUser | null
-  offices: Location[]
+  locations: Location[]
   updateStaffUser: (
     user: Partial<StaffUser>,
     prevUser: Partial<StaffUser>,
@@ -33,7 +33,7 @@ export const EditStaffUserModal = ({
   open,
   onClose,
   user,
-  offices,
+  locations,
   updateStaffUser,
   revalidateTable,
   openConfirmArchiveUserModal,
@@ -102,7 +102,7 @@ export const EditStaffUserModal = ({
           <div className="grid grid-cols-2 gap-6">
             <RoleAndAssignmentSection
               user={formData}
-              offices={offices}
+              locations={locations}
               setFormData={setFormData}
               availableRoles={editableRoles}
               disabled={isReadonly}
