@@ -22,7 +22,7 @@ export const insertService = async (
   const data: Prisma.ServiceCreateInput = {
     ...(rest as Prisma.ServiceCreateInput),
     ...(locations && locations.length > 0
-      ? { locations: { connect: locations.map((l) => ({ id: l.id })) } }
+      ? { locations: { connect: locations.map((l) => ({ code: l.code })) } }
       : {}),
     ...(categories && categories.length > 0
       ? { categories: { connect: categories.map((c) => ({ id: c.id })) } }
