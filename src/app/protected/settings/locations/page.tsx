@@ -3,6 +3,7 @@ import { LocationTable } from "@/components/settings/locations/LocationTable"
 import type { Counter } from "@/generated/prisma/client"
 import { doesLocationCodeExist } from "@/lib/prisma/location/doesLocationCodeExist"
 import { getAllLocations } from "@/lib/prisma/location/getAllLocations"
+import { insertLocation } from "@/lib/prisma/location/insertLocation"
 import { updateLocation } from "@/lib/prisma/location/updateLocation"
 import { getAllServices } from "@/lib/prisma/service/getAllServices"
 import { getAllStaffUsers } from "@/lib/prisma/staff_user/getAllStaffUsers"
@@ -30,6 +31,7 @@ export default async function Page() {
         counters={counters}
         staffUsers={staffUsers}
         updateLocation={updateLocation}
+        insertLocation={insertLocation}
         doesLocationCodeExist={doesLocationCodeExist}
         revalidateTable={revalidateTable}
       />

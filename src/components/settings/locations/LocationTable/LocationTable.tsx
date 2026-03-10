@@ -7,6 +7,7 @@ import type { Counter, StaffUser } from "@/generated/prisma/client"
 import { useDialog } from "@/hooks/useDialog"
 import type { LocationWithRelations } from "@/lib/prisma/location/types"
 import type { ServiceWithRelations } from "@/lib/prisma/service/types"
+import { CreateLocationModal } from "../CreateLocationModal"
 import { EditLocationModal } from "../EditLocationModal"
 import { columns } from "./columns"
 
@@ -19,6 +20,9 @@ export type LocationTableProps = {
     location: Partial<LocationWithRelations>,
     prevLocation: Partial<LocationWithRelations>
   ) => Promise<LocationWithRelations | null>
+  insertLocation: (
+    location: Partial<LocationWithRelations>
+  ) => Promise<LocationWithRelations | null>
   doesLocationCodeExist: (code: string) => Promise<boolean>
   revalidateTable: () => Promise<void>
 }
@@ -29,6 +33,7 @@ export const LocationTable = ({
   counters,
   staffUsers,
   updateLocation,
+  insertLocation,
   doesLocationCodeExist,
   revalidateTable,
 }: LocationTableProps) => {
@@ -36,6 +41,11 @@ export const LocationTable = ({
     open: editLocationModalOpen,
     openDialog: openEditLocationModal,
     closeDialog: closeEditLocationModal,
+  } = useDialog()
+  const {
+    open: createLocationModalOpen,
+    openDialog: openCreateLocationModal,
+    closeDialog: closeCreateLocationModal,
   } = useDialog()
 
   const [showArchived, setShowArchived] = useState<boolean>(false)
@@ -55,7 +65,7 @@ export const LocationTable = ({
       <div className="flex items-center justify-end mb-3 gap-4">
         <h3 className="self-center text-sm font-medium text-gray-700">Show Archived</h3>
         <Switch checked={showArchived} onChange={setShowArchived} />
-        <button type="button" className="primary">
+        <button type="button" className="primary" onClick={openCreateLocationModal}>
           + Create
         </button>
       </div>
@@ -82,6 +92,16 @@ export const LocationTable = ({
         counters={counters}
         staffUsers={staffUsers}
         updateLocation={updateLocation}
+        doesLocationCodeExist={doesLocationCodeExist}
+        revalidateTable={revalidateTable}
+      />
+      <CreateLocationModal
+        open={createLocationModalOpen}
+        onClose={closeCreateLocationModal}
+        services={services}
+        counters={counters}
+        staffUsers={staffUsers}
+        insertLocation={insertLocation}
         doesLocationCodeExist={doesLocationCodeExist}
         revalidateTable={revalidateTable}
       />
