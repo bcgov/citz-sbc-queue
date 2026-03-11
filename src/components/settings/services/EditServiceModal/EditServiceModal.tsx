@@ -42,6 +42,7 @@ export const EditServiceModal = ({
   openConfirmArchiveServiceModal,
 }: EditServiceModalProps) => {
   const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState<Partial<ServiceWithRelations> | null>(null)
   const [previousService, setPreviousService] = useState<Partial<ServiceWithRelations> | null>(null)
   const [isFormValidState, setIsFormValidState] = useState<boolean>(false)
@@ -115,11 +116,20 @@ export const EditServiceModal = ({
 
   const handleSave = async () => {
     if (formData && !isReadonly) {
-      setIsSaving(true)
-      await updateService(formData, previousService)
-      await revalidateTable()
-      onClose()
-      setIsSaving(false)
+      try {
+        setIsSaving(true)
+        await updateService(formData, previousService)
+        await revalidateTable()
+        onClose()
+        setIsSaving(false)
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          setError(e.message)
+        } else {
+          setError("An unknown error occurred")
+        }
+        setIsSaving(false)
+      }
     }
   }
 
@@ -143,6 +153,12 @@ export const EditServiceModal = ({
                   This service is archived and cannot be edited.
                 </p>
               )}
+            </div>
+          )}
+
+          {error && (
+            <div className="flex flex-col gap-1 rounded-md border-l-4 border-l-red-600 bg-red-50 p-4">
+              <p className="text-sm font-medium text-red-800">{error}</p>
             </div>
           )}
 
