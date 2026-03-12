@@ -80,19 +80,33 @@ Use `getAuthContext()` to extract authentication information:
 import { getAuthContext } from "@/utils/auth/getAuthContext"
 
 export async function GET(request: NextRequest) {
-  const { user, token, roles } = getAuthContext(request)
+  const { user, token, roles } = getAuthContext(request.headers) ?? {}
 
   // Use user information for business logic
-  console.log(`User: ${user.display_name}, Roles: ${roles}`)
+  console.log(`User: ${user?.display_name}, Roles: ${roles}`)
 }
 ```
 
-### In Frontend Pages
+### In Server Components & Pages
 
-Authentication is handled automatically by the middleware:
-- **Protected pages**: Users are redirected to home page if not authenticated
-- **Public pages**: No authentication required
-- **Access tokens**: Automatically managed via HTTP-only cookies
+Use `getAuthContext()` with `headers()` from Next.js:
+
+```typescript
+import { headers } from "next/headers"
+import { getAuthContext } from "@/utils/auth/getAuthContext"
+
+export default async function Page() {
+  const headersList = await headers()
+  const { user = { sub: "" } } = getAuthContext(headersList) ?? {}
+
+  // Use user.sub to fetch user-specific data
+  const currentUser = await getStaffUserBySub(user.sub)
+
+  return <div>{currentUser?.displayName}</div>
+}
+```
+
+**Note**: `getAuthContext` returns `null` if authentication fails, so use nullish coalescing (`??`) to provide fallback values.
 
 ## Cookie Configuration
 

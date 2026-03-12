@@ -1,4 +1,5 @@
 enum Role {
+  Authenticated
   CSR
   SCSR
   SDM

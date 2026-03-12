@@ -122,6 +122,7 @@ export const EditServiceModal = ({
         await revalidateTable()
         onClose()
         setIsSaving(false)
+        window.location.href = "/protected/settings/services"
       } catch (e: unknown) {
         if (e instanceof Error) {
           setError(e.message)

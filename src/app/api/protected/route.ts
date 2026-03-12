@@ -4,7 +4,7 @@ import { getAuthContext } from "@/utils/auth/getAuthContext"
 
 export async function GET(request: NextRequest) {
   try {
-    const authContext = getAuthContext(request)
+    const authContext = getAuthContext(request.headers)
 
     if (!authContext) {
       return NextResponse.json(

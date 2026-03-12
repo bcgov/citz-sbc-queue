@@ -109,8 +109,13 @@ export async function frontendAuthMiddleware(request: NextRequest): Promise<Next
       return NextResponse.redirect(new URL("/", request.url))
     }
 
-    // Token is valid, continue with the request
+    // Token is valid, continue with the request and add user info to headers
     const response = NextResponse.next()
+
+    // Add token and user information to headers so pages can access them
+    response.headers.set("x-user-token", accessToken)
+    response.headers.set("x-user-info", JSON.stringify(validationResult.user))
+    response.headers.set("x-user-roles", JSON.stringify(validationResult.roles || []))
 
     return response
   } catch (error) {

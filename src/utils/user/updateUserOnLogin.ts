@@ -13,7 +13,7 @@ import { assignNewRoleFromCSR } from "./assignNewRoleFromCSR"
 export const updateUserOnLogin = async (accessToken: string) => {
   const jwt = decodeJWT(accessToken)
   const { sub, idir_user_guid, idir_username, display_name, client_roles } = jwt
-  const userRole = (client_roles?.length ? client_roles[0] : "CSR") as Role
+  const userRole = (client_roles?.length ? client_roles[0] : "Authenticated") as Role
 
   // Check if user exists in the database
   const staffUser = await getStaffUserBySub(sub)

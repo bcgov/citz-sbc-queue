@@ -1,4 +1,3 @@
-import type { NextRequest } from "next/server"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getAuthContext } from "./getAuthContext"
 import type { SSOIdirUser } from "./types"
@@ -40,26 +39,20 @@ describe("getAuthContext", () => {
 
   const mockRoles = ["admin", "user"]
 
-  const createMockRequest = (headers: Record<string, string | null>): NextRequest => {
+  const createMockHeaders = (headers: Record<string, string | null>): Headers => {
     const headerEntries = Object.entries(headers).filter(([, value]) => value !== null)
-    const mockHeaders = new Headers(headerEntries as [string, string][])
-
-    return {
-      headers: {
-        get: (name: string) => mockHeaders.get(name),
-      },
-    } as NextRequest
+    return new Headers(headerEntries as [string, string][])
   }
 
   describe("when all required headers are present and valid", () => {
     it("should return auth context with user, token, and roles", () => {
-      const request = createMockRequest({
+      const headers = createMockHeaders({
         "x-user-token": "valid-token",
         "x-user-info": JSON.stringify(mockUser),
         "x-user-roles": JSON.stringify(mockRoles),
       })
 
-      const result = getAuthContext(request)
+      const result = getAuthContext(headers)
 
       expect(result).toEqual({
         user: mockUser,
@@ -69,13 +62,13 @@ describe("getAuthContext", () => {
     })
 
     it("should return auth context with empty roles when x-user-roles header is missing", () => {
-      const request = createMockRequest({
+      const headers = createMockHeaders({
         "x-user-token": "valid-token",
         "x-user-info": JSON.stringify(mockUser),
         "x-user-roles": null,
       })
 
-      const result = getAuthContext(request)
+      const result = getAuthContext(headers)
 
       expect(result).toEqual({
         user: mockUser,
@@ -87,37 +80,37 @@ describe("getAuthContext", () => {
 
   describe("when required headers are missing", () => {
     it("should return null when x-user-token header is missing", () => {
-      const request = createMockRequest({
+      const headers = createMockHeaders({
         "x-user-token": null,
         "x-user-info": JSON.stringify(mockUser),
         "x-user-roles": JSON.stringify(mockRoles),
       })
 
-      const result = getAuthContext(request)
+      const result = getAuthContext(headers)
 
       expect(result).toBeNull()
     })
 
     it("should return null when x-user-info header is missing", () => {
-      const request = createMockRequest({
+      const headers = createMockHeaders({
         "x-user-token": "valid-token",
         "x-user-info": null,
         "x-user-roles": JSON.stringify(mockRoles),
       })
 
-      const result = getAuthContext(request)
+      const result = getAuthContext(headers)
 
       expect(result).toBeNull()
     })
 
     it("should return null when both required headers are missing", () => {
-      const request = createMockRequest({
+      const headers = createMockHeaders({
         "x-user-token": null,
         "x-user-info": null,
         "x-user-roles": JSON.stringify(mockRoles),
       })
 
-      const result = getAuthContext(request)
+      const result = getAuthContext(headers)
 
       expect(result).toBeNull()
     })
@@ -125,13 +118,13 @@ describe("getAuthContext", () => {
 
   describe("when headers contain invalid JSON", () => {
     it("should return null and log error when x-user-info contains invalid JSON", () => {
-      const request = createMockRequest({
+      const headers = createMockHeaders({
         "x-user-token": "valid-token",
         "x-user-info": "invalid-json",
         "x-user-roles": JSON.stringify(mockRoles),
       })
 
-      const result = getAuthContext(request)
+      const result = getAuthContext(headers)
 
       expect(result).toBeNull()
       expect(mockConsoleError).toHaveBeenCalledWith(
@@ -141,13 +134,13 @@ describe("getAuthContext", () => {
     })
 
     it("should return null and log error when x-user-roles contains invalid JSON", () => {
-      const request = createMockRequest({
+      const headers = createMockHeaders({
         "x-user-token": "valid-token",
         "x-user-info": JSON.stringify(mockUser),
         "x-user-roles": "invalid-json",
       })
 
-      const result = getAuthContext(request)
+      const result = getAuthContext(headers)
 
       expect(result).toBeNull()
       expect(mockConsoleError).toHaveBeenCalledWith(
@@ -159,25 +152,25 @@ describe("getAuthContext", () => {
 
   describe("edge cases", () => {
     it("should handle empty string headers", () => {
-      const request = createMockRequest({
+      const headers = createMockHeaders({
         "x-user-token": "",
         "x-user-info": "",
         "x-user-roles": "",
       })
 
-      const result = getAuthContext(request)
+      const result = getAuthContext(headers)
 
       expect(result).toBeNull()
     })
 
     it("should handle valid empty arrays for roles", () => {
-      const request = createMockRequest({
+      const headers = createMockHeaders({
         "x-user-token": "valid-token",
         "x-user-info": JSON.stringify(mockUser),
         "x-user-roles": JSON.stringify([]),
       })
 
-      const result = getAuthContext(request)
+      const result = getAuthContext(headers)
 
       expect(result).toEqual({
         user: mockUser,
@@ -187,13 +180,13 @@ describe("getAuthContext", () => {
     })
 
     it("should handle valid JSON null for roles", () => {
-      const request = createMockRequest({
+      const headers = createMockHeaders({
         "x-user-token": "valid-token",
         "x-user-info": JSON.stringify(mockUser),
         "x-user-roles": "null",
       })
 
-      const result = getAuthContext(request)
+      const result = getAuthContext(headers)
 
       expect(result).toEqual({
         user: mockUser,
