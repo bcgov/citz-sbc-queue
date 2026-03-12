@@ -60,7 +60,7 @@ export const ConfirmArchiveServiceCategoryModal = ({
         if (!isArchived && hasServices) {
           if (serviceAction === "remove") {
             // Detach services
-            await updateServiceCategory({ deletedAt: new Date(), services: [] })
+            await updateServiceCategory({ id: formData?.id, deletedAt: new Date(), services: [] })
           } else if (serviceAction === "reassign" && newCategoryId) {
             // Reassign services to the new category
             const newCategory = serviceCategories.find((c) => c.id === newCategoryId)
@@ -78,10 +78,17 @@ export const ConfirmArchiveServiceCategoryModal = ({
               await updateServiceCategory({ id: newCategoryId, services: uniqueServices })
             }
             // Now archive the current category and detach its services
-            await updateServiceCategory({ deletedAt: new Date(), services: [] })
+            await updateServiceCategory({
+              id: formData?.id,
+              deletedAt: new Date(),
+              services: [],
+            })
           }
         } else {
-          await updateServiceCategory({ deletedAt: isArchived ? null : new Date() })
+          await updateServiceCategory({
+            id: formData?.id,
+            deletedAt: isArchived ? null : new Date(),
+          })
         }
 
         await revalidateTable()

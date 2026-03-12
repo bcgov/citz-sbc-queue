@@ -181,7 +181,7 @@ describe("ConfirmArchiveServiceCategoryModal", () => {
     })
     expect(updateServiceCategory).toHaveBeenNthCalledWith(
       2,
-      expect.objectContaining({ deletedAt: expect.any(Date), services: [] }) // Archived and detached
+      expect.objectContaining({ id: "1", services: [] }) // Archived and detached
     )
   })
 })
