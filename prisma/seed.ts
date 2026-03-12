@@ -162,6 +162,92 @@ async function main() {
         data: { categories: { connect: { id: categoryIdentity.id } } },
       })
     }
+
+    // --- Mock test staff users for each role ---
+    const testLocation = await prisma.location.findUnique({
+      where: { legacyOfficeNumber: 999 },
+    })
+
+    if (testLocation) {
+      // Authenticated role
+      await prisma.staffUser.upsert({
+        where: { sub: "test-authenticated@idir" },
+        update: {},
+        create: {
+          guid: "11111111-1111-1111-1111-111111111111",
+          sub: "test-authenticated@idir",
+          username: "sarah.chen",
+          displayName: "Sarah Chen",
+          role: "Authenticated",
+          isActive: false,
+          locationCode: testLocation.code,
+          counterId: counter.id,
+        },
+      })
+
+      // CSR role
+      await prisma.staffUser.upsert({
+        where: { sub: "test-csr@idir" },
+        update: {},
+        create: {
+          guid: "22222222-2222-2222-2222-222222222222",
+          sub: "test-csr@idir",
+          username: "michael.rodriguez",
+          displayName: "Michael Rodriguez",
+          role: "CSR",
+          isActive: false,
+          locationCode: testLocation.code,
+          counterId: counter.id,
+        },
+      })
+
+      // SCSR role
+      await prisma.staffUser.upsert({
+        where: { sub: "test-scsr@idir" },
+        update: {},
+        create: {
+          guid: "33333333-3333-3333-3333-333333333333",
+          sub: "test-scsr@idir",
+          username: "jennifer.smith",
+          displayName: "Jennifer Smith",
+          role: "SCSR",
+          isActive: false,
+          locationCode: testLocation.code,
+          counterId: reception.id,
+        },
+      })
+
+      // SDM role
+      await prisma.staffUser.upsert({
+        where: { sub: "test-sdm@idir" },
+        update: {},
+        create: {
+          guid: "44444444-4444-4444-4444-444444444444",
+          sub: "test-sdm@idir",
+          username: "robert.taylor",
+          displayName: "Robert Taylor",
+          role: "SDM",
+          isActive: false,
+          locationCode: testLocation.code,
+          isOfficeManager: true,
+        },
+      })
+
+      // Administrator role
+      await prisma.staffUser.upsert({
+        where: { sub: "test-admin@idir" },
+        update: {},
+        create: {
+          guid: "55555555-5555-5555-5555-555555555555",
+          sub: "test-admin@idir",
+          username: "patricia.williams",
+          displayName: "Patricia Williams",
+          role: "Administrator",
+          isActive: false,
+          locationCode: testLocation.code,
+        },
+      })
+    }
   } catch (error) {
 
     console.error("❌ Seeding database failed:", error)

@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import type { StaffUser } from "@/generated/prisma/client"
 import type { Role } from "@/generated/prisma/enums"
 import { prisma } from "@/utils/db/prisma"
 import { assignRole } from "@/utils/sso/assignRole"
@@ -31,7 +32,6 @@ describe("insertStaffUser (staff_user)", () => {
       sub: "sub-123",
       username: "j.doe",
       displayName: "J Doe",
-      locationCode: null,
       role: "CSR" as Role,
     }
 
@@ -41,7 +41,7 @@ describe("insertStaffUser (staff_user)", () => {
       legacyCsrId: null,
       username: inputData.username,
       displayName: inputData.displayName,
-      locationCode: inputData.locationCode,
+      locationCode: null,
       counterId: null,
       role: "CSR" as Role,
       isActive: true,
@@ -61,8 +61,50 @@ describe("insertStaffUser (staff_user)", () => {
     const result = await insertStaffUser(inputData)
 
     expect(assignRole).toHaveBeenCalledWith(inputData.sub, inputData.role)
-    expect(prisma.staffUser.create).toHaveBeenCalledWith({ data: { ...inputData } })
+    expect(prisma.staffUser.create).toHaveBeenCalledWith({
+      data: { ...inputData },
+      include: { location: true, counter: true },
+    })
     expect(result).toEqual(mockCreated)
+  })
+
+  it("throws error when guid is missing", async () => {
+    const inputData = {
+      sub: "s",
+      role: "CSR" as Role,
+    } as unknown as StaffUser
+
+    await expect(insertStaffUser(inputData)).rejects.toThrow(
+      "GUID, SUB, and Role are required to insert a staff user."
+    )
+    expect(assignRole).not.toHaveBeenCalled()
+    expect(prisma.staffUser.create).not.toHaveBeenCalled()
+  })
+
+  it("throws error when sub is missing", async () => {
+    const inputData = {
+      guid: "g",
+      role: "CSR" as Role,
+    } as unknown as StaffUser
+
+    await expect(insertStaffUser(inputData)).rejects.toThrow(
+      "GUID, SUB, and Role are required to insert a staff user."
+    )
+    expect(assignRole).not.toHaveBeenCalled()
+    expect(prisma.staffUser.create).not.toHaveBeenCalled()
+  })
+
+  it("throws error when role is missing", async () => {
+    const inputData = {
+      guid: "g",
+      sub: "s",
+    } as unknown as StaffUser
+
+    await expect(insertStaffUser(inputData)).rejects.toThrow(
+      "GUID, SUB, and Role are required to insert a staff user."
+    )
+    expect(assignRole).not.toHaveBeenCalled()
+    expect(prisma.staffUser.create).not.toHaveBeenCalled()
   })
 
   it("propagates SSO assignRole errors", async () => {
@@ -71,7 +113,6 @@ describe("insertStaffUser (staff_user)", () => {
       sub: "s",
       username: "u",
       displayName: "d",
-      locationCode: null,
       role: "CSR" as Role,
     }
     const ssoError = new Error("SSO failed")
@@ -87,7 +128,6 @@ describe("insertStaffUser (staff_user)", () => {
       sub: "s2",
       username: "u2",
       displayName: "d2",
-      locationCode: null,
       role: "CSR" as Role,
     }
     const dbError = new Error("DB failed")

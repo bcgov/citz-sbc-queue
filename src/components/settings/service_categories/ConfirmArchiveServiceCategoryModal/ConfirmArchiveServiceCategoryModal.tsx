@@ -31,6 +31,7 @@ export const ConfirmArchiveServiceCategoryModal = ({
   updateServiceCategory,
   revalidateTable,
 }: ConfirmArchiveServiceCategoryModalProps) => {
+  const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState<ServiceCategoryWithRelations | null>(null)
   const [previousServiceCategory, setPreviousServiceCategory] =
     useState<ServiceCategoryWithRelations | null>(null)
@@ -54,37 +55,46 @@ export const ConfirmArchiveServiceCategoryModal = ({
   if (!serviceCategory || !formData || !previousServiceCategory) return null
 
   const handleSave = async () => {
-    if (formData) {
-      if (!isArchived && hasServices) {
-        if (serviceAction === "remove") {
-          // Detach services
-          await updateServiceCategory({ ...formData, deletedAt: new Date(), services: [] })
-        } else if (serviceAction === "reassign" && newCategoryId) {
-          // Reassign services to the new category
-          const newCategory = serviceCategories.find((c) => c.id === newCategoryId)
-          if (newCategory) {
-            const mergedServices = [
-              ...(newCategory.services || []),
-              ...(serviceCategory.services || []),
-            ]
-            // Deduplicate services by code
-            const uniqueServices = Array.from(
-              new Map(mergedServices.map((s) => [s.code, s])).values()
-            )
+    try {
+      if (formData) {
+        if (!isArchived && hasServices) {
+          if (serviceAction === "remove") {
+            // Detach services
+            await updateServiceCategory({ deletedAt: new Date(), services: [] })
+          } else if (serviceAction === "reassign" && newCategoryId) {
+            // Reassign services to the new category
+            const newCategory = serviceCategories.find((c) => c.id === newCategoryId)
+            if (newCategory) {
+              const mergedServices = [
+                ...(newCategory.services || []),
+                ...(serviceCategory.services || []),
+              ]
+              // Deduplicate services by code
+              const uniqueServices = Array.from(
+                new Map(mergedServices.map((s) => [s.code, s])).values()
+              )
 
-            // Update the new category to include the transferred services
-            await updateServiceCategory({ id: newCategoryId, services: uniqueServices })
+              // Update the new category to include the transferred services
+              await updateServiceCategory({ id: newCategoryId, services: uniqueServices })
+            }
+            // Now archive the current category and detach its services
+            await updateServiceCategory({ deletedAt: new Date(), services: [] })
           }
-          // Now archive the current category and detach its services
-          await updateServiceCategory({ ...formData, deletedAt: new Date(), services: [] })
+        } else {
+          await updateServiceCategory({ deletedAt: isArchived ? null : new Date() })
         }
-      } else {
-        await updateServiceCategory({ ...formData, deletedAt: isArchived ? null : new Date() })
-      }
 
-      await revalidateTable()
-      setArchiveConfirmation("")
-      onClose()
+        await revalidateTable()
+        setArchiveConfirmation("")
+        onClose()
+        window.location.href = "/protected/settings/service-categories"
+      }
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        setError(e.message)
+      } else {
+        setError("An unknown error occurred")
+      }
     }
   }
 
@@ -103,6 +113,12 @@ export const ConfirmArchiveServiceCategoryModal = ({
 
       <DialogBody>
         <form className="space-y-5">
+          {error && (
+            <div className="flex flex-col gap-1 rounded-md border-l-4 border-l-red-600 bg-red-50 p-4">
+              <p className="text-sm font-medium text-red-800">{error}</p>
+            </div>
+          )}
+
           {!isArchived && hasServices && (
             <div className="space-y-4">
               <p className="text-sm font-medium text-typography-primary">

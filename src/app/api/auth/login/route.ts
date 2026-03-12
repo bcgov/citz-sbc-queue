@@ -30,7 +30,14 @@ export async function GET(_request: NextRequest) {
     })
 
     // Redirect the user to the SSO login page
-    return NextResponse.redirect(redirectURL)
+    const response = NextResponse.redirect(redirectURL)
+
+    // Prevent caching of redirect responses to avoid stale maintenance page redirects
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
+    response.headers.set("Pragma", "no-cache")
+    response.headers.set("Expires", "0")
+
+    return response
   } catch (error) {
     console.error("Error in login route:", error)
     return NextResponse.json({ error: "Failed to generate login URL" }, { status: 500 })

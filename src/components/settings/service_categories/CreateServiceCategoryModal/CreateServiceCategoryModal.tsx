@@ -98,6 +98,7 @@ export const CreateServiceCategoryModal = ({
         await revalidateTable()
         onClose()
         setIsSaving(false)
+        window.location.href = "/protected/settings"
       } catch (e: unknown) {
         if (e instanceof Error) {
           setError(e.message)

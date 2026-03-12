@@ -1,3 +1,4 @@
+import { StaffUserPolicy } from "./resources/staff_user"
 import type { Policies } from "./types"
 
 /**
@@ -15,4 +16,6 @@ import type { Policies } from "./types"
  * Actions are not limited to CRUD and may represent any domain-specific capability
  * such as "moderate", "publish", "lock", or "approve".
  */
-export const policies: Policies = {}
+export const policies: Policies = {
+  staff_user: StaffUserPolicy,
+}

@@ -29,6 +29,7 @@ export const ConfirmArchiveServiceModal = ({
   updateService,
   revalidateTable,
 }: ConfirmArchiveServiceModalProps) => {
+  const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState<ServiceWithRelations | null>(null)
   const [previousService, setPreviousService] = useState<ServiceWithRelations | null>(null)
   const [archiveConfirmation, setArchiveConfirmation] = useState("")
@@ -46,13 +47,19 @@ export const ConfirmArchiveServiceModal = ({
 
   const handleSave = async () => {
     if (formData) {
-      await updateService(
-        { ...formData, deletedAt: isArchived ? null : new Date() },
-        previousService
-      )
-      await revalidateTable()
-      setArchiveConfirmation("")
-      onClose()
+      try {
+        await updateService({ deletedAt: isArchived ? null : new Date() }, previousService)
+        await revalidateTable()
+        setArchiveConfirmation("")
+        onClose()
+        window.location.href = "/protected/settings/services"
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          setError(e.message)
+        } else {
+          setError("An unknown error occurred")
+        }
+      }
     }
   }
 
@@ -66,6 +73,12 @@ export const ConfirmArchiveServiceModal = ({
 
       <DialogBody>
         <form className="space-y-5">
+          {error && (
+            <div className="flex flex-col gap-1 rounded-md border-l-4 border-l-red-600 bg-red-50 p-4">
+              <p className="text-sm font-medium text-red-800">{error}</p>
+            </div>
+          )}
+
           <div>
             <label
               htmlFor="archive-service"
