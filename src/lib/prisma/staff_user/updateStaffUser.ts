@@ -37,12 +37,21 @@ export const updateStaffUser = async (
     throw new Error("You do not have permission to assign this role.")
   }
 
-  const locationData = locationCode ? { connect: { code: locationCode } } : undefined
-  const counterData = counterId ? { connect: { id: counterId } } : undefined
+  const updateData: Record<string, unknown> = {
+    ...data,
+    updatedAt: new Date(),
+  }
+
+  if (locationCode) {
+    updateData.location = { connect: { code: locationCode } }
+  }
+  if (counterId) {
+    updateData.counter = { connect: { id: counterId } }
+  }
 
   const staffUser = await prisma.staffUser.update({
     where: { guid: guidToUpdate },
-    data: { ...data, location: locationData, counter: counterData, updatedAt: new Date() },
+    data: updateData,
     include: { location: true, counter: true },
   })
   if (!staffUser) return null

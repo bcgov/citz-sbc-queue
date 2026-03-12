@@ -92,6 +92,7 @@ describe("updateStaffUser", () => {
     expect(prisma.staffUser.update).toHaveBeenCalledWith({
       where: { guid: mockStaffUser.guid },
       data: expect.objectContaining({ displayName: "Updated Name", updatedAt: expect.any(Date) }),
+      include: { location: true, counter: true },
     })
   })
 
@@ -163,6 +164,7 @@ describe("updateStaffUser", () => {
     expect(prisma.staffUser.update).toHaveBeenCalledWith({
       where: { guid: mockStaffUser.guid },
       data: expect.objectContaining({ updatedAt: expect.any(Date) }),
+      include: { location: true, counter: true },
     })
   })
 
