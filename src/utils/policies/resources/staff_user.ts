@@ -35,5 +35,9 @@ export const StaffUserPolicy: Policy = (user_context, data) => {
   const editableRoles = ROLE_HIERARCHY.filter((r) => canUserEditRole(role ?? "", r))
   editableRoles.forEach((r) => actions.add(`change_role_to_${r}`))
 
+  // Change users location
+  if (data?.guid === staff_user_id) actions.add("change_location") // Users can change their own location
+  if (role === "Administrator") actions.add("change_location") // Admins can change any user's location
+
   return Array.from(actions)
 }

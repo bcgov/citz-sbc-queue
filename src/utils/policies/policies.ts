@@ -1,3 +1,4 @@
+import { LocationPolicy } from "./resources/location"
 import { StaffUserPolicy } from "./resources/staff_user"
 import type { Policies } from "./types"
 
@@ -18,4 +19,5 @@ import type { Policies } from "./types"
  */
 export const policies: Policies = {
   staff_user: StaffUserPolicy,
+  location: LocationPolicy,
 }

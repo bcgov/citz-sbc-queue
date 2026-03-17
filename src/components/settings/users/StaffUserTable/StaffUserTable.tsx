@@ -56,6 +56,7 @@ export const StaffUserTable = ({
   const [selectedUser, setSelectedUser] = useState<StaffUser | null>(null)
   const [canEditSelectedUser, setCanEditSelectedUser] = useState<boolean>(false)
   const [canArchiveSelectedUser, setCanArchiveSelectedUser] = useState<boolean>(false)
+  const [canEditLocationSelectedUser, setCanEditLocationSelectedUser] = useState<boolean>(false)
   const [availableRolesForSelectedUser, setAvailableRolesForSelectedUser] = useState<Role[]>([])
   const [showArchived, setShowArchived] = useState<boolean>(false)
 
@@ -65,6 +66,7 @@ export const StaffUserTable = ({
       const actions = resolvePolicy("staff_user", userContext, selectedUser)
       setCanEditSelectedUser(actions.includes("edit"))
       setCanArchiveSelectedUser(actions.includes("archive"))
+      setCanEditLocationSelectedUser(actions.includes("change_location"))
 
       // Extract available roles from change_role_to_ actions
       const availableRoles = actions
@@ -75,6 +77,7 @@ export const StaffUserTable = ({
     } else {
       setCanEditSelectedUser(false)
       setCanArchiveSelectedUser(false)
+      setCanEditLocationSelectedUser(false)
       setAvailableRolesForSelectedUser([])
     }
   }, [selectedUser, userContext])
@@ -120,6 +123,7 @@ export const StaffUserTable = ({
         user={selectedUser}
         canEdit={canEditSelectedUser}
         canArchive={canArchiveSelectedUser}
+        canEditLocation={canEditLocationSelectedUser}
         availableRoles={availableRolesForSelectedUser}
         locations={locations}
         updateStaffUser={updateStaffUser}

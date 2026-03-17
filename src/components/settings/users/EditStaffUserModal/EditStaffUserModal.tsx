@@ -20,6 +20,7 @@ type EditStaffUserModalProps = {
   user: StaffUser | null
   canEdit: boolean
   canArchive: boolean
+  canEditLocation: boolean
   availableRoles: Role[]
   locations: Location[]
   updateStaffUser: (
@@ -37,6 +38,7 @@ export const EditStaffUserModal = ({
   user,
   canEdit,
   canArchive,
+  canEditLocation,
   locations,
   availableRoles,
   updateStaffUser,
@@ -95,18 +97,19 @@ export const EditStaffUserModal = ({
 
       <DialogBody>
         <form className="space-y-5">
-          {isReadonly && (
+          {!canEdit && (
             <div className="flex flex-col gap-1 rounded-md border-l-4 border-l-red-600 bg-red-50 p-4">
-              {isArchived && (
-                <p className="text-sm font-medium text-red-800">
-                  This user is archived and cannot be edited.
-                </p>
-              )}
-              {!canEdit && (
-                <p className="text-sm font-medium text-red-800">
-                  You do not have permission to edit this user.
-                </p>
-              )}
+              <p className="text-sm font-medium text-red-800">
+                You do not have permission to edit this user.
+              </p>
+            </div>
+          )}
+
+          {isArchived && (
+            <div className="flex flex-col gap-1 rounded-md border-l-4 border-l-red-600 bg-red-50 p-4">
+              <p className="text-sm font-medium text-red-800">
+                This user is archived and cannot be edited.
+              </p>
             </div>
           )}
 
@@ -124,6 +127,7 @@ export const EditStaffUserModal = ({
               locations={locations}
               setFormData={setFormData}
               availableRoles={availableRoles}
+              canEditLocation={canEditLocation}
               disabled={isReadonly}
             />
             <PermissionsSection user={formData} setFormData={setFormData} disabled={isReadonly} />
