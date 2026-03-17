@@ -5,7 +5,7 @@ export const LocationPolicy: Policy = (user_context, data) => {
   const actions = new Set<string>()
 
   // View permissions
-  if (data?.code === location_code) actions.add("view") // Users can view records in their own location
+  if (role !== "Authenticated" && data?.code === location_code) actions.add("view") // Users can view records in their own location (except Authenticated role)
   if (role === "Administrator") actions.add("view") // Administrators can view all records
 
   // Create permissions
