@@ -10,7 +10,6 @@ import {
   Modal,
 } from "@/components/common/dialog"
 import type { Role, StaffUser } from "@/generated/prisma/client"
-import { useEditableRoles } from "@/hooks/useEditableRoles"
 
 type ConfirmArchiveUserModalProps = {
   open: boolean
@@ -19,7 +18,7 @@ type ConfirmArchiveUserModalProps = {
   updateStaffUser: (
     user: Partial<StaffUser>,
     prevUser: Partial<StaffUser>,
-    availableRoles: Role[]
+    availableRoles?: Role[]
   ) => Promise<StaffUser | null>
   revalidateTable: () => Promise<void>
 }
@@ -31,10 +30,10 @@ export const ConfirmArchiveUserModal = ({
   updateStaffUser,
   revalidateTable,
 }: ConfirmArchiveUserModalProps) => {
+  const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState<StaffUser | null>(null)
   const [previousUser, setPreviousUser] = useState<StaffUser | null>(null)
   const [archiveConfirmation, setArchiveConfirmation] = useState("")
-  const editableRoles = useEditableRoles()
 
   const isArchived = user?.deletedAt !== null
 
@@ -49,14 +48,19 @@ export const ConfirmArchiveUserModal = ({
 
   const handleSave = async () => {
     if (formData) {
-      await updateStaffUser(
-        { ...formData, deletedAt: isArchived ? null : new Date() },
-        previousUser,
-        editableRoles
-      )
-      await revalidateTable()
-      setArchiveConfirmation("")
-      onClose()
+      try {
+        await updateStaffUser({ deletedAt: isArchived ? null : new Date() }, previousUser)
+        await revalidateTable()
+        setArchiveConfirmation("")
+        onClose()
+        window.location.href = "/protected/settings/users"
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          setError(e.message)
+        } else {
+          setError("An unknown error occurred.")
+        }
+      }
     }
   }
 
@@ -70,6 +74,12 @@ export const ConfirmArchiveUserModal = ({
 
       <DialogBody>
         <form className="space-y-5">
+          {error && (
+            <div className="flex flex-col gap-1 rounded-md border-l-4 border-l-red-600 bg-red-50 p-4">
+              <p className="text-sm font-medium text-red-800">{error}</p>
+            </div>
+          )}
+
           <div>
             <label
               htmlFor="archive-user"

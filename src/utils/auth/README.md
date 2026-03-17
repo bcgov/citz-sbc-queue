@@ -7,7 +7,7 @@ This folder contains modular utilities for handling authentication logic across 
 ```
 src/utils/auth/
 ├── constants.ts                    # Static auth values (token keys, timeouts)
-├── getAuthContext.ts               # Auth context retrieval (for api routes)
+├── getAuthContext.ts               # Auth context retrieval (for api routes and pages)
 ├── types.ts                        # Types for auth objects
 ├── jwt/
 │   ├── decodeJWT.ts               # JWT token payload decoding

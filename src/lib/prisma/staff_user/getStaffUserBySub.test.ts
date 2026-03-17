@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import type { StaffUser } from "@/generated/prisma/client"
 import { prisma } from "@/utils/db/prisma"
 import { getStaffUserBySub } from "./getStaffUserBySub"
+import type { StaffUserWithRelations } from "./types"
 
 vi.mock("@/utils/db/prisma", () => ({
   prisma: {
@@ -21,10 +21,10 @@ describe("getStaffUserBySub", () => {
       sub: "550e8400-e29b-41d4-a716-446655440000@azureidir",
       guid: "550e8400-e29b-41d4-a716-446655440000",
       legacyCsrId: null,
-      locationId: null,
       username: "user1",
       displayName: "User One",
-      counterId: 1,
+      locationCode: null,
+      counterId: null,
       role: "CSR" as const,
       isActive: true,
       deletedAt: null,
@@ -35,13 +35,16 @@ describe("getStaffUserBySub", () => {
       isPesticideDesignate: false,
       isFinanceDesignate: false,
       isIta2Designate: false,
-    } as StaffUser
+    } as StaffUserWithRelations
 
     vi.mocked(prisma.staffUser.findUnique).mockResolvedValueOnce(mockUser)
 
     const result = await getStaffUserBySub(mockUser.sub)
 
-    expect(prisma.staffUser.findUnique).toHaveBeenCalledWith({ where: { sub: mockUser.sub } })
+    expect(prisma.staffUser.findUnique).toHaveBeenCalledWith({
+      where: { sub: mockUser.sub },
+      include: { location: true, counter: true },
+    })
     expect(result).toEqual(mockUser)
   })
 
@@ -50,6 +53,10 @@ describe("getStaffUserBySub", () => {
 
     const result = await getStaffUserBySub("non-existent-sub")
 
+    expect(prisma.staffUser.findUnique).toHaveBeenCalledWith({
+      where: { sub: "non-existent-sub" },
+      include: { location: true, counter: true },
+    })
     expect(result).toBeNull()
   })
 })

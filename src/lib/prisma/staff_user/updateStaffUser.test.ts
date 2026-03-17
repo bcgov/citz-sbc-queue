@@ -1,8 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import type { Role, StaffUser } from "@/generated/prisma/client"
+import type { Role } from "@/generated/prisma/client"
 import { prisma } from "@/utils/db/prisma"
 import { assignRole } from "@/utils/sso/assignRole"
 import { unassignRole } from "@/utils/sso/unassignRole"
+import type { StaffUserWithRelations } from "./types"
 import { updateStaffUser } from "./updateStaffUser"
 
 vi.mock("@/utils/db/prisma", () => ({
@@ -16,14 +17,14 @@ vi.mock("@/utils/sso/assignRole")
 vi.mock("@/utils/sso/unassignRole")
 
 describe("updateStaffUser", () => {
-  const mockStaffUser: StaffUser = {
+  const mockStaffUser: StaffUserWithRelations = {
     guid: "test-guid-123",
     sub: "test-sub-123",
     legacyCsrId: 5,
     username: "test.user",
     displayName: "Test User",
-    locationId: "11111111-1111-1111-1111-111111111111",
-    counterId: null,
+    locationCode: "LOC123",
+    counterId: "counter-123",
     role: "CSR" as Role,
     isActive: true,
     deletedAt: null,
@@ -34,6 +35,26 @@ describe("updateStaffUser", () => {
     isPesticideDesignate: false,
     isFinanceDesignate: false,
     isIta2Designate: false,
+    location: {
+      code: "LOC123",
+      name: "Test Location",
+      timezone: "America/Vancouver",
+      streetAddress: "123 Main St",
+      mailAddress: null,
+      phoneNumber: null,
+      latitude: 49.0,
+      longitude: -123.0,
+      legacyOfficeNumber: null,
+      deletedAt: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+    counter: {
+      id: "counter-123",
+      name: "Counter 1",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
   }
 
   beforeEach(() => {
@@ -71,6 +92,7 @@ describe("updateStaffUser", () => {
     expect(prisma.staffUser.update).toHaveBeenCalledWith({
       where: { guid: mockStaffUser.guid },
       data: expect.objectContaining({ displayName: "Updated Name", updatedAt: expect.any(Date) }),
+      include: { location: true, counter: true },
     })
   })
 
@@ -142,6 +164,7 @@ describe("updateStaffUser", () => {
     expect(prisma.staffUser.update).toHaveBeenCalledWith({
       where: { guid: mockStaffUser.guid },
       data: expect.objectContaining({ updatedAt: expect.any(Date) }),
+      include: { location: true, counter: true },
     })
   })
 

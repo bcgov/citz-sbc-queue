@@ -98,6 +98,7 @@ export const EditServiceCategoryModal = ({
         await revalidateTable()
         onClose()
         setIsSaving(false)
+        window.location.href = "/protected/settings/service-categories"
       } catch (e: unknown) {
         if (e instanceof Error) {
           setError(e.message)

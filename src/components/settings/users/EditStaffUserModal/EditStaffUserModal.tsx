@@ -10,7 +10,6 @@ import {
   Modal,
 } from "@/components/common/dialog"
 import type { Location, Role, StaffUser } from "@/generated/prisma/client"
-import { useEditableRoles } from "@/hooks/useEditableRoles"
 import { PermissionsSection } from "./sections/PermissionsSection"
 import { RoleAndAssignmentSection } from "./sections/RoleAndAssignmentSection"
 import { UserInformationSection } from "./sections/UserInformationSection"
@@ -19,6 +18,9 @@ type EditStaffUserModalProps = {
   open: boolean
   onClose: () => void
   user: StaffUser | null
+  canEdit: boolean
+  canArchive: boolean
+  availableRoles: Role[]
   locations: Location[]
   updateStaffUser: (
     user: Partial<StaffUser>,
@@ -33,7 +35,10 @@ export const EditStaffUserModal = ({
   open,
   onClose,
   user,
+  canEdit,
+  canArchive,
   locations,
+  availableRoles,
   updateStaffUser,
   revalidateTable,
   openConfirmArchiveUserModal,
@@ -42,7 +47,6 @@ export const EditStaffUserModal = ({
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState<StaffUser | null>(null)
   const [previousUser, setPreviousUser] = useState<StaffUser | null>(null)
-  const editableRoles = useEditableRoles()
 
   useEffect(() => {
     if (open && user) {
@@ -53,10 +57,8 @@ export const EditStaffUserModal = ({
 
   if (!user || !formData || !previousUser) return null
 
-  // Check if the user being edited has a higher role than the current user
-  const isUserHigherRole = !editableRoles.includes(user.role)
   const isArchived = user.deletedAt !== null
-  const isReadonly = isUserHigherRole || isArchived
+  const isReadonly = isArchived || !canEdit
 
   const hasMadeChanges = JSON.stringify(formData) !== JSON.stringify(previousUser)
 
@@ -64,10 +66,11 @@ export const EditStaffUserModal = ({
     if (formData && !isReadonly) {
       try {
         setIsSaving(true)
-        await updateStaffUser(formData, previousUser, editableRoles)
+        await updateStaffUser(formData, previousUser, availableRoles)
         await revalidateTable()
         onClose()
         setIsSaving(false)
+        window.location.href = "/protected/settings/users" // Force re-fetch
       } catch (e: unknown) {
         if (e instanceof Error) {
           setError(e.message)
@@ -94,14 +97,14 @@ export const EditStaffUserModal = ({
         <form className="space-y-5">
           {isReadonly && (
             <div className="flex flex-col gap-1 rounded-md border-l-4 border-l-red-600 bg-red-50 p-4">
-              {isUserHigherRole && (
-                <p className="text-sm font-medium text-red-800">
-                  This user has a higher role than yours and cannot be edited.
-                </p>
-              )}
               {isArchived && (
                 <p className="text-sm font-medium text-red-800">
                   This user is archived and cannot be edited.
+                </p>
+              )}
+              {!canEdit && (
+                <p className="text-sm font-medium text-red-800">
+                  You do not have permission to edit this user.
                 </p>
               )}
             </div>
@@ -120,7 +123,7 @@ export const EditStaffUserModal = ({
               user={formData}
               locations={locations}
               setFormData={setFormData}
-              availableRoles={editableRoles}
+              availableRoles={availableRoles}
               disabled={isReadonly}
             />
             <PermissionsSection user={formData} setFormData={setFormData} disabled={isReadonly} />
@@ -132,14 +135,11 @@ export const EditStaffUserModal = ({
         <button type="button" className="tertiary" onClick={onClose}>
           Cancel
         </button>
-        <button
-          type="button"
-          className="secondary danger"
-          onClick={handleOpenArchive}
-          disabled={isUserHigherRole}
-        >
-          {isArchived ? "Unarchive" : "Archive"}
-        </button>
+        {canArchive && (
+          <button type="button" className="secondary danger" onClick={handleOpenArchive}>
+            {isArchived ? "Unarchive" : "Archive"}
+          </button>
+        )}
         <button
           type="button"
           className="primary"

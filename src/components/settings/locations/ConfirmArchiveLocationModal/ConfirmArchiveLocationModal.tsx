@@ -29,6 +29,7 @@ export const ConfirmArchiveLocationModal = ({
   updateLocation,
   revalidateTable,
 }: ConfirmArchiveLocationModalProps) => {
+  const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState<LocationWithRelations | null>(null)
   const [previousLocation, setPreviousLocation] = useState<LocationWithRelations | null>(null)
   const [archiveConfirmation, setArchiveConfirmation] = useState("")
@@ -45,14 +46,20 @@ export const ConfirmArchiveLocationModal = ({
   if (!location || !formData || !previousLocation) return null
 
   const handleSave = async () => {
-    if (formData) {
-      await updateLocation(
-        { ...formData, deletedAt: isArchived ? null : new Date() },
-        previousLocation
-      )
-      await revalidateTable()
-      setArchiveConfirmation("")
-      onClose()
+    try {
+      if (formData) {
+        await updateLocation({ deletedAt: isArchived ? null : new Date() }, previousLocation)
+        await revalidateTable()
+        setArchiveConfirmation("")
+        onClose()
+        window.location.href = "/protected/settings/locations"
+      }
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        setError(e.message)
+      } else {
+        setError("An unknown error occurred")
+      }
     }
   }
 
@@ -66,6 +73,12 @@ export const ConfirmArchiveLocationModal = ({
 
       <DialogBody>
         <form className="space-y-5">
+          {error && (
+            <div className="flex flex-col gap-1 rounded-md border-l-4 border-l-red-600 bg-red-50 p-4">
+              <p className="text-sm font-medium text-red-800">{error}</p>
+            </div>
+          )}
+
           <div>
             <label
               htmlFor="archive-location"

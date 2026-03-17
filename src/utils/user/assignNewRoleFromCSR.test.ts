@@ -13,10 +13,10 @@ describe("assignNewRoleFromCSR", () => {
     vi.restoreAllMocks()
   })
 
-  it("returns CSR and does not call assignRole when sub is null", async () => {
+  it("returns Authenticated and does not call assignRole when sub is null", async () => {
     const result = await assignNewRoleFromCSR(null, null)
 
-    expect(result).toBe("CSR")
+    expect(result).toBe("Authenticated")
     expect(assignRole).not.toHaveBeenCalled()
   })
 
@@ -38,10 +38,19 @@ describe("assignNewRoleFromCSR", () => {
     expect(assignRole).toHaveBeenCalledWith("test-sub", "Administrator")
   })
 
-  it("defaults to CSR and calls assignRole when sub provided but csrRoleId is null", async () => {
+  it("defaults to Authenticated and calls assignRole when sub provided but csrRoleId is null", async () => {
     vi.mocked(assignRole).mockResolvedValueOnce([])
 
     const result = await assignNewRoleFromCSR("test-sub", null)
+
+    expect(result).toBe("Authenticated")
+    expect(assignRole).toHaveBeenCalledWith("test-sub", "Authenticated")
+  })
+
+  it("maps other csrRoleIds to CSR and calls assignRole when sub provided", async () => {
+    vi.mocked(assignRole).mockResolvedValueOnce([])
+
+    const result = await assignNewRoleFromCSR("test-sub", 5)
 
     expect(result).toBe("CSR")
     expect(assignRole).toHaveBeenCalledWith("test-sub", "CSR")

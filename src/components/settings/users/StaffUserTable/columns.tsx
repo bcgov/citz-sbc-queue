@@ -9,7 +9,10 @@ export const columns: ColumnConfig<StaffUser>[] = [
     searchable: true,
     render: (value, row) => {
       return (
-        <span className={row.deletedAt ? "text-typography-danger" : ""}>{value as string}</span>
+        <div className="flex flex-row gap-2 items-center">
+          {row.isActive && <div className="w-2 h-2 rounded-full bg-green-500" />}
+          <span className={row.deletedAt ? "text-typography-danger" : ""}>{value as string}</span>
+        </div>
       )
     },
   },
@@ -30,7 +33,14 @@ export const columns: ColumnConfig<StaffUser>[] = [
     searchable: true,
     render: (value, row) => {
       return (
-        <span className={row.deletedAt ? "text-typography-danger" : ""}>{value as string}</span>
+        <span
+          className={[
+            row.deletedAt ? "text-typography-danger" : "",
+            value === "Authenticated" ? "text-neutral-300" : "",
+          ].join(" ")}
+        >
+          {value as string}
+        </span>
       )
     },
   },

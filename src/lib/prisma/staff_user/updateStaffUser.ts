@@ -1,9 +1,10 @@
 "use server"
 
-import type { Role, StaffUser } from "@/generated/prisma/client"
+import type { Role } from "@/generated/prisma/client"
 import { prisma } from "@/utils/db/prisma"
 import { assignRole } from "@/utils/sso/assignRole"
 import { unassignRole } from "@/utils/sso/unassignRole"
+import type { StaffUserWithRelations } from "./types"
 
 /**
  * Function to update a staff user in the database and sso.
@@ -13,11 +14,19 @@ import { unassignRole } from "@/utils/sso/unassignRole"
  * @returns Promise resolving to the updated StaffUser object or null if not found
  */
 export const updateStaffUser = async (
-  user: Partial<StaffUser>,
-  prevUser: Partial<StaffUser>,
+  user: Partial<StaffUserWithRelations>,
+  prevUser: Partial<StaffUserWithRelations>,
   availableRoles: Role[] = []
-): Promise<StaffUser | null> => {
-  const { guid, sub, ...data } = user
+): Promise<StaffUserWithRelations | null> => {
+  const {
+    guid,
+    sub,
+    location: _location,
+    counter: _counter,
+    locationCode,
+    counterId,
+    ...data
+  } = user
   if (!guid && !prevUser.guid) return null
 
   // Use provided guid or fall back to previous user's guid
@@ -28,9 +37,13 @@ export const updateStaffUser = async (
     throw new Error("You do not have permission to assign this role.")
   }
 
+  const locationData = locationCode ? { connect: { code: locationCode } } : undefined
+  const counterData = counterId ? { connect: { id: counterId } } : undefined
+
   const staffUser = await prisma.staffUser.update({
     where: { guid: guidToUpdate },
-    data: { ...data, updatedAt: new Date() },
+    data: { ...data, location: locationData, counter: counterData, updatedAt: new Date() },
+    include: { location: true, counter: true },
   })
   if (!staffUser) return null
 

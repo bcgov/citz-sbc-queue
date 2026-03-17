@@ -141,6 +141,7 @@ export const EditLocationModal = ({
         await revalidateTable()
         onClose()
         setIsSaving(false)
+        window.location.href = "/protected/settings/locations"
       } catch (e: unknown) {
         if (e instanceof Error) {
           setError(e.message)
