@@ -8,6 +8,7 @@ type RoleAndAssignmentSectionProps = {
   locations: Location[]
   setFormData: Dispatch<SetStateAction<StaffUser | null>>
   availableRoles: Role[]
+  canEditLocation: boolean
   disabled?: boolean
 }
 
@@ -16,7 +17,8 @@ export const RoleAndAssignmentSection = ({
   locations,
   setFormData,
   availableRoles,
-  disabled,
+  canEditLocation,
+  disabled = false,
 }: RoleAndAssignmentSectionProps) => {
   return (
     <Section title="Role and Assignment" disabled={disabled ?? false}>
@@ -25,7 +27,7 @@ export const RoleAndAssignmentSection = ({
         label="Role"
         value={user.role}
         onChange={(value) => setFormData((prev) => prev && { ...prev, role: value as Role })}
-        disabled={disabled ?? false}
+        disabled={disabled}
         options={availableRoles.map((role) => ({ value: role, label: role }))}
       />
 
@@ -34,7 +36,7 @@ export const RoleAndAssignmentSection = ({
         label="Location"
         value={user.locationCode === null ? undefined : user.locationCode}
         onChange={(value) => setFormData((prev) => prev && { ...prev, locationCode: value })}
-        disabled={disabled ?? false}
+        disabled={!canEditLocation || disabled}
         options={locations
           .filter((location) => location.deletedAt === null)
           .map((location) => ({
