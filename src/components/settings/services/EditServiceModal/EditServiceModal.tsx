@@ -21,6 +21,8 @@ type EditServiceModalProps = {
   service: ServiceWithRelations | null
   locations: LocationWithRelations[]
   categories: ServiceCategoryWithRelations[]
+  canEdit: boolean
+  canArchive: boolean
   updateService: (
     service: Partial<ServiceWithRelations>,
     prevService: Partial<ServiceWithRelations>
@@ -36,6 +38,8 @@ export const EditServiceModal = ({
   service,
   locations,
   categories,
+  canEdit,
+  canArchive,
   updateService,
   doesServiceCodeExist,
   revalidateTable,
@@ -112,7 +116,7 @@ export const EditServiceModal = ({
   if (!service || !formData || !previousService) return null
 
   const isArchived = service.deletedAt !== null
-  const isReadonly = isArchived
+  const isReadonly = isArchived || !canEdit
 
   const handleSave = async () => {
     if (formData && !isReadonly) {
@@ -147,13 +151,19 @@ export const EditServiceModal = ({
 
       <DialogBody>
         <form className="space-y-5">
-          {isReadonly && (
+          {!canEdit && (
             <div className="flex flex-col gap-1 rounded-md border-l-4 border-l-red-600 bg-red-50 p-4">
-              {isArchived && (
-                <p className="text-sm font-medium text-red-800">
-                  This service is archived and cannot be edited.
-                </p>
-              )}
+              <p className="text-sm font-medium text-red-800">
+                You do not have permission to edit this service.
+              </p>
+            </div>
+          )}
+
+          {isArchived && (
+            <div className="flex flex-col gap-1 rounded-md border-l-4 border-l-red-600 bg-red-50 p-4">
+              <p className="text-sm font-medium text-red-800">
+                This service is archived and cannot be edited.
+              </p>
             </div>
           )}
 
@@ -178,9 +188,11 @@ export const EditServiceModal = ({
         <button type="button" className="tertiary" onClick={onClose}>
           Cancel
         </button>
-        <button type="button" className="secondary danger" onClick={handleOpenArchive}>
-          {isArchived ? "Unarchive" : "Archive"}
-        </button>
+        {canArchive && (
+          <button type="button" className="secondary danger" onClick={handleOpenArchive}>
+            {isArchived ? "Unarchive" : "Archive"}
+          </button>
+        )}
         <button
           type="button"
           className="primary"

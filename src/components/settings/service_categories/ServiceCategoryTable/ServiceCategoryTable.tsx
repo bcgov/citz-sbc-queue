@@ -83,9 +83,14 @@ export const ServiceCategoryTable = ({
     openEditServiceCategoryModal()
   }
 
-  const serviceCategoriesToShow = showArchived
-    ? serviceCategories
-    : serviceCategories.filter((serviceCategory) => serviceCategory.deletedAt === null)
+  const serviceCategoriesToShow = serviceCategories.filter((serviceCategory) => {
+    // Filter by archived status
+    if (!showArchived && serviceCategory.deletedAt !== null) return false
+
+    // Filter by view permission
+    const actions = resolvePolicy("service_category", userContext, serviceCategory)
+    return actions.includes("view")
+  })
 
   const canCreate = actions.includes("create")
 
