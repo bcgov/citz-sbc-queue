@@ -22,6 +22,7 @@ model StaffUser {
   isPesticideDesignate Boolean   @default(false) @map("is_pesticide_designate")
   isFinanceDesignate   Boolean   @default(false) @map("is_finance_designate")
   isIta2Designate      Boolean   @default(false) @map("is_ita2_designate")
+  isDeveloper          Boolean   @default(false) @map("is_developer")
 
   @@map("staff_user")
   @@schema("app")
