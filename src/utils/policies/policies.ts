@@ -1,4 +1,5 @@
 import { LocationPolicy } from "./resources/location"
+import { ServicePolicy } from "./resources/service"
 import { ServiceCategoryPolicy } from "./resources/service_category"
 import { StaffUserPolicy } from "./resources/staff_user"
 import type { Policies } from "./types"
@@ -21,5 +22,6 @@ import type { Policies } from "./types"
 export const policies: Policies = {
   staff_user: StaffUserPolicy,
   location: LocationPolicy,
+  service: ServicePolicy,
   service_category: ServiceCategoryPolicy,
 }
