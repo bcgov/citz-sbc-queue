@@ -7,6 +7,7 @@ export type DialogBodyProps = {
   children: ReactNode
   scroll?: boolean
   className?: string
+  maxHeight?: string
 }
 
 /**
@@ -17,15 +18,21 @@ export type DialogBodyProps = {
  * @property {ReactNode} children - The content to render inside the dialog body.
  * @property {boolean} [scroll=false] - Whether the dialog body should be scrollable.
  * @property {string} [className] - Additional CSS classes to apply to the dialog body container.
+ * @property {string} [maxHeight] - Maximum height of the dialog body. Can be used to ensure the body fits within the viewport.
  */
-export const DialogBody = ({ children, scroll = false, className }: DialogBodyProps) => {
+export const DialogBody = ({
+  children,
+  scroll = true,
+  className,
+  maxHeight = "70vh",
+}: DialogBodyProps) => {
   const bodyClasses = useMemo(() => {
     return [
       "p-[24px] gap-[8px] leading[27px] text-typography-secondary text-[16px]",
-      `${scroll ? "max-h-[70vh] overflow-y-auto" : ""}`,
+      `${scroll ? `max-h-[${maxHeight}] overflow-y-auto` : `max-h-[${maxHeight}] overflow-hidden`}`,
       `${className ?? ""}`,
     ].join(" ")
-  }, [scroll, className])
+  }, [scroll, className, maxHeight])
 
   return <div className={bodyClasses}>{children}</div>
 }
