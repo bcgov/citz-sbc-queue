@@ -5,6 +5,11 @@ import * as hooks from "@/hooks"
 import Header from "./Header"
 
 describe("Header", () => {
+  const mockToggleAvailableBySub = vi.fn()
+  const mockGetStaffUserBySub = vi.fn().mockResolvedValue(null)
+  const mockGetAllLocations = vi.fn().mockResolvedValue([])
+  const mockUpdateStaffUser = vi.fn().mockResolvedValue(null)
+
   afterEach(() => {
     vi.restoreAllMocks()
   })
@@ -14,7 +19,14 @@ describe("Header", () => {
       isAuthenticated: false,
       hasRole: () => false,
     } as unknown as ReturnType<typeof hooks.useAuth>)
-    render(<Header />)
+    render(
+      <Header
+        toggleAvailableBySub={mockToggleAvailableBySub}
+        getStaffUserBySub={mockGetStaffUserBySub}
+        getAllLocations={mockGetAllLocations}
+        updateStaffUser={mockUpdateStaffUser}
+      />
+    )
     expect(screen.getByRole("button", { name: /login/i })).toBeInTheDocument()
     expect(screen.queryByRole("button", { name: /logout/i })).toBeNull()
   })
@@ -24,7 +36,14 @@ describe("Header", () => {
       isAuthenticated: true,
       hasRole: () => false,
     } as unknown as ReturnType<typeof hooks.useAuth>)
-    render(<Header />)
+    render(
+      <Header
+        toggleAvailableBySub={mockToggleAvailableBySub}
+        getStaffUserBySub={mockGetStaffUserBySub}
+        getAllLocations={mockGetAllLocations}
+        updateStaffUser={mockUpdateStaffUser}
+      />
+    )
     expect(screen.getByRole("button", { name: /logout/i })).toBeInTheDocument()
     expect(screen.queryByRole("button", { name: /login/i })).toBeNull()
   })
@@ -36,7 +55,14 @@ describe("Header", () => {
     } as unknown as ReturnType<typeof hooks.useAuth>)
     window.innerWidth = 639
     window.dispatchEvent(new Event("resize"))
-    render(<Header />)
+    render(
+      <Header
+        toggleAvailableBySub={mockToggleAvailableBySub}
+        getStaffUserBySub={mockGetStaffUserBySub}
+        getAllLocations={mockGetAllLocations}
+        updateStaffUser={mockUpdateStaffUser}
+      />
+    )
     const hamburgerParent = screen.getByTestId("hamburgerNav-parent")
     expect(hamburgerParent.className).toMatch(/contents/)
   })
@@ -49,7 +75,14 @@ describe("Header", () => {
     } as unknown as ReturnType<typeof hooks.useAuth>)
     window.innerWidth = 640
     window.dispatchEvent(new Event("resize"))
-    render(<Header />)
+    render(
+      <Header
+        toggleAvailableBySub={mockToggleAvailableBySub}
+        getStaffUserBySub={mockGetStaffUserBySub}
+        getAllLocations={mockGetAllLocations}
+        updateStaffUser={mockUpdateStaffUser}
+      />
+    )
     const hamburgerParent = screen.getByTestId("hamburgerNav-parent")
     expect(hamburgerParent.className).toMatch(/md:hidden/)
   })
