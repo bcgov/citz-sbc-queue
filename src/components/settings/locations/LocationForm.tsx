@@ -131,8 +131,25 @@ export const LocationForm = ({
           <AddressAutocomplete
             id="location-street-address"
             label="Street Address"
-            required
             value={location.streetAddress || ""}
+            onChange={(v) => {
+              // Updates address text, and clears lat/long if address is fully removed
+              setFormData((s) => {
+                if (!s) return s
+                if (v.trim() === "") {
+                  return {
+                    ...s,
+                    streetAddress: null,
+                    latitude: null,
+                    longitude: null,
+                  }
+                }
+                return {
+                  ...s,
+                  streetAddress: v,
+                }
+              })
+            }}
             onSelect={(suggestion: AddressSuggestion) => {
               // Update the form with the selected address information
               setFormData((s) =>
