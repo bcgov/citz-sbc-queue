@@ -151,15 +151,16 @@ export const LocationCounterSwitch = ({
           <span className="text-sm font-bold">{currentUser.location?.name ?? "No Location"}</span>
           <span className="text-xs">{currentUser.counter?.name ?? "No Counter"}</span>
         </div>
-        <button
-          type="button"
-          className="rounded border border-border-light p-1.5 text-typography-primary transition-colors hover:bg-background-light-gray focus:outline-none focus:ring-2 focus:ring-offset-2"
-          aria-label="Switch location or counter"
-          disabled={role === "Authenticated"}
-          onClick={openDialog}
-        >
-          <ArrowsRightLeftIcon className="h-5 w-5" />
-        </button>
+        {role !== "Authenticated" && (
+          <button
+            type="button"
+            className="rounded border border-border-light p-1.5 text-typography-primary transition-colors hover:bg-background-light-gray focus:outline-none focus:ring-2 focus:ring-offset-2"
+            aria-label="Switch location or counter"
+            onClick={openDialog}
+          >
+            <ArrowsRightLeftIcon className="h-5 w-5" />
+          </button>
+        )}
       </div>
       <div className="w-px h-8 bg-border-light mx-sm" />
       {/* Modal */}
