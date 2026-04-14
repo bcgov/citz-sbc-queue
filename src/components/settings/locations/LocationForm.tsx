@@ -139,9 +139,9 @@ export const LocationForm = ({
                 if (v.trim() === "") {
                   return {
                     ...s,
-                    streetAddress: null,
-                    latitude: null,
-                    longitude: null,
+                    streetAddress: undefined,
+                    latitude: undefined,
+                    longitude: undefined,
                   }
                 }
                 return {
@@ -156,7 +156,7 @@ export const LocationForm = ({
                 s
                   ? {
                       ...s,
-                      streetAddress: suggestion.streetName ? suggestion.address : "",
+                      streetAddress: suggestion.streetName ? suggestion.address : undefined,
                       latitude: suggestion.coordinates.latitude,
                       longitude: suggestion.coordinates.longitude,
                     }

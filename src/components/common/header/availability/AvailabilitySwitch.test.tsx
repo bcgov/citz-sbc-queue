@@ -21,7 +21,7 @@ describe("AvailabilitySwitch", () => {
     legacyCsrId: 5,
     username: "test.user",
     displayName: "Test User",
-    locationId: "11111111-1111-1111-1111-111111111111",
+    locationCode: "11111111-1111-1111-1111-111111111111",
     counterId: null,
     role: "CSR" as Role,
     isActive: true,
@@ -33,6 +33,7 @@ describe("AvailabilitySwitch", () => {
     isPesticideDesignate: false,
     isFinanceDesignate: false,
     isIta2Designate: false,
+    isDeveloper: false,
   }
 
   beforeEach(() => {
