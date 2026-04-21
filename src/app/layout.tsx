@@ -3,9 +3,11 @@ import "../styles/globals.css"
 import localFont from "next/font/local"
 import { AuthProvider } from "@/components/auth/AuthProvider"
 import { Footer, Header } from "@/components/common"
+import { ArchiveUserBlock } from "@/components/user/ArchiveUserBlock"
+import { getAllLocations } from "@/lib/prisma/location/getAllLocations"
 import { getStaffUserBySub } from "@/lib/prisma/staff_user/getStaffUserBySub"
 import { toggleAvailabilityBySub } from "@/lib/prisma/staff_user/toggleAvailabilityBySub"
-import { ArchiveUserBlock } from "@/components/user/ArchiveUserBlock"
+import { updateStaffUser } from "@/lib/prisma/staff_user/updateStaffUser"
 
 const BCSans = localFont({
   src: [
@@ -56,6 +58,8 @@ export default async function RootLayout({
             <Header
               toggleAvailableBySub={toggleAvailabilityBySub}
               getStaffUserBySub={getStaffUserBySub}
+              getAllLocations={getAllLocations}
+              updateStaffUser={updateStaffUser}
             />
           </header>
           <main className="grid md:col-span-8 md:col-start-3 col-span-full">
