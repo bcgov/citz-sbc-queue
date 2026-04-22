@@ -2,11 +2,11 @@ model Location {
   code               String   @id @unique()
   name               String   @db.VarChar(250)
   timezone           String   @db.VarChar(50)
-  streetAddress      String   @db.VarChar(500) @map("street_address")
+  streetAddress      String?  @db.VarChar(500) @map("street_address")
   mailAddress        String?  @db.VarChar(500) @map("mail_address")
   phoneNumber        String?  @db.VarChar(20) @map("phone_number")
-  latitude           Float
-  longitude          Float
+  latitude           Float?
+  longitude          Float?
   legacyOfficeNumber Int?     @unique @map("legacy_office_number")
 
   staffUsers         StaffUser[]

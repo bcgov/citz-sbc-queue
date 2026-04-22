@@ -70,7 +70,7 @@ export const EditLocationModal = ({
         },
         { message: "Code already exists" }
       ),
-    streetAddress: z.string(),
+    streetAddress: z.string().nullable(),
     mailAddress: z.string().nullable(),
     phoneNumber: z
       .string()
@@ -86,8 +86,8 @@ export const EditLocationModal = ({
         { message: "Phone number must contain at least 10 digits" }
       ),
     timezone: z.string(),
-    latitude: z.number(),
-    longitude: z.number(),
+    latitude: z.number().nullable(),
+    longitude: z.number().nullable(),
     legacyOfficeNumber: z.number().nullable(),
     deletedAt: z.date().nullable(),
     createdAt: z.date(),
