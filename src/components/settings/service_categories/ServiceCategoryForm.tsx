@@ -1,8 +1,8 @@
 import type { Dispatch, SetStateAction } from "react"
-import { useMemo } from "react"
 import { TextField } from "@/components/common"
 import { MultiSelect } from "@/components/common/select/MultiSelect"
 import type { Service } from "@/generated/prisma/client"
+import { useServiceCategoryForm } from "@/hooks/settings/service_categories/useServiceCategoryForm"
 import type { ServiceCategoryWithRelations } from "@/lib/prisma/service_category/types"
 
 type ServiceCategoryFormProps = {
@@ -27,17 +27,8 @@ export const ServiceCategoryForm = ({
   setFormData,
   isReadonly,
 }: ServiceCategoryFormProps) => {
-  const serviceOptions = useMemo(
-    () =>
-      services
-        .filter((service) => service.deletedAt === null)
-        .map((s) => ({ key: s.code, label: s.name })),
-    [services]
-  )
-
-  const selectedServiceCodes = serviceCategory.services
-    ? serviceCategory.services.map((s) => s.code)
-    : []
+  const { serviceOptions, selectedServiceCodes, handleNameChange, handleServicesChange } =
+    useServiceCategoryForm({ serviceCategory, services, setFormData })
 
   return (
     <div className="flex flex-col gap-2">
@@ -45,7 +36,7 @@ export const ServiceCategoryForm = ({
         id="name"
         label="Name"
         value={serviceCategory.name || ""}
-        onChange={(v) => setFormData((s) => (s ? { ...s, name: v } : s))}
+        onChange={handleNameChange}
         disabled={isReadonly}
         required
       />
@@ -57,18 +48,7 @@ export const ServiceCategoryForm = ({
             label="Services"
             options={serviceOptions}
             selected={selectedServiceCodes}
-            onChange={(selected) =>
-              setFormData((s) =>
-                s
-                  ? {
-                      ...s,
-                      services: selected.map(
-                        (code) => services.find((s) => s.code === code) as Service
-                      ),
-                    }
-                  : s
-              )
-            }
+            onChange={handleServicesChange}
             placeholder="Select services"
             disabled={isReadonly}
           />
