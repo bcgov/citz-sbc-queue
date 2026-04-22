@@ -4,19 +4,19 @@ export const LocationPolicy: Policy = (user_context, data) => {
   const { role, location_code } = user_context
   const actions = new Set<string>()
 
-  // View permissions
-  if (role !== "Authenticated" && data?.code === location_code) actions.add("view") // Users can view records in their own location (except Authenticated role)
-  if (role === "Administrator") actions.add("view") // Administrators can view all records
+  // Users can view records in their own location (except Authenticated role), administrators can view all records
+  if ((role !== "Authenticated" && data?.code === location_code) || role === "Administrator")
+    actions.add("view")
 
-  // Create permissions
-  if (role === "Administrator") actions.add("create") // Administrators can create locations
+  // Administrators can create locations
+  if (role === "Administrator") actions.add("create")
 
-  // Edit permissions
-  if (data?.code === location_code && role === "SDM") actions.add("edit") // SDM users can edit records in their own location
-  if (role === "Administrator") actions.add("edit") // Administrators can edit all records
+  // SDM users can edit records in their own location, administrators can edit all records
+  if ((data?.code === location_code && role === "SDM") || role === "Administrator")
+    actions.add("edit")
 
-  // Archive permissions
-  if (role === "Administrator") actions.add("archive") // Administrators can archive all records
+  // Administrators can archive all records
+  if (role === "Administrator") actions.add("archive")
 
   return Array.from(actions)
 }

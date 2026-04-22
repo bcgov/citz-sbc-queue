@@ -1,3 +1,5 @@
+"use client"
+
 type SelectInputProps = {
   id: string
   label: string
@@ -27,11 +29,13 @@ export const SelectInput = ({
         disabled={disabled}
         className="mt-xs block w-full rounded-md border border-border-dark px-sm py-xs text-xs text-typography-primary disabled:cursor-not-allowed disabled:bg-gray-100"
       >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
+        {options && options.length > 0
+          ? options.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))
+          : null}
       </select>
     </div>
   )

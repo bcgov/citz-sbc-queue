@@ -7,6 +7,8 @@ import Header from "./Header"
 describe("Header", () => {
   const mockToggleAvailableBySub = vi.fn()
   const mockGetStaffUserBySub = vi.fn().mockResolvedValue(null)
+  const mockGetAllLocations = vi.fn().mockResolvedValue([])
+  const mockUpdateStaffUser = vi.fn().mockResolvedValue(null)
 
   afterEach(() => {
     vi.restoreAllMocks()
@@ -21,6 +23,8 @@ describe("Header", () => {
       <Header
         toggleAvailableBySub={mockToggleAvailableBySub}
         getStaffUserBySub={mockGetStaffUserBySub}
+        getAllLocations={mockGetAllLocations}
+        updateStaffUser={mockUpdateStaffUser}
       />
     )
     expect(screen.getByRole("button", { name: /login/i })).toBeInTheDocument()
@@ -36,6 +40,8 @@ describe("Header", () => {
       <Header
         toggleAvailableBySub={mockToggleAvailableBySub}
         getStaffUserBySub={mockGetStaffUserBySub}
+        getAllLocations={mockGetAllLocations}
+        updateStaffUser={mockUpdateStaffUser}
       />
     )
     expect(screen.getByRole("button", { name: /logout/i })).toBeInTheDocument()
@@ -53,6 +59,8 @@ describe("Header", () => {
       <Header
         toggleAvailableBySub={mockToggleAvailableBySub}
         getStaffUserBySub={mockGetStaffUserBySub}
+        getAllLocations={mockGetAllLocations}
+        updateStaffUser={mockUpdateStaffUser}
       />
     )
     const hamburgerParent = screen.getByTestId("hamburgerNav-parent")
@@ -71,6 +79,8 @@ describe("Header", () => {
       <Header
         toggleAvailableBySub={mockToggleAvailableBySub}
         getStaffUserBySub={mockGetStaffUserBySub}
+        getAllLocations={mockGetAllLocations}
+        updateStaffUser={mockUpdateStaffUser}
       />
     )
     const hamburgerParent = screen.getByTestId("hamburgerNav-parent")

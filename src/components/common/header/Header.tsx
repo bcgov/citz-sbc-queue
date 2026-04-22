@@ -6,17 +6,29 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Loginout, SvgBcLogo } from "@/components"
-import type { StaffUser } from "@/generated/prisma/client"
 import { useAuth } from "@/hooks"
+import type { LocationWithRelations } from "@/lib/prisma/location/types"
+import type { StaffUserWithRelations } from "@/lib/prisma/staff_user/types"
 import { AvailabilitySwitch } from "./availability"
+import { LocationCounterSwitch } from "./locationCounterSwitch"
 import { Navigation } from "./navigation"
 
 type HeaderProps = {
   toggleAvailableBySub: (sub: string, isAvailable: boolean) => void
-  getStaffUserBySub: (sub: string) => Promise<StaffUser | null>
+  getStaffUserBySub: (sub: string) => Promise<StaffUserWithRelations | null>
+  getAllLocations: () => Promise<LocationWithRelations[]>
+  updateStaffUser: (
+    user: Partial<StaffUserWithRelations>,
+    prevUser: Partial<StaffUserWithRelations>
+  ) => Promise<StaffUserWithRelations | null>
 }
 
-export const Header = ({ toggleAvailableBySub, getStaffUserBySub }: HeaderProps) => {
+export const Header = ({
+  toggleAvailableBySub,
+  getStaffUserBySub,
+  getAllLocations,
+  updateStaffUser,
+}: HeaderProps) => {
   const pathname = usePathname()
   const [showNavList, setShowNavList] = useState(false)
 
@@ -59,7 +71,12 @@ export const Header = ({ toggleAvailableBySub, getStaffUserBySub }: HeaderProps)
         {/** below is bcds-header--container class */}
         <div className="flex flex-row gap-sm grow max-w-[1200px] justify-between">
           <BCGovLogo />
-          <div className="flex flex-row  justify-around gap-sm px-sm items-center">
+          <div className="flex flex-row justify-around gap-sm px-sm items-center">
+            <LocationCounterSwitch
+              getStaffUserBySub={getStaffUserBySub}
+              getAllLocations={getAllLocations}
+              updateStaffUser={updateStaffUser}
+            />
             <AvailabilitySwitch
               toggleAvailableBySub={toggleAvailableBySub}
               getStaffUserBySub={getStaffUserBySub}
