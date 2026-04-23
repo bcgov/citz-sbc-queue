@@ -109,8 +109,9 @@ describe("LocationCounterSwitch", () => {
       expect(screen.getByText("Victoria")).toBeInTheDocument()
     })
 
-    const button = screen.getByRole("button", { name: /switch location or counter/i })
-    expect(button).toBeDisabled()
+    expect(
+      screen.queryByRole("button", { name: /switch location or counter/i })
+    ).not.toBeInTheDocument()
   })
 
   it("opens the modal and allows changing location and counter", async () => {

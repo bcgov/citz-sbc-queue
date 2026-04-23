@@ -18,7 +18,7 @@ export const StaffUserPolicy: Policy = (user_context, data) => {
   // View permissions
   if (data?.guid === staff_user_id) actions.add("view") // Users can always view their own record
   if (data?.locationCode === location_code) actions.add("view") // Users can view records in their own location
-  if (role === "Administrator") actions.add("view") // Administrators can view all records
+  if (role !== "Authenticated") actions.add("view") // Users with roles above Authenticated can view all records
 
   // Edit permissions: user can edit if their role is at or above the target user's role (except for Authenticated role)
   if (
