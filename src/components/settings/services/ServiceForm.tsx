@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from "react"
-import { useEffect, useMemo, useRef, useState } from "react"
 import { Notice, Switch, TextArea, TextField } from "@/components/common"
 import { MultiSelect } from "@/components/common/select/MultiSelect"
+import { useServiceForm } from "@/hooks/settings/services/useServiceForm"
 import type { LocationWithRelations } from "@/lib/prisma/location/types"
 import type { ServiceWithRelations } from "@/lib/prisma/service/types"
 import type { ServiceCategoryWithRelations } from "@/lib/prisma/service_category/types"
@@ -37,52 +37,28 @@ export const ServiceForm = ({
   doesServiceCodeExist,
   isReadonly,
 }: ServiceFormProps) => {
-  const [codeExists, setCodeExists] = useState<boolean | null>(null)
-  const initialCodeRef = useRef<string | undefined>(initialCode ?? service.code)
-
-  const selectedLocationCodes = service.locations ? service.locations.map((l) => l.code) : []
-  const availableLocations = locations.filter((location) => location.deletedAt === null)
-  const locationOptions = useMemo(
-    () => availableLocations.map((o) => ({ key: o.code, label: o.name })),
-    [availableLocations]
-  )
-
-  const selectedCategoryIds = service.categories ? service.categories.map((c) => c.id) : []
-  const availableCategories = categories.filter((category) => category.deletedAt === null)
-  const categoryOptions = useMemo(
-    () => availableCategories.map((c) => ({ key: c.id, label: c.name })),
-    [availableCategories]
-  )
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <>
-  useEffect(() => {
-    // when the service changes (new service loaded) reset initial code and state
-    initialCodeRef.current = initialCode ?? service.code
-    setCodeExists(null)
-  }, [service.updatedAt, initialCode])
-
-  useEffect(() => {
-    // debounce checking service code existence
-    const code = service.code
-    if (!code || code.length === 0) {
-      setCodeExists(null)
-      return
-    }
-
-    // don't warn if the code is unchanged from the initial value
-    if (initialCodeRef.current === code) {
-      setCodeExists(false)
-      return
-    }
-
-    const t = setTimeout(() => {
-      doesServiceCodeExist(code)
-        .then((exists) => setCodeExists(exists))
-        .catch(() => setCodeExists(null))
-    }, 500)
-
-    return () => clearTimeout(t)
-  }, [service.code, doesServiceCodeExist])
+  const {
+    codeExists,
+    selectedLocationCodes,
+    locationOptions,
+    selectedCategoryIds,
+    categoryOptions,
+    handleCodeChange,
+    handleTicketPrefixChange,
+    handleBackOfficeChange,
+    handleNameChange,
+    handlePublicNameChange,
+    handleDescriptionChange,
+    handleLocationsChange,
+    handleCategoriesChange,
+  } = useServiceForm({
+    service,
+    initialCode,
+    locations,
+    categories,
+    setFormData,
+    doesServiceCodeExist,
+  })
 
   return (
     <div className="flex flex-col gap-2">
@@ -92,7 +68,7 @@ export const ServiceForm = ({
           id="service-code"
           label="Code"
           value={service.code || ""}
-          onChange={(v) => setFormData((s) => (s ? { ...s, code: v.replace(/\s/g, "") } : s))}
+          onChange={handleCodeChange}
           disabled={isReadonly}
           required
           className="col-span-3"
@@ -102,7 +78,7 @@ export const ServiceForm = ({
           id="service-ticketPrefix"
           label="Ticket Prefix"
           value={service.ticketPrefix || ""}
-          onChange={(v) => setFormData((s) => (s ? { ...s, ticketPrefix: v } : s))}
+          onChange={handleTicketPrefixChange}
           disabled={isReadonly}
           required
           className="col-span-3"
@@ -112,7 +88,7 @@ export const ServiceForm = ({
           <p className="block text-xs font-medium text-typography-primary">Back Office</p>
           <Switch
             checked={service.backOffice || false}
-            onChange={(checked) => setFormData((s) => (s ? { ...s, backOffice: checked } : s))}
+            onChange={handleBackOfficeChange}
             disabled={isReadonly}
           />
         </div>
@@ -122,7 +98,7 @@ export const ServiceForm = ({
           id="service-name"
           label="Name"
           value={service.name || ""}
-          onChange={(v) => setFormData((s) => (s ? { ...s, name: v } : s))}
+          onChange={handleNameChange}
           disabled={isReadonly}
           required
         />
@@ -131,7 +107,7 @@ export const ServiceForm = ({
           id="service-publicName"
           label="Public Name"
           value={service.publicName || ""}
-          onChange={(v) => setFormData((s) => (s ? { ...s, publicName: v } : s))}
+          onChange={handlePublicNameChange}
           disabled={isReadonly}
           required
         />
@@ -140,7 +116,7 @@ export const ServiceForm = ({
           id="service-description"
           label="Description"
           value={service.description || ""}
-          onChange={(v) => setFormData((s) => (s ? { ...s, description: v } : s))}
+          onChange={handleDescriptionChange}
           disabled={isReadonly}
           maxLength={1000}
           className="col-span-2"
@@ -153,18 +129,7 @@ export const ServiceForm = ({
           label="Locations"
           options={locationOptions}
           selected={selectedLocationCodes}
-          onChange={(selected) =>
-            setFormData((s) =>
-              s
-                ? {
-                    ...s,
-                    locations: selected.map(
-                      (code) => locations.find((o) => o.code === code) as LocationWithRelations
-                    ),
-                  }
-                : s
-            )
-          }
+          onChange={handleLocationsChange}
           placeholder="Select locations"
           disabled={isReadonly}
         />
@@ -173,18 +138,7 @@ export const ServiceForm = ({
           label="Categories"
           options={categoryOptions}
           selected={selectedCategoryIds}
-          onChange={(selected) =>
-            setFormData((s) =>
-              s
-                ? {
-                    ...s,
-                    categories: selected.map(
-                      (id) => categories.find((c) => c.id === id) as ServiceCategoryWithRelations
-                    ),
-                  }
-                : s
-            )
-          }
+          onChange={handleCategoriesChange}
           placeholder="Select categories"
           disabled={isReadonly}
         />

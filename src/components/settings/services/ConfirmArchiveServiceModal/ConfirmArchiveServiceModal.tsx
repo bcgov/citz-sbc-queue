@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import {
   CloseButton,
   DialogActions,
@@ -9,6 +8,7 @@ import {
   DialogTitle,
   Modal,
 } from "@/components/common/dialog"
+import { useConfirmArchiveServiceModal } from "@/hooks/settings/services/useConfirmArchiveServiceModal"
 import type { ServiceWithRelations } from "@/lib/prisma/service/types"
 
 type ConfirmArchiveServiceModalProps = {
@@ -29,39 +29,23 @@ export const ConfirmArchiveServiceModal = ({
   updateService,
   revalidateTable,
 }: ConfirmArchiveServiceModalProps) => {
-  const [error, setError] = useState<string | null>(null)
-  const [formData, setFormData] = useState<ServiceWithRelations | null>(null)
-  const [previousService, setPreviousService] = useState<ServiceWithRelations | null>(null)
-  const [archiveConfirmation, setArchiveConfirmation] = useState("")
+  const {
+    error,
+    formData,
+    archiveConfirmation,
+    setArchiveConfirmation,
+    isArchived,
+    isSaveDisabled,
+    handleSave,
+  } = useConfirmArchiveServiceModal({
+    open,
+    onClose,
+    service,
+    updateService,
+    revalidateTable,
+  })
 
-  const isArchived = service?.deletedAt !== null
-
-  useEffect(() => {
-    if (open && service) {
-      setFormData(service)
-      setPreviousService(service)
-    }
-  }, [open, service])
-
-  if (!service || !formData || !previousService) return null
-
-  const handleSave = async () => {
-    if (formData) {
-      try {
-        await updateService({ deletedAt: isArchived ? null : new Date() }, previousService)
-        await revalidateTable()
-        setArchiveConfirmation("")
-        onClose()
-        window.location.href = "/protected/settings/services"
-      } catch (e: unknown) {
-        if (e instanceof Error) {
-          setError(e.message)
-        } else {
-          setError("An unknown error occurred")
-        }
-      }
-    }
-  }
+  if (!service || !formData) return null
 
   return (
     <Modal open={open} onClose={onClose} size="sm">
@@ -106,7 +90,7 @@ export const ConfirmArchiveServiceModal = ({
           type="button"
           className="primary danger"
           onClick={handleSave}
-          disabled={archiveConfirmation !== service.name}
+          disabled={isSaveDisabled}
         >
           {isArchived ? "Unarchive" : "Archive"}
         </button>
