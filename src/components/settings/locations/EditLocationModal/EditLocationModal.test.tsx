@@ -1,15 +1,15 @@
 import "@testing-library/jest-dom"
 import { fireEvent, render, screen, waitFor } from "@testing-library/react"
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
-// Mock the LocationForm to avoid rendering complex child components
 vi.mock("../LocationForm", () => ({
   LocationForm: () => <div>LocationFormStub</div>,
 }))
 
-import type { Counter, StaffUser } from "@/generated/prisma/client"
+vi.mock("@/hooks/settings/locations/useEditLocationModal")
+
+import { useEditLocationModal } from "@/hooks/settings/locations/useEditLocationModal"
 import type { LocationWithRelations } from "@/lib/prisma/location/types"
-import type { ServiceWithRelations } from "@/lib/prisma/service/types"
 import { EditLocationModal } from "./EditLocationModal"
 
 describe("EditLocationModal", () => {
@@ -32,251 +32,151 @@ describe("EditLocationModal", () => {
     services: [],
   } as LocationWithRelations
 
-  const services = [
-    {
-      code: "SRV1",
-      name: "Service 1",
-      id: "s1",
-      description: "Test service",
-      publicName: "Public Service",
-      ticketPrefix: "T",
-      legacyServiceId: null,
-      backOffice: false,
-      deletedAt: null,
-      createdAt: now,
-      updatedAt: now,
-      locations: [],
-      categories: [],
-    },
-  ] as unknown as ServiceWithRelations[]
+  const mockHandleSave = vi.fn()
+  const mockHandleOpenArchive = vi.fn()
+  const mockSetFormData = vi.fn()
+  const mockOnClose = vi.fn()
 
-  const counters = [
-    {
-      id: "c1",
-      name: "Counter 1",
-      locationCode: "LOC1",
-      deletedAt: null,
-      createdAt: now,
-      updatedAt: now,
-    },
-  ] as unknown as Counter[]
+  const defaultHookReturn = {
+    isSaving: false,
+    error: null,
+    formData: { ...location } as Partial<LocationWithRelations>,
+    setFormData: mockSetFormData,
+    isFormValidating: false,
+    isFormValidState: true,
+    hasMadeChanges: false,
+    isArchived: false,
+    isReadonly: false,
+    isSaveDisabled: false,
+    handleSave: mockHandleSave,
+    handleOpenArchive: mockHandleOpenArchive,
+  }
 
-  const staffUsers = [
-    {
-      guid: "su1",
-      displayName: "Staff User 1",
-      locationCode: "LOC1",
-      deletedAt: null,
-      createdAt: now,
-      updatedAt: now,
-    },
-  ] as unknown as StaffUser[]
+  const defaultProps = {
+    open: true,
+    onClose: mockOnClose,
+    location,
+    services: [],
+    counters: [],
+    staffUsers: [],
+    canEdit: true,
+    canArchive: true,
+    updateLocation: vi.fn(),
+    doesLocationCodeExist: vi.fn(),
+    revalidateTable: vi.fn(),
+    openConfirmArchiveLocationModal: vi.fn(),
+  }
 
-  it("renders modal title when open with a location", async () => {
-    const onClose = vi.fn()
-    const updateLocation = vi.fn().mockResolvedValue(location)
-    const revalidateTable = vi.fn().mockResolvedValue(undefined)
-    const doesLocationCodeExist = vi.fn().mockResolvedValue(false)
-    const openConfirmArchiveLocationModal = vi.fn()
+  beforeEach(() => {
+    vi.mocked(useEditLocationModal).mockReturnValue(defaultHookReturn)
+  })
 
-    render(
-      <EditLocationModal
-        open={true}
-        onClose={onClose}
-        location={location}
-        services={services}
-        counters={counters}
-        staffUsers={staffUsers}
-        canEdit={true}
-        canArchive={true}
-        updateLocation={updateLocation}
-        doesLocationCodeExist={doesLocationCodeExist}
-        revalidateTable={revalidateTable}
-        openConfirmArchiveLocationModal={openConfirmArchiveLocationModal}
-      />
-    )
+  it("renders modal title and LocationForm when open with a location", async () => {
+    render(<EditLocationModal {...defaultProps} />)
 
     await waitFor(() => expect(screen.getByText(`Edit Location: ${location.code}`)).toBeTruthy())
     expect(screen.getByText("LocationFormStub")).toBeTruthy()
   })
 
+  it("returns null when formData is null", () => {
+    vi.mocked(useEditLocationModal).mockReturnValue({ ...defaultHookReturn, formData: null })
+
+    const { queryByText } = render(<EditLocationModal {...defaultProps} />)
+
+    expect(queryByText(`Edit Location: ${location.code}`)).toBeNull()
+  })
+
   it("calls onClose when Cancel button is clicked", async () => {
-    const onClose = vi.fn()
-    const updateLocation = vi.fn().mockResolvedValue(location)
-    const revalidateTable = vi.fn().mockResolvedValue(undefined)
-    const doesLocationCodeExist = vi.fn().mockResolvedValue(false)
-    const openConfirmArchiveLocationModal = vi.fn()
+    render(<EditLocationModal {...defaultProps} />)
 
-    render(
-      <EditLocationModal
-        open={true}
-        onClose={onClose}
-        location={location}
-        services={services}
-        counters={counters}
-        staffUsers={staffUsers}
-        canEdit={true}
-        canArchive={true}
-        updateLocation={updateLocation}
-        doesLocationCodeExist={doesLocationCodeExist}
-        revalidateTable={revalidateTable}
-        openConfirmArchiveLocationModal={openConfirmArchiveLocationModal}
-      />
-    )
-
-    await waitFor(() => expect(screen.getByText(`Edit Location: ${location.code}`)).toBeTruthy())
-
+    await waitFor(() => expect(screen.getByText("Cancel")).toBeTruthy())
     fireEvent.click(screen.getByText("Cancel"))
-    expect(onClose).toHaveBeenCalled()
+    expect(mockOnClose).toHaveBeenCalled()
   })
 
-  it("disables save button when modal is closed", async () => {
-    const onClose = vi.fn()
-    const updateLocation = vi.fn().mockResolvedValue(location)
-    const revalidateTable = vi.fn().mockResolvedValue(undefined)
-    const doesLocationCodeExist = vi.fn().mockResolvedValue(false)
-    const openConfirmArchiveLocationModal = vi.fn()
+  it("shows no-permission message when canEdit is false", async () => {
+    render(<EditLocationModal {...defaultProps} canEdit={false} />)
 
-    const { queryByText } = render(
-      <EditLocationModal
-        open={false}
-        onClose={onClose}
-        location={location}
-        services={services}
-        counters={counters}
-        staffUsers={staffUsers}
-        canEdit={true}
-        canArchive={true}
-        updateLocation={updateLocation}
-        doesLocationCodeExist={doesLocationCodeExist}
-        revalidateTable={revalidateTable}
-        openConfirmArchiveLocationModal={openConfirmArchiveLocationModal}
-      />
+    await waitFor(() =>
+      expect(screen.getByText("You do not have permission to edit this location.")).toBeTruthy()
     )
-
-    // Modal should not render when closed
-    expect(queryByText(`Edit Location: ${location.code}`)).not.toBeTruthy()
   })
 
-  it("shows archived message when location is archived", async () => {
-    const archivedLocation = {
-      ...location,
-      deletedAt: new Date(),
-    } as LocationWithRelations
+  it("shows archived message when isArchived is true", async () => {
+    vi.mocked(useEditLocationModal).mockReturnValue({ ...defaultHookReturn, isArchived: true })
 
-    const onClose = vi.fn()
-    const updateLocation = vi.fn().mockResolvedValue(archivedLocation)
-    const revalidateTable = vi.fn().mockResolvedValue(undefined)
-    const doesLocationCodeExist = vi.fn().mockResolvedValue(false)
-    const openConfirmArchiveLocationModal = vi.fn()
-
-    render(
-      <EditLocationModal
-        open={true}
-        onClose={onClose}
-        location={archivedLocation}
-        services={services}
-        counters={counters}
-        staffUsers={staffUsers}
-        canEdit={true}
-        canArchive={true}
-        updateLocation={updateLocation}
-        doesLocationCodeExist={doesLocationCodeExist}
-        revalidateTable={revalidateTable}
-        openConfirmArchiveLocationModal={openConfirmArchiveLocationModal}
-      />
-    )
+    render(<EditLocationModal {...defaultProps} />)
 
     await waitFor(() =>
       expect(screen.getByText("This location is archived and cannot be edited.")).toBeTruthy()
     )
   })
 
-  it("shows Archive button with text 'Archive' for active location", async () => {
-    const onClose = vi.fn()
-    const updateLocation = vi.fn().mockResolvedValue(location)
-    const revalidateTable = vi.fn().mockResolvedValue(undefined)
-    const doesLocationCodeExist = vi.fn().mockResolvedValue(false)
-    const openConfirmArchiveLocationModal = vi.fn()
+  it("shows error message when error is set", async () => {
+    vi.mocked(useEditLocationModal).mockReturnValue({
+      ...defaultHookReturn,
+      error: "Something went wrong",
+    })
 
-    render(
-      <EditLocationModal
-        open={true}
-        onClose={onClose}
-        location={location}
-        services={services}
-        counters={counters}
-        staffUsers={staffUsers}
-        canEdit={true}
-        canArchive={true}
-        updateLocation={updateLocation}
-        doesLocationCodeExist={doesLocationCodeExist}
-        revalidateTable={revalidateTable}
-        openConfirmArchiveLocationModal={openConfirmArchiveLocationModal}
-      />
-    )
+    render(<EditLocationModal {...defaultProps} />)
+
+    await waitFor(() => expect(screen.getByText("Something went wrong")).toBeTruthy())
+  })
+
+  it("shows Archive button for active location when canArchive is true", async () => {
+    render(<EditLocationModal {...defaultProps} />)
 
     await waitFor(() => expect(screen.getByText("Archive")).toBeTruthy())
   })
 
-  it("calls openConfirmArchiveLocationModal when Archive button is clicked", async () => {
-    const onClose = vi.fn()
-    const updateLocation = vi.fn().mockResolvedValue(location)
-    const revalidateTable = vi.fn().mockResolvedValue(undefined)
-    const doesLocationCodeExist = vi.fn().mockResolvedValue(false)
-    const openConfirmArchiveLocationModal = vi.fn()
-
-    render(
-      <EditLocationModal
-        open={true}
-        onClose={onClose}
-        location={location}
-        services={services}
-        counters={counters}
-        staffUsers={staffUsers}
-        canEdit={true}
-        canArchive={true}
-        updateLocation={updateLocation}
-        doesLocationCodeExist={doesLocationCodeExist}
-        revalidateTable={revalidateTable}
-        openConfirmArchiveLocationModal={openConfirmArchiveLocationModal}
-      />
-    )
+  it("calls handleOpenArchive when Archive button is clicked", async () => {
+    render(<EditLocationModal {...defaultProps} />)
 
     await waitFor(() => expect(screen.getByText("Archive")).toBeTruthy())
     fireEvent.click(screen.getByText("Archive"))
-    expect(openConfirmArchiveLocationModal).toHaveBeenCalled()
+    expect(mockHandleOpenArchive).toHaveBeenCalled()
+  })
+
+  it("hides Archive button when canArchive is false", async () => {
+    const { queryByText } = render(<EditLocationModal {...defaultProps} canArchive={false} />)
+
+    await waitFor(() => expect(screen.getByText("Save Changes")).toBeTruthy())
+    expect(queryByText("Archive")).toBeNull()
   })
 
   it("shows Unarchive button for archived location", async () => {
-    const archivedLocation = {
-      ...location,
-      deletedAt: new Date(),
-    } as LocationWithRelations
+    vi.mocked(useEditLocationModal).mockReturnValue({ ...defaultHookReturn, isArchived: true })
 
-    const onClose = vi.fn()
-    const updateLocation = vi.fn().mockResolvedValue(archivedLocation)
-    const revalidateTable = vi.fn().mockResolvedValue(undefined)
-    const doesLocationCodeExist = vi.fn().mockResolvedValue(false)
-    const openConfirmArchiveLocationModal = vi.fn()
-
-    render(
-      <EditLocationModal
-        open={true}
-        onClose={onClose}
-        location={archivedLocation}
-        services={services}
-        counters={counters}
-        staffUsers={staffUsers}
-        canEdit={true}
-        canArchive={true}
-        updateLocation={updateLocation}
-        doesLocationCodeExist={doesLocationCodeExist}
-        revalidateTable={revalidateTable}
-        openConfirmArchiveLocationModal={openConfirmArchiveLocationModal}
-      />
-    )
+    render(<EditLocationModal {...defaultProps} />)
 
     await waitFor(() => expect(screen.getByText("Unarchive")).toBeTruthy())
+  })
+
+  it("disables Save Changes button when isSaveDisabled is true", async () => {
+    vi.mocked(useEditLocationModal).mockReturnValue({ ...defaultHookReturn, isSaveDisabled: true })
+
+    render(<EditLocationModal {...defaultProps} />)
+
+    await waitFor(() => expect(screen.getByRole("button", { name: "Save Changes" })).toBeDisabled())
+  })
+
+  it("shows Saving... text when isSaving is true", async () => {
+    vi.mocked(useEditLocationModal).mockReturnValue({
+      ...defaultHookReturn,
+      isSaving: true,
+      isSaveDisabled: true,
+    })
+
+    render(<EditLocationModal {...defaultProps} />)
+
+    await waitFor(() => expect(screen.getByText("Saving...")).toBeTruthy())
+  })
+
+  it("calls handleSave when Save Changes button is clicked", async () => {
+    render(<EditLocationModal {...defaultProps} />)
+
+    await waitFor(() => expect(screen.getByText("Save Changes")).toBeTruthy())
+    fireEvent.click(screen.getByText("Save Changes"))
+    expect(mockHandleSave).toHaveBeenCalled()
   })
 })

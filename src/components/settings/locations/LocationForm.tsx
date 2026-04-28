@@ -1,12 +1,11 @@
 /** biome-ignore-all lint/suspicious/noEmptyBlockStatements: <Read only inputs> */
 import type { Dispatch, SetStateAction } from "react"
-import { useEffect, useMemo, useRef, useState } from "react"
 import { Notice, TextField } from "@/components/common"
 import { MultiSelect } from "@/components/common/select/MultiSelect"
 import { SelectInput } from "@/components/common/select/SelectInput"
 import { AddressAutocomplete } from "@/components/geocoder"
 import type { Counter, StaffUser } from "@/generated/prisma/client"
-import type { AddressSuggestion } from "@/hooks"
+import { TIMEZONE_OPTIONS, useLocationForm } from "@/hooks/settings/locations/useLocationForm"
 import type { LocationWithRelations } from "@/lib/prisma/location/types"
 import type { ServiceWithRelations } from "@/lib/prisma/service/types"
 
@@ -44,62 +43,33 @@ export const LocationForm = ({
   doesLocationCodeExist,
   isReadonly,
 }: LocationFormProps) => {
-  const [codeExists, setCodeExists] = useState<boolean | null>(null)
-  const initialCodeRef = useRef<string | undefined>(initialCode ?? location.code)
-
-  const selectedServiceCodes = location.services ? location.services.map((s) => s.code) : []
-  const availableServices = services.filter((service) => service.deletedAt === null)
-  const serviceOptions = useMemo(
-    () => availableServices.map((o) => ({ key: o.code, label: o.name })),
-    [availableServices]
-  )
-
-  const selectedCounterIds = location.counters ? location.counters.map((c) => c.id) : []
-  const counterOptions = useMemo(
-    () => counters.map((o) => ({ key: o.id, label: o.name })),
-    [counters]
-  )
-
-  const selectedStaffUserIds = location.staffUsers ? location.staffUsers.map((u) => u.guid) : []
-  const staffUserOptions = useMemo(
-    () => staffUsers.map((o) => ({ key: o.guid, label: o.displayName })),
-    [staffUsers]
-  )
-
-  const timezoneOptions = [
-    { value: "America/Vancouver", label: "Pacific Time (America/Vancouver)" },
-    { value: "America/Edmonton", label: "Mountain Time (America/Edmonton)" },
-  ]
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <>
-  useEffect(() => {
-    // when the location changes (new location loaded) reset initial code and state
-    initialCodeRef.current = initialCode ?? location.code
-    setCodeExists(null)
-  }, [location.updatedAt, initialCode])
-
-  useEffect(() => {
-    // debounce checking location code existence
-    const code = location.code
-    if (!code || code.length === 0) {
-      setCodeExists(null)
-      return
-    }
-
-    // don't warn if the code is unchanged from the initial value
-    if (initialCodeRef.current === code) {
-      setCodeExists(false)
-      return
-    }
-
-    const t = setTimeout(() => {
-      doesLocationCodeExist(code)
-        .then((exists) => setCodeExists(exists))
-        .catch(() => setCodeExists(null))
-    }, 500)
-
-    return () => clearTimeout(t)
-  }, [location.code, doesLocationCodeExist])
+  const {
+    codeExists,
+    selectedServiceCodes,
+    selectedCounterIds,
+    selectedStaffUserIds,
+    serviceOptions,
+    counterOptions,
+    staffUserOptions,
+    handleCodeChange,
+    handleNameChange,
+    handleAddressChange,
+    handleAddressSelect,
+    handleTimezoneChange,
+    handleMailAddressChange,
+    handlePhoneNumberChange,
+    handleServicesChange,
+    handleCountersChange,
+    handleStaffUsersChange,
+  } = useLocationForm({
+    initialCode,
+    location,
+    services,
+    counters,
+    staffUsers,
+    setFormData,
+    doesLocationCodeExist,
+  })
 
   return (
     <div className="flex flex-col gap-2">
@@ -109,7 +79,7 @@ export const LocationForm = ({
           id="location-code"
           label="Code"
           value={location.code || ""}
-          onChange={(v) => setFormData((s) => (s ? { ...s, code: v.replace(/\s/g, "") } : s))}
+          onChange={handleCodeChange}
           disabled={isReadonly}
           required
           className="col-span-3"
@@ -120,7 +90,7 @@ export const LocationForm = ({
           label="Name"
           className="col-span-6"
           value={location.name || ""}
-          onChange={(v) => setFormData((s) => (s ? { ...s, name: v } : s))}
+          onChange={handleNameChange}
           disabled={isReadonly}
           required
         />
@@ -132,37 +102,8 @@ export const LocationForm = ({
             id="location-street-address"
             label="Street Address"
             value={location.streetAddress || ""}
-            onChange={(v) => {
-              // Updates address text, and clears lat/long if address is fully removed
-              setFormData((s) => {
-                if (!s) return s
-                if (v.trim() === "") {
-                  return {
-                    ...s,
-                    streetAddress: undefined,
-                    latitude: undefined,
-                    longitude: undefined,
-                  }
-                }
-                return {
-                  ...s,
-                  streetAddress: v,
-                }
-              })
-            }}
-            onSelect={(suggestion: AddressSuggestion) => {
-              // Update the form with the selected address information
-              setFormData((s) =>
-                s
-                  ? {
-                      ...s,
-                      streetAddress: suggestion.streetName ? suggestion.address : undefined,
-                      latitude: suggestion.coordinates.latitude,
-                      longitude: suggestion.coordinates.longitude,
-                    }
-                  : s
-              )
-            }}
+            onChange={handleAddressChange}
+            onSelect={handleAddressSelect}
             placeholder="Search and select address..."
             disabled={isReadonly}
           />
@@ -186,9 +127,9 @@ export const LocationForm = ({
             id="location-timezone"
             label="Timezone"
             value={location.timezone || ""}
-            onChange={(v) => setFormData((s) => (s ? { ...s, timezone: v } : s))}
+            onChange={handleTimezoneChange}
             disabled={isReadonly}
-            options={timezoneOptions}
+            options={TIMEZONE_OPTIONS}
           />
         </div>
       </div>
@@ -198,7 +139,7 @@ export const LocationForm = ({
           id="location-mail-address"
           label="Mailing Address"
           value={location.mailAddress || ""}
-          onChange={(v) => setFormData((s) => (s ? { ...s, mailAddress: v } : s))}
+          onChange={handleMailAddressChange}
           disabled={isReadonly}
           placeholder="Optional mailing address"
         />
@@ -206,7 +147,7 @@ export const LocationForm = ({
           id="location-phone"
           label="Phone Number"
           value={location.phoneNumber || ""}
-          onChange={(v) => setFormData((s) => (s ? { ...s, phoneNumber: v } : s))}
+          onChange={handlePhoneNumberChange}
           disabled={isReadonly}
           placeholder="Optional phone number"
         />
@@ -218,18 +159,7 @@ export const LocationForm = ({
           label="Services"
           options={serviceOptions}
           selected={selectedServiceCodes}
-          onChange={(selected) =>
-            setFormData((s) =>
-              s
-                ? {
-                    ...s,
-                    services: selected.map(
-                      (code) => services.find((o) => o.code === code) as ServiceWithRelations
-                    ),
-                  }
-                : s
-            )
-          }
+          onChange={handleServicesChange}
           placeholder="Select services"
           disabled={isReadonly}
         />
@@ -238,16 +168,7 @@ export const LocationForm = ({
           label="Counters"
           options={counterOptions}
           selected={selectedCounterIds}
-          onChange={(selected) =>
-            setFormData((s) =>
-              s
-                ? {
-                    ...s,
-                    counters: selected.map((id) => counters.find((c) => c.id === id) as Counter),
-                  }
-                : s
-            )
-          }
+          onChange={handleCountersChange}
           placeholder="Select counters"
           disabled={isReadonly}
         />
@@ -259,18 +180,7 @@ export const LocationForm = ({
           label="Staff Users"
           options={staffUserOptions}
           selected={selectedStaffUserIds}
-          onChange={(selected) =>
-            setFormData((s) =>
-              s
-                ? {
-                    ...s,
-                    staffUsers: selected.map(
-                      (id) => staffUsers.find((u) => u.guid === id) as StaffUser
-                    ),
-                  }
-                : s
-            )
-          }
+          onChange={handleStaffUsersChange}
           placeholder="Select staff users"
           disabled={isReadonly}
         />

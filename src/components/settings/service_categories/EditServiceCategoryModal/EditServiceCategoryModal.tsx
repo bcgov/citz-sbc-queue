@@ -1,7 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { z } from "zod"
 import {
   CloseButton,
   DialogActions,
@@ -11,6 +9,7 @@ import {
   Modal,
 } from "@/components/common/dialog"
 import type { Service } from "@/generated/prisma/client"
+import { useEditServiceCategoryModal } from "@/hooks/settings/service_categories/useEditServiceCategoryModal"
 import type { ServiceCategoryWithRelations } from "@/lib/prisma/service_category/types"
 import { ServiceCategoryForm } from "../ServiceCategoryForm"
 
@@ -39,85 +38,29 @@ export const EditServiceCategoryModal = ({
   revalidateTable,
   openConfirmArchiveServiceCategoryModal,
 }: EditServiceCategoryModalProps) => {
-  const [isSaving, setIsSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [formData, setFormData] = useState<Partial<ServiceCategoryWithRelations> | null>(null)
-  const [isFormValidState, setIsFormValidState] = useState<boolean>(false)
-  const [isFormValidating, setIsFormValidating] = useState<boolean>(false)
-
-  const EditServiceCategoryWithRelationsSchema = z.object({
-    name: z.string().min(1, "Name is required"),
-    deletedAt: z.date().nullable(),
-    createdAt: z.date(),
-    updatedAt: z.date(),
-    services: z.array(z.any()),
+  const {
+    isSaving,
+    error,
+    formData,
+    setFormData,
+    isArchived,
+    isReadonly,
+    isSaveDisabled,
+    handleSave,
+    handleOpenArchive,
+  } = useEditServiceCategoryModal({
+    open,
+    onClose,
+    serviceCategory,
+    services,
+    canEdit,
+    canArchive,
+    updateServiceCategory,
+    revalidateTable,
+    openConfirmArchiveServiceCategoryModal,
   })
 
-  useEffect(() => {
-    if (open && serviceCategory) {
-      setFormData(serviceCategory)
-    }
-  }, [open, serviceCategory])
-
-  // Validate formData asynchronously and update local state instead of calling async validators during render
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <>
-  useEffect(() => {
-    if (!formData) {
-      setIsFormValidState(false)
-      setIsFormValidating(false)
-      return
-    }
-
-    let active = true
-    setIsFormValidating(true)
-
-    EditServiceCategoryWithRelationsSchema.parseAsync(formData)
-      .then(() => {
-        if (active) setIsFormValidState(true)
-      })
-      .catch(() => {
-        if (active) setIsFormValidState(false)
-      })
-      .finally(() => {
-        if (active) setIsFormValidating(false)
-      })
-
-    return () => {
-      active = false
-    }
-  }, [formData])
-
   if (!serviceCategory || !formData) return null
-
-  const isArchived = serviceCategory.deletedAt !== null
-  const isReadonly = isArchived || !canEdit
-
-  const hasMadeChanges = JSON.stringify(formData) !== JSON.stringify(serviceCategory)
-
-  const handleSave = async () => {
-    if (formData && !isReadonly) {
-      try {
-        setIsSaving(true)
-        await updateServiceCategory(formData)
-        await revalidateTable()
-        onClose()
-        setIsSaving(false)
-        window.location.href = "/protected/settings/service-categories"
-      } catch (e: unknown) {
-        if (e instanceof Error) {
-          setError(e.message)
-        } else {
-          setError("An unknown error occurred")
-        }
-        setIsSaving(false)
-      }
-    }
-  }
-
-  const handleOpenArchive = () => {
-    openConfirmArchiveServiceCategoryModal()
-    onClose()
-  }
 
   return (
     <Modal open={open} onClose={onClose} size="md">
@@ -167,14 +110,7 @@ export const EditServiceCategoryModal = ({
             {isArchived ? "Unarchive" : "Archive"}
           </button>
         )}
-        <button
-          type="button"
-          className="primary"
-          onClick={handleSave}
-          disabled={
-            isReadonly || isSaving || isFormValidating || !isFormValidState || !hasMadeChanges
-          }
-        >
+        <button type="button" className="primary" onClick={handleSave} disabled={isSaveDisabled}>
           {isSaving ? "Saving..." : "Save Changes"}
         </button>
       </DialogActions>

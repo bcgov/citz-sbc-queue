@@ -1,7 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { z } from "zod"
 import {
   CloseButton,
   DialogActions,
@@ -11,6 +9,7 @@ import {
   Modal,
 } from "@/components/common/dialog"
 import type { Counter, StaffUser } from "@/generated/prisma/client"
+import { useEditLocationModal } from "@/hooks/settings/locations/useEditLocationModal"
 import type { LocationWithRelations } from "@/lib/prisma/location/types"
 import type { ServiceWithRelations } from "@/lib/prisma/service/types"
 import { LocationForm } from "../LocationForm"
@@ -47,120 +46,32 @@ export const EditLocationModal = ({
   revalidateTable,
   openConfirmArchiveLocationModal,
 }: EditLocationModalProps) => {
-  const [isSaving, setIsSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [formData, setFormData] = useState<Partial<LocationWithRelations> | null>(null)
-  const [previousLocation, setPreviousLocation] = useState<Partial<LocationWithRelations> | null>(
-    null
-  )
-  const [isFormValidState, setIsFormValidState] = useState<boolean>(false)
-  const [isFormValidating, setIsFormValidating] = useState<boolean>(false)
-
-  const hasMadeChanges = JSON.stringify(formData) !== JSON.stringify(previousLocation)
-
-  const EditLocationWithRelationsSchema = z.object({
-    name: z.string().min(1, "Name is required"),
-    code: z
-      .string()
-      .min(1, "Code is required")
-      .refine(
-        async (code) => {
-          if (code === previousLocation?.code) return true
-          return !(await doesLocationCodeExist(code))
-        },
-        { message: "Code already exists" }
-      ),
-    streetAddress: z.string().nullable(),
-    mailAddress: z.string().nullable(),
-    phoneNumber: z
-      .string()
-      .nullable()
-      .refine(
-        (phone) => {
-          // Allow null or empty string (optional field)
-          if (!phone || phone.trim() === "") return true
-          // Must contain at least 10 digits for a valid phone number
-          const digits = phone.replace(/\D/g, "")
-          return digits.length >= 10
-        },
-        { message: "Phone number must contain at least 10 digits" }
-      ),
-    timezone: z.string(),
-    latitude: z.number().nullable(),
-    longitude: z.number().nullable(),
-    legacyOfficeNumber: z.number().nullable(),
-    deletedAt: z.date().nullable(),
-    createdAt: z.date(),
-    updatedAt: z.date(),
-    services: z.array(z.any()),
-    counters: z.array(z.any()),
-    staffUsers: z.array(z.any()),
+  const {
+    isSaving,
+    error,
+    formData,
+    setFormData,
+    isArchived,
+    isReadonly,
+    isSaveDisabled,
+    handleSave,
+    handleOpenArchive,
+  } = useEditLocationModal({
+    open,
+    onClose,
+    location,
+    services,
+    counters,
+    staffUsers,
+    canEdit,
+    canArchive,
+    updateLocation,
+    doesLocationCodeExist,
+    revalidateTable,
+    openConfirmArchiveLocationModal,
   })
 
-  useEffect(() => {
-    if (open && location) {
-      setFormData(location)
-      setPreviousLocation(location)
-    }
-  }, [open, location])
-
-  // Validate formData asynchronously and update local state instead of calling async validators during render
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <>
-  useEffect(() => {
-    if (!formData) {
-      setIsFormValidState(false)
-      setIsFormValidating(false)
-      return
-    }
-
-    let active = true
-    setIsFormValidating(true)
-
-    EditLocationWithRelationsSchema.parseAsync(formData)
-      .then(() => {
-        if (active) setIsFormValidState(true)
-      })
-      .catch(() => {
-        if (active) setIsFormValidState(false)
-      })
-      .finally(() => {
-        if (active) setIsFormValidating(false)
-      })
-
-    return () => {
-      active = false
-    }
-  }, [formData, previousLocation, doesLocationCodeExist])
-
-  if (!location || !formData || !previousLocation) return null
-
-  const isArchived = location.deletedAt !== null
-  const isReadonly = isArchived || !canEdit
-
-  const handleSave = async () => {
-    if (formData && !isReadonly) {
-      try {
-        setIsSaving(true)
-        await updateLocation(formData, previousLocation)
-        await revalidateTable()
-        onClose()
-        setIsSaving(false)
-        window.location.href = "/protected/settings/locations"
-      } catch (e: unknown) {
-        if (e instanceof Error) {
-          setError(e.message)
-        } else {
-          setError("An unknown error occurred")
-        }
-        setIsSaving(false)
-      }
-    }
-  }
-
-  const handleOpenArchive = () => {
-    openConfirmArchiveLocationModal()
-    onClose()
-  }
+  if (!location || !formData) return null
 
   return (
     <Modal open={open} onClose={onClose} size="xl">
@@ -213,14 +124,7 @@ export const EditLocationModal = ({
             {isArchived ? "Unarchive" : "Archive"}
           </button>
         )}
-        <button
-          type="button"
-          className="primary"
-          onClick={handleSave}
-          disabled={
-            isReadonly || isSaving || isFormValidating || !isFormValidState || !hasMadeChanges
-          }
-        >
+        <button type="button" className="primary" onClick={handleSave} disabled={isSaveDisabled}>
           {isSaving ? "Saving..." : "Save Changes"}
         </button>
       </DialogActions>

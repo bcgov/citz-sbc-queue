@@ -1,14 +1,10 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
 import { DataTable } from "@/components/common/datatable"
 import { Switch } from "@/components/common/switch"
 import type { Location, Role, StaffUser } from "@/generated/prisma/client"
-import { useAuth } from "@/hooks/useAuth"
-import { useDialog } from "@/hooks/useDialog/useDialog"
+import { useStaffUserTable } from "@/hooks/settings/users/useStaffUserTable"
 import type { StaffUserWithRelations } from "@/lib/prisma/staff_user/types"
-import { resolvePolicy } from "@/utils/policies/resolvePolicy"
-import type { UserContext } from "@/utils/policies/types"
 import { ConfirmArchiveUserModal } from "../ConfirmArchiveUserModal"
 import { EditStaffUserModal } from "../EditStaffUserModal"
 import { columns } from "./columns"
@@ -32,69 +28,22 @@ export const StaffUserTable = ({
   updateStaffUser,
   revalidateTable,
 }: UserTableProps) => {
-  const { role, idir_user_guid } = useAuth()
   const {
-    open: editUserModalOpen,
-    openDialog: openEditUserModal,
-    closeDialog: closeEditUserModal,
-  } = useDialog()
-  const {
-    open: confirmArchiveUserModalOpen,
-    openDialog: openConfirmArchiveUserModal,
-    closeDialog: closeConfirmArchiveUserModal,
-  } = useDialog()
-
-  const userContext = useMemo<UserContext>(
-    () => ({
-      staff_user_id: idir_user_guid ?? null,
-      role,
-      location_code: currentUser?.locationCode ?? null,
-    }),
-    [idir_user_guid, role, currentUser?.locationCode]
-  )
-
-  const [selectedUser, setSelectedUser] = useState<StaffUser | null>(null)
-  const [canEditSelectedUser, setCanEditSelectedUser] = useState<boolean>(false)
-  const [canArchiveSelectedUser, setCanArchiveSelectedUser] = useState<boolean>(false)
-  const [canEditLocationSelectedUser, setCanEditLocationSelectedUser] = useState<boolean>(false)
-  const [availableRolesForSelectedUser, setAvailableRolesForSelectedUser] = useState<Role[]>([])
-  const [showArchived, setShowArchived] = useState<boolean>(false)
-
-  // Determine if the current user can edit/archive the selected user whenever either changes
-  useEffect(() => {
-    if (selectedUser) {
-      const actions = resolvePolicy("staff_user", userContext, selectedUser)
-      setCanEditSelectedUser(actions.includes("edit"))
-      setCanArchiveSelectedUser(actions.includes("archive"))
-      setCanEditLocationSelectedUser(actions.includes("change_location"))
-
-      // Extract available roles from change_role_to_ actions
-      const availableRoles = actions
-        .filter((action) => action.startsWith("change_role_to_"))
-        .map((action) => action.replace("change_role_to_", "") as Role)
-
-      setAvailableRolesForSelectedUser(availableRoles)
-    } else {
-      setCanEditSelectedUser(false)
-      setCanArchiveSelectedUser(false)
-      setCanEditLocationSelectedUser(false)
-      setAvailableRolesForSelectedUser([])
-    }
-  }, [selectedUser, userContext])
-
-  const handleRowClick = (user: StaffUser) => {
-    setSelectedUser(user)
-    openEditUserModal()
-  }
-
-  const usersToShow = users.filter((user) => {
-    // Filter by archived status
-    if (!showArchived && user.deletedAt !== null) return false
-
-    // Filter by view permission
-    const actions = resolvePolicy("staff_user", userContext, user)
-    return actions.includes("view")
-  })
+    showArchived,
+    setShowArchived,
+    selectedUser,
+    canEditSelectedUser,
+    canArchiveSelectedUser,
+    canEditLocationSelectedUser,
+    availableRolesForSelectedUser,
+    usersToShow,
+    handleRowClick,
+    editUserModalOpen,
+    closeEditUserModal,
+    confirmArchiveUserModalOpen,
+    openConfirmArchiveUserModal,
+    closeConfirmArchiveUserModal,
+  } = useStaffUserTable({ currentUser, users, locations, revalidateTable })
 
   return (
     <>

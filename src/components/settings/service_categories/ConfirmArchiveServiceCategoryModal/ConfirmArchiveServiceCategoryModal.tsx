@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import {
   CloseButton,
   DialogActions,
@@ -10,6 +9,7 @@ import {
   Modal,
 } from "@/components/common/dialog"
 import { SelectInput } from "@/components/common/select"
+import { useConfirmArchiveServiceCategoryModal } from "@/hooks/settings/service_categories/useConfirmArchiveServiceCategoryModal"
 import type { ServiceCategoryWithRelations } from "@/lib/prisma/service_category/types"
 
 type ConfirmArchiveServiceCategoryModalProps = {
@@ -31,84 +31,30 @@ export const ConfirmArchiveServiceCategoryModal = ({
   updateServiceCategory,
   revalidateTable,
 }: ConfirmArchiveServiceCategoryModalProps) => {
-  const [error, setError] = useState<string | null>(null)
-  const [formData, setFormData] = useState<ServiceCategoryWithRelations | null>(null)
-  const [previousServiceCategory, setPreviousServiceCategory] =
-    useState<ServiceCategoryWithRelations | null>(null)
-  const [archiveConfirmation, setArchiveConfirmation] = useState("")
-  const [serviceAction, setServiceAction] = useState<"remove" | "reassign" | "">("")
-  const [newCategoryId, setNewCategoryId] = useState<string>("")
+  const {
+    error,
+    formData,
+    archiveConfirmation,
+    setArchiveConfirmation,
+    serviceAction,
+    setServiceAction,
+    newCategoryId,
+    setNewCategoryId,
+    isArchived,
+    hasServices,
+    isSaveDisabled,
+    handleSave,
+    serviceCategories: filteredCategories,
+  } = useConfirmArchiveServiceCategoryModal({
+    open,
+    onClose,
+    serviceCategory,
+    serviceCategories,
+    updateServiceCategory,
+    revalidateTable,
+  })
 
-  const isArchived = serviceCategory?.deletedAt !== null
-  const hasServices = (serviceCategory?.services?.length ?? 0) > 0
-
-  useEffect(() => {
-    if (open && serviceCategory) {
-      setFormData(serviceCategory)
-      setPreviousServiceCategory(serviceCategory)
-      setArchiveConfirmation("")
-      setServiceAction("")
-      setNewCategoryId("")
-    }
-  }, [open, serviceCategory])
-
-  if (!serviceCategory || !formData || !previousServiceCategory) return null
-
-  const handleSave = async () => {
-    try {
-      if (formData) {
-        if (!isArchived && hasServices) {
-          if (serviceAction === "remove") {
-            // Detach services
-            await updateServiceCategory({ id: formData?.id, deletedAt: new Date(), services: [] })
-          } else if (serviceAction === "reassign" && newCategoryId) {
-            // Reassign services to the new category
-            const newCategory = serviceCategories.find((c) => c.id === newCategoryId)
-            if (newCategory) {
-              const mergedServices = [
-                ...(newCategory.services || []),
-                ...(serviceCategory.services || []),
-              ]
-              // Deduplicate services by code
-              const uniqueServices = Array.from(
-                new Map(mergedServices.map((s) => [s.code, s])).values()
-              )
-
-              // Update the new category to include the transferred services
-              await updateServiceCategory({ id: newCategoryId, services: uniqueServices })
-            }
-            // Now archive the current category and detach its services
-            await updateServiceCategory({
-              id: formData?.id,
-              deletedAt: new Date(),
-              services: [],
-            })
-          }
-        } else {
-          await updateServiceCategory({
-            id: formData?.id,
-            deletedAt: isArchived ? null : new Date(),
-          })
-        }
-
-        await revalidateTable()
-        setArchiveConfirmation("")
-        onClose()
-        window.location.href = "/protected/settings/service-categories"
-      }
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        setError(e.message)
-      } else {
-        setError("An unknown error occurred")
-      }
-    }
-  }
-
-  const isSaveDisabled =
-    archiveConfirmation !== serviceCategory.name ||
-    (!isArchived && hasServices && !serviceAction) ||
-    (!isArchived && hasServices && serviceAction === "reassign" && !newCategoryId)
+  if (!serviceCategory || !formData) return null
 
   return (
     <Modal open={open} onClose={onClose} size={hasServices ? "md" : "sm"}>
@@ -155,7 +101,7 @@ export const ConfirmArchiveServiceCategoryModal = ({
                   disabled={false}
                   options={[
                     { value: "", label: "Select a new category..." },
-                    ...serviceCategories
+                    ...filteredCategories
                       .filter((c) => c.id !== serviceCategory.id && c.deletedAt === null)
                       .map((c) => ({ value: c.id, label: c.name })),
                   ]}
@@ -176,6 +122,9 @@ export const ConfirmArchiveServiceCategoryModal = ({
               id="archive-service"
               value={archiveConfirmation}
               onChange={(e) => setArchiveConfirmation(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !isSaveDisabled) handleSave()
+              }}
               autoComplete="off"
               className="mt-2 block w-full rounded-md border border-border-dark px-2 py-1 text-xs text-typography-primary"
             />

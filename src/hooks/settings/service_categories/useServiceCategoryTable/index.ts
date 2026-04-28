@@ -1,0 +1,1 @@
+export { useServiceCategoryTable } from "./useServiceCategoryTable"

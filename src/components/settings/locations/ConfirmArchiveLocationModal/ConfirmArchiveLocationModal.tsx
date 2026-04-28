@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import {
   CloseButton,
   DialogActions,
@@ -9,6 +8,7 @@ import {
   DialogTitle,
   Modal,
 } from "@/components/common/dialog"
+import { useConfirmArchiveLocationModal } from "@/hooks/settings/locations/useConfirmArchiveLocationModal"
 import type { LocationWithRelations } from "@/lib/prisma/location/types"
 
 type ConfirmArchiveLocationModalProps = {
@@ -29,39 +29,17 @@ export const ConfirmArchiveLocationModal = ({
   updateLocation,
   revalidateTable,
 }: ConfirmArchiveLocationModalProps) => {
-  const [error, setError] = useState<string | null>(null)
-  const [formData, setFormData] = useState<LocationWithRelations | null>(null)
-  const [previousLocation, setPreviousLocation] = useState<LocationWithRelations | null>(null)
-  const [archiveConfirmation, setArchiveConfirmation] = useState("")
+  const {
+    error,
+    formData,
+    archiveConfirmation,
+    setArchiveConfirmation,
+    isArchived,
+    isConfirmDisabled,
+    handleSave,
+  } = useConfirmArchiveLocationModal({ open, onClose, location, updateLocation, revalidateTable })
 
-  const isArchived = location?.deletedAt !== null
-
-  useEffect(() => {
-    if (open && location) {
-      setFormData(location)
-      setPreviousLocation(location)
-    }
-  }, [open, location])
-
-  if (!location || !formData || !previousLocation) return null
-
-  const handleSave = async () => {
-    try {
-      if (formData) {
-        await updateLocation({ deletedAt: isArchived ? null : new Date() }, previousLocation)
-        await revalidateTable()
-        setArchiveConfirmation("")
-        onClose()
-        window.location.href = "/protected/settings/locations"
-      }
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        setError(e.message)
-      } else {
-        setError("An unknown error occurred")
-      }
-    }
-  }
+  if (!location || !formData) return null
 
   return (
     <Modal open={open} onClose={onClose} size="sm">
@@ -91,6 +69,9 @@ export const ConfirmArchiveLocationModal = ({
               id="archive-location"
               value={archiveConfirmation}
               onChange={(e) => setArchiveConfirmation(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !isConfirmDisabled) handleSave()
+              }}
               autoComplete="off"
               className="mt-2 block w-full rounded-md border border-border-dark px-2 py-1 text-xs text-typography-primary"
             />
@@ -106,7 +87,7 @@ export const ConfirmArchiveLocationModal = ({
           type="button"
           className="primary danger"
           onClick={handleSave}
-          disabled={archiveConfirmation !== location.name}
+          disabled={isConfirmDisabled}
         >
           {isArchived ? "Unarchive" : "Archive"}
         </button>
