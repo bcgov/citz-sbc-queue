@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import type { ServiceCategoryWithRelations } from "@/lib/prisma/service_category/types"
 
@@ -32,6 +33,7 @@ export const useConfirmArchiveServiceCategoryModal = ({
   updateServiceCategory,
   revalidateTable,
 }: UseConfirmArchiveServiceCategoryModalProps) => {
+  const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState<ServiceCategoryWithRelations | null>(null)
   const [previousServiceCategory, setPreviousServiceCategory] =
@@ -88,7 +90,7 @@ export const useConfirmArchiveServiceCategoryModal = ({
         await revalidateTable()
         setArchiveConfirmation("")
         onClose()
-        window.location.href = "/protected/settings/service-categories"
+        router.refresh()
       }
     } catch (e: unknown) {
       if (e instanceof Error) {

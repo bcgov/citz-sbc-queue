@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import type { LocationWithRelations } from "@/lib/prisma/location/types"
 
@@ -30,6 +31,7 @@ export const useConfirmArchiveLocationModal = ({
   updateLocation,
   revalidateTable,
 }: UseConfirmArchiveLocationModalProps) => {
+  const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState<LocationWithRelations | null>(null)
   const [previousLocation, setPreviousLocation] = useState<LocationWithRelations | null>(null)
@@ -51,7 +53,7 @@ export const useConfirmArchiveLocationModal = ({
         await revalidateTable()
         setArchiveConfirmation("")
         onClose()
-        window.location.href = "/protected/settings/locations"
+        router.refresh()
       }
     } catch (e: unknown) {
       if (e instanceof Error) {

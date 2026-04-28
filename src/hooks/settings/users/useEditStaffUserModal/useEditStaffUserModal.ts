@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import type { Role, StaffUser } from "@/generated/prisma/client"
 
@@ -42,6 +43,7 @@ export const useEditStaffUserModal = ({
   revalidateTable,
   openConfirmArchiveUserModal,
 }: UseEditStaffUserModalProps) => {
+  const router = useRouter()
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState<StaffUser | null>(null)
@@ -67,7 +69,7 @@ export const useEditStaffUserModal = ({
         await revalidateTable()
         onClose()
         setIsSaving(false)
-        window.location.href = "/protected/settings/users"
+        router.refresh()
       } catch (e: unknown) {
         if (e instanceof Error) {
           setError(e.message)

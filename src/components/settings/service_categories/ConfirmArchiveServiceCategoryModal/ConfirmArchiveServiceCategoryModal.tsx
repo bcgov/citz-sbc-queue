@@ -122,6 +122,9 @@ export const ConfirmArchiveServiceCategoryModal = ({
               id="archive-service"
               value={archiveConfirmation}
               onChange={(e) => setArchiveConfirmation(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !isSaveDisabled) handleSave()
+              }}
               autoComplete="off"
               className="mt-2 block w-full rounded-md border border-border-dark px-2 py-1 text-xs text-typography-primary"
             />

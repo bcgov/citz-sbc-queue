@@ -69,6 +69,9 @@ export const ConfirmArchiveLocationModal = ({
               id="archive-location"
               value={archiveConfirmation}
               onChange={(e) => setArchiveConfirmation(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !isConfirmDisabled) handleSave()
+              }}
               autoComplete="off"
               className="mt-2 block w-full rounded-md border border-border-dark px-2 py-1 text-xs text-typography-primary"
             />

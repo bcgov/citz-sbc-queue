@@ -7,6 +7,10 @@ vi.mock("../ServiceForm", () => ({
   ServiceForm: () => <div>ServiceFormStub</div>,
 }))
 
+vi.mock("next/navigation", () => ({
+  useRouter: vi.fn().mockReturnValue({ refresh: vi.fn() }),
+}))
+
 import type { LocationWithRelations } from "@/lib/prisma/location/types"
 import type { ServiceWithRelations } from "@/lib/prisma/service/types"
 import type { ServiceCategoryWithRelations } from "@/lib/prisma/service_category/types"

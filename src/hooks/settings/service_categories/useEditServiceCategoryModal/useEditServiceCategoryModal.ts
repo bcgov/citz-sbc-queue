@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { z } from "zod"
 import type { Service } from "@/generated/prisma/client"
@@ -40,6 +41,7 @@ export const useEditServiceCategoryModal = ({
   revalidateTable,
   openConfirmArchiveServiceCategoryModal,
 }: UseEditServiceCategoryModalProps) => {
+  const router = useRouter()
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState<Partial<ServiceCategoryWithRelations> | null>(null)
@@ -101,7 +103,7 @@ export const useEditServiceCategoryModal = ({
         await revalidateTable()
         onClose()
         setIsSaving(false)
-        window.location.href = "/protected/settings/service-categories"
+        router.refresh()
       } catch (e: unknown) {
         if (e instanceof Error) {
           setError(e.message)

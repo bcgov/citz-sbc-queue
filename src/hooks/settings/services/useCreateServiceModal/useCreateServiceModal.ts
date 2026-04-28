@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { z } from "zod"
 import type { ServiceWithRelations } from "@/lib/prisma/service/types"
@@ -28,6 +29,7 @@ export const useCreateServiceModal = ({
   doesServiceCodeExist,
   revalidateTable,
 }: UseCreateServiceModalProps) => {
+  const router = useRouter()
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState<Partial<ServiceWithRelations> | null>(null)
@@ -114,7 +116,7 @@ export const useCreateServiceModal = ({
         await revalidateTable()
         onClose()
         setIsSaving(false)
-        window.location.href = "/protected/settings/services"
+        router.refresh()
       } catch (e: unknown) {
         if (e instanceof Error) {
           setError(e.message)

@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { z } from "zod"
 import type { Counter, StaffUser } from "@/generated/prisma/client"
@@ -50,6 +51,7 @@ export const useEditLocationModal = ({
   revalidateTable,
   openConfirmArchiveLocationModal,
 }: UseEditLocationModalProps) => {
+  const router = useRouter()
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState<Partial<LocationWithRelations> | null>(null)
@@ -144,7 +146,7 @@ export const useEditLocationModal = ({
         await revalidateTable()
         onClose()
         setIsSaving(false)
-        window.location.href = "/protected/settings/locations"
+        router.refresh()
       } catch (e: unknown) {
         if (e instanceof Error) {
           setError(e.message)

@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import type { ServiceWithRelations } from "@/lib/prisma/service/types"
 
@@ -30,6 +31,7 @@ export const useConfirmArchiveServiceModal = ({
   updateService,
   revalidateTable,
 }: UseConfirmArchiveServiceModalProps) => {
+  const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState<ServiceWithRelations | null>(null)
   const [previousService, setPreviousService] = useState<ServiceWithRelations | null>(null)
@@ -51,7 +53,7 @@ export const useConfirmArchiveServiceModal = ({
         await revalidateTable()
         setArchiveConfirmation("")
         onClose()
-        window.location.href = "/protected/settings/services"
+        router.refresh()
       } catch (e: unknown) {
         if (e instanceof Error) {
           setError(e.message)
