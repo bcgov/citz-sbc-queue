@@ -1,7 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { z } from "zod"
 import {
   CloseButton,
   DialogActions,
@@ -10,6 +8,7 @@ import {
   DialogTitle,
   Modal,
 } from "@/components/common/dialog"
+import { useEditServiceModal } from "@/hooks/settings/services/useEditServiceModal"
 import type { LocationWithRelations } from "@/lib/prisma/location/types"
 import type { ServiceWithRelations } from "@/lib/prisma/service/types"
 import type { ServiceCategoryWithRelations } from "@/lib/prisma/service_category/types"
@@ -45,103 +44,29 @@ export const EditServiceModal = ({
   revalidateTable,
   openConfirmArchiveServiceModal,
 }: EditServiceModalProps) => {
-  const [isSaving, setIsSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [formData, setFormData] = useState<Partial<ServiceWithRelations> | null>(null)
-  const [previousService, setPreviousService] = useState<Partial<ServiceWithRelations> | null>(null)
-  const [isFormValidState, setIsFormValidState] = useState<boolean>(false)
-  const [isFormValidating, setIsFormValidating] = useState<boolean>(false)
-
-  const hasMadeChanges = JSON.stringify(formData) !== JSON.stringify(previousService)
-
-  const EditServiceWithRelationsSchema = z.object({
-    name: z.string().min(1, "Name is required"),
-    code: z
-      .string()
-      .min(1, "Code is required")
-      .refine(
-        async (code) => {
-          if (code === previousService?.code) return true
-          return !(await doesServiceCodeExist(code))
-        },
-        { message: "Code already exists" }
-      ),
-    description: z.string(),
-    publicName: z.string().min(1, "Public name is required"),
-    ticketPrefix: z.string().min(1, "Ticket prefix is required"),
-    legacyServiceId: z.number().nullable(),
-    backOffice: z.boolean(),
-    deletedAt: z.date().nullable(),
-    createdAt: z.date(),
-    updatedAt: z.date(),
-    locations: z.array(z.any()),
-    categories: z.array(z.any()),
+  const {
+    isSaving,
+    error,
+    formData,
+    setFormData,
+    isArchived,
+    isReadonly,
+    isSaveDisabled,
+    handleSave,
+    handleOpenArchive,
+  } = useEditServiceModal({
+    open,
+    onClose,
+    service,
+    canEdit,
+    canArchive,
+    updateService,
+    doesServiceCodeExist,
+    revalidateTable,
+    openConfirmArchiveServiceModal,
   })
 
-  useEffect(() => {
-    if (open && service) {
-      setFormData(service)
-      setPreviousService(service)
-    }
-  }, [open, service])
-
-  // Validate formData asynchronously and update local state instead of calling async validators during render
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <>
-  useEffect(() => {
-    if (!formData) {
-      setIsFormValidState(false)
-      setIsFormValidating(false)
-      return
-    }
-
-    let active = true
-    setIsFormValidating(true)
-
-    EditServiceWithRelationsSchema.parseAsync(formData)
-      .then(() => {
-        if (active) setIsFormValidState(true)
-      })
-      .catch(() => {
-        if (active) setIsFormValidState(false)
-      })
-      .finally(() => {
-        if (active) setIsFormValidating(false)
-      })
-
-    return () => {
-      active = false
-    }
-  }, [formData, previousService, doesServiceCodeExist])
-
-  if (!service || !formData || !previousService) return null
-
-  const isArchived = service.deletedAt !== null
-  const isReadonly = isArchived || !canEdit
-
-  const handleSave = async () => {
-    if (formData && !isReadonly) {
-      try {
-        setIsSaving(true)
-        await updateService(formData, previousService)
-        await revalidateTable()
-        onClose()
-        setIsSaving(false)
-        window.location.href = "/protected/settings/services"
-      } catch (e: unknown) {
-        if (e instanceof Error) {
-          setError(e.message)
-        } else {
-          setError("An unknown error occurred")
-        }
-        setIsSaving(false)
-      }
-    }
-  }
-
-  const handleOpenArchive = () => {
-    openConfirmArchiveServiceModal()
-    onClose()
-  }
+  if (!service || !formData) return null
 
   return (
     <Modal open={open} onClose={onClose} size="lg">
@@ -193,14 +118,7 @@ export const EditServiceModal = ({
             {isArchived ? "Unarchive" : "Archive"}
           </button>
         )}
-        <button
-          type="button"
-          className="primary"
-          onClick={handleSave}
-          disabled={
-            isReadonly || isSaving || isFormValidating || !isFormValidState || !hasMadeChanges
-          }
-        >
+        <button type="button" className="primary" onClick={handleSave} disabled={isSaveDisabled}>
           {isSaving ? "Saving..." : "Save Changes"}
         </button>
       </DialogActions>

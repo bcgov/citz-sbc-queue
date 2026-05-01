@@ -1,0 +1,1 @@
+export { useServiceTable } from "./useServiceTable"

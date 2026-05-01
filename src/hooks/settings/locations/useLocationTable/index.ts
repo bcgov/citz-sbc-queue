@@ -1,0 +1,1 @@
+export { useLocationTable } from "./useLocationTable"

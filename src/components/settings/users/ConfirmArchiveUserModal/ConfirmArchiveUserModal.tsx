@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import {
   CloseButton,
   DialogActions,
@@ -10,6 +9,7 @@ import {
   Modal,
 } from "@/components/common/dialog"
 import type { Role, StaffUser } from "@/generated/prisma/client"
+import { useConfirmArchiveUserModal } from "@/hooks/settings/users/useConfirmArchiveUserModal"
 
 type ConfirmArchiveUserModalProps = {
   open: boolean
@@ -30,39 +30,23 @@ export const ConfirmArchiveUserModal = ({
   updateStaffUser,
   revalidateTable,
 }: ConfirmArchiveUserModalProps) => {
-  const [error, setError] = useState<string | null>(null)
-  const [formData, setFormData] = useState<StaffUser | null>(null)
-  const [previousUser, setPreviousUser] = useState<StaffUser | null>(null)
-  const [archiveConfirmation, setArchiveConfirmation] = useState("")
+  const {
+    error,
+    formData,
+    archiveConfirmation,
+    setArchiveConfirmation,
+    isArchived,
+    isSaveDisabled,
+    handleSave,
+  } = useConfirmArchiveUserModal({
+    open,
+    onClose,
+    user,
+    updateStaffUser,
+    revalidateTable,
+  })
 
-  const isArchived = user?.deletedAt !== null
-
-  useEffect(() => {
-    if (open && user) {
-      setFormData(user)
-      setPreviousUser(user)
-    }
-  }, [open, user])
-
-  if (!user || !formData || !previousUser) return null
-
-  const handleSave = async () => {
-    if (formData) {
-      try {
-        await updateStaffUser({ deletedAt: isArchived ? null : new Date() }, previousUser)
-        await revalidateTable()
-        setArchiveConfirmation("")
-        onClose()
-        window.location.href = "/protected/settings/users"
-      } catch (e: unknown) {
-        if (e instanceof Error) {
-          setError(e.message)
-        } else {
-          setError("An unknown error occurred.")
-        }
-      }
-    }
-  }
+  if (!user || !formData) return null
 
   return (
     <Modal open={open} onClose={onClose} size="sm">
@@ -92,6 +76,9 @@ export const ConfirmArchiveUserModal = ({
               id="archive-user"
               value={archiveConfirmation}
               onChange={(e) => setArchiveConfirmation(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !isSaveDisabled) handleSave()
+              }}
               autoComplete="off"
               className="mt-2 block w-full rounded-md border border-border-dark px-2 py-1 text-xs text-typography-primary"
             />
@@ -107,7 +94,7 @@ export const ConfirmArchiveUserModal = ({
           type="button"
           className="primary danger"
           onClick={handleSave}
-          disabled={archiveConfirmation !== user.username}
+          disabled={isSaveDisabled}
         >
           {isArchived ? "Unarchive" : "Archive"}
         </button>

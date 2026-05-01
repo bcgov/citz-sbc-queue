@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import {
   CloseButton,
   DialogActions,
@@ -10,6 +9,7 @@ import {
   Modal,
 } from "@/components/common/dialog"
 import type { Location, Role, StaffUser } from "@/generated/prisma/client"
+import { useEditStaffUserModal } from "@/hooks/settings/users/useEditStaffUserModal"
 import { PermissionsSection } from "./sections/PermissionsSection"
 import { RoleAndAssignmentSection } from "./sections/RoleAndAssignmentSection"
 import { UserInformationSection } from "./sections/UserInformationSection"
@@ -45,49 +45,29 @@ export const EditStaffUserModal = ({
   revalidateTable,
   openConfirmArchiveUserModal,
 }: EditStaffUserModalProps) => {
-  const [isSaving, setIsSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [formData, setFormData] = useState<StaffUser | null>(null)
-  const [previousUser, setPreviousUser] = useState<StaffUser | null>(null)
+  const {
+    isSaving,
+    error,
+    formData,
+    setFormData,
+    isArchived,
+    isReadonly,
+    isSaveDisabled,
+    handleSave,
+    handleOpenArchive,
+  } = useEditStaffUserModal({
+    open,
+    onClose,
+    user,
+    canEdit,
+    canArchive,
+    availableRoles,
+    updateStaffUser,
+    revalidateTable,
+    openConfirmArchiveUserModal,
+  })
 
-  useEffect(() => {
-    if (open && user) {
-      setFormData(user)
-      setPreviousUser(user)
-    }
-  }, [open, user])
-
-  if (!user || !formData || !previousUser) return null
-
-  const isArchived = user.deletedAt !== null
-  const isReadonly = isArchived || !canEdit
-
-  const hasMadeChanges = JSON.stringify(formData) !== JSON.stringify(previousUser)
-
-  const handleSave = async () => {
-    if (formData && !isReadonly) {
-      try {
-        setIsSaving(true)
-        await updateStaffUser(formData, previousUser, availableRoles)
-        await revalidateTable()
-        onClose()
-        setIsSaving(false)
-        window.location.href = "/protected/settings/users" // Force re-fetch
-      } catch (e: unknown) {
-        if (e instanceof Error) {
-          setError(e.message)
-        } else {
-          setError("An unknown error occurred")
-        }
-        setIsSaving(false)
-      }
-    }
-  }
-
-  const handleOpenArchive = () => {
-    openConfirmArchiveUserModal()
-    onClose()
-  }
+  if (!user || !formData) return null
 
   return (
     <Modal open={open} onClose={onClose} size="lg">
@@ -144,12 +124,7 @@ export const EditStaffUserModal = ({
             {isArchived ? "Unarchive" : "Archive"}
           </button>
         )}
-        <button
-          type="button"
-          className="primary"
-          onClick={handleSave}
-          disabled={isReadonly || isSaving || !hasMadeChanges}
-        >
+        <button type="button" className="primary" onClick={handleSave} disabled={isSaveDisabled}>
           {isSaving ? "Saving..." : "Save Changes"}
         </button>
       </DialogActions>

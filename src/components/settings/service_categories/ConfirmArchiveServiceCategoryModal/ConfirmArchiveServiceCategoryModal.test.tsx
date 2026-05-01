@@ -3,6 +3,11 @@ import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import type { ServiceCategoryWithRelations } from "@/lib/prisma/service_category/types"
+
+vi.mock("next/navigation", () => ({
+  useRouter: vi.fn().mockReturnValue({ refresh: vi.fn() }),
+}))
+
 import { ConfirmArchiveServiceCategoryModal } from "./ConfirmArchiveServiceCategoryModal"
 
 describe("ConfirmArchiveServiceCategoryModal", () => {
@@ -183,5 +188,63 @@ describe("ConfirmArchiveServiceCategoryModal", () => {
       2,
       expect.objectContaining({ id: "1", services: [] }) // Archived and detached
     )
+  })
+
+  it("saves when Enter is pressed and confirmation matches", async () => {
+    const serviceCategory = {
+      id: "1",
+      name: "Cat 1",
+      deletedAt: null,
+      services: [],
+    } as unknown as ServiceCategoryWithRelations
+    const updateServiceCategory = vi.fn().mockResolvedValue(serviceCategory)
+    const revalidateTable = vi.fn().mockResolvedValue(undefined)
+    const onClose = vi.fn()
+
+    render(
+      <ConfirmArchiveServiceCategoryModal
+        open={true}
+        onClose={onClose}
+        serviceCategory={serviceCategory}
+        updateServiceCategory={updateServiceCategory}
+        revalidateTable={revalidateTable}
+      />
+    )
+
+    const input = await screen.findByRole("textbox")
+    await userEvent.type(input, serviceCategory.name)
+    await userEvent.keyboard("{Enter}")
+
+    await waitFor(() => expect(updateServiceCategory).toHaveBeenCalled())
+    expect(onClose).toHaveBeenCalled()
+  })
+
+  it("does not save when Enter is pressed with incomplete confirmation", async () => {
+    const serviceCategory = {
+      id: "1",
+      name: "Cat 1",
+      deletedAt: null,
+      services: [],
+    } as unknown as ServiceCategoryWithRelations
+    const updateServiceCategory = vi.fn().mockResolvedValue(serviceCategory)
+    const revalidateTable = vi.fn().mockResolvedValue(undefined)
+    const onClose = vi.fn()
+
+    render(
+      <ConfirmArchiveServiceCategoryModal
+        open={true}
+        onClose={onClose}
+        serviceCategory={serviceCategory}
+        updateServiceCategory={updateServiceCategory}
+        revalidateTable={revalidateTable}
+      />
+    )
+
+    const input = await screen.findByRole("textbox")
+    await userEvent.type(input, "wrong")
+    await userEvent.keyboard("{Enter}")
+
+    expect(updateServiceCategory).not.toHaveBeenCalled()
+    expect(onClose).not.toHaveBeenCalled()
   })
 })
