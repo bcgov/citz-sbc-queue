@@ -1,0 +1,1 @@
+export { useCounterTable } from "./useCounterTable"
