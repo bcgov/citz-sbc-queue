@@ -1,6 +1,6 @@
 import type { Policy } from "../types"
 
-export const CounterPolicy: Policy = (user_context, _data) => {
+export const CounterPolicy: Policy = (user_context, data) => {
   const { role } = user_context
   const actions = new Set<string>()
 
@@ -13,8 +13,8 @@ export const CounterPolicy: Policy = (user_context, _data) => {
     actions.add("edit")
   }
 
-  // Only Administrators can delete counters
-  if (role === "Administrator") actions.add("delete")
+  // Only Administrators can delete counters, except the default "Counter" which is protected from deletion
+  if (role === "Administrator" && data?.name !== "Counter") actions.add("delete")
 
   return Array.from(actions)
 }

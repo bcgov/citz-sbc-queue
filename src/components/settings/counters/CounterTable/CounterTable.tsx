@@ -9,12 +9,6 @@ import { columns } from "./columns"
 export type CounterTableProps = {
   currentUser: StaffUserWithRelations | null
   counters: CounterWithRelations[]
-  updateCounter: (
-    counter: Partial<CounterWithRelations>,
-    prevCounter: Partial<CounterWithRelations>
-  ) => Promise<CounterWithRelations | null>
-  insertCounter: (counter: Partial<CounterWithRelations>) => Promise<CounterWithRelations | null>
-  deleteCounter: (counterId: string) => Promise<void>
   revalidateTable: () => Promise<void>
 }
 
