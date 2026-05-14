@@ -1,4 +1,10 @@
-import { FolderOpenIcon, HandRaisedIcon, MapPinIcon, UsersIcon } from "@heroicons/react/24/outline"
+import {
+  ComputerDesktopIcon,
+  FolderOpenIcon,
+  HandRaisedIcon,
+  MapPinIcon,
+  UsersIcon,
+} from "@heroicons/react/24/outline"
 
 export const NAV_ITEMS = [
   {
@@ -20,5 +26,10 @@ export const NAV_ITEMS = [
     label: "Service Categories",
     href: "/protected/settings/service-categories",
     icon: <FolderOpenIcon className="h-7 w-7 text-blue" />,
+  },
+  {
+    label: "Counters",
+    href: "/protected/settings/counters",
+    icon: <ComputerDesktopIcon className="h-7 w-7 text-blue" />,
   },
 ]

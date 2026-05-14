@@ -1,3 +1,4 @@
+import { CounterPolicy } from "./resources/counter"
 import { LocationPolicy } from "./resources/location"
 import { ServicePolicy } from "./resources/service"
 import { ServiceCategoryPolicy } from "./resources/service_category"
@@ -20,6 +21,7 @@ import type { Policies } from "./types"
  * such as "moderate", "publish", "lock", or "approve".
  */
 export const policies: Policies = {
+  counter: CounterPolicy,
   staff_user: StaffUserPolicy,
   location: LocationPolicy,
   service: ServicePolicy,

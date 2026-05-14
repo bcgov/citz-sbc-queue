@@ -1,11 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import type { Counter, CSR, StaffUser } from "@/generated/prisma/client"
-import { getCounterByName } from "@/lib/prisma/counter/read"
+import type { CSR } from "@/generated/prisma/client"
+import { getCounterByName } from "@/lib/prisma/counter/getCounterByName"
+import type { CounterWithRelations } from "@/lib/prisma/counter/types"
 import { getCSRByUsername } from "@/lib/prisma/legacy/csr/getCSRByUsername"
 import { getLocationByLegacyOfficeId } from "@/lib/prisma/location/getLocationByLegacyOfficeId"
 import type { LocationWithRelations } from "@/lib/prisma/location/types"
 import { getStaffUserBySub } from "@/lib/prisma/staff_user/getStaffUserBySub"
 import { insertStaffUser } from "@/lib/prisma/staff_user/insertStaffUser"
+import type { StaffUserWithRelations } from "@/lib/prisma/staff_user/types"
 import { updateStaffUser } from "@/lib/prisma/staff_user/updateStaffUser"
 import { decodeJWT } from "@/utils/auth/jwt/decodeJWT"
 import type { SSOIdirUser } from "@/utils/auth/types"
@@ -20,7 +22,7 @@ vi.mock("./assignNewRoleFromCSR", () => ({ assignNewRoleFromCSR: vi.fn() }))
 vi.mock("@/lib/prisma/location/getLocationByLegacyOfficeId", () => ({
   getLocationByLegacyOfficeId: vi.fn(),
 }))
-vi.mock("@/lib/prisma/counter/read", () => ({ getCounterByName: vi.fn() }))
+vi.mock("@/lib/prisma/counter/getCounterByName", () => ({ getCounterByName: vi.fn() }))
 vi.mock("@/lib/prisma/staff_user/insertStaffUser", () => ({ insertStaffUser: vi.fn() }))
 
 describe("updateUserOnLogin", () => {
@@ -61,8 +63,8 @@ describe("updateUserOnLogin", () => {
   })
 
   it("updates existing staff user when found", async () => {
-    const existingUser: Partial<StaffUser> = { guid: "existing-guid", sub: "test-sub" }
-    vi.mocked(getStaffUserBySub).mockResolvedValueOnce(existingUser as StaffUser)
+    const existingUser: Partial<StaffUserWithRelations> = { guid: "existing-guid", sub: "test-sub" }
+    vi.mocked(getStaffUserBySub).mockResolvedValueOnce(existingUser as StaffUserWithRelations)
 
     await updateUserOnLogin("token")
 
@@ -95,7 +97,9 @@ describe("updateUserOnLogin", () => {
     vi.mocked(getLocationByLegacyOfficeId).mockResolvedValueOnce({
       code: "loc-id-1",
     } as LocationWithRelations)
-    vi.mocked(getCounterByName).mockResolvedValueOnce({ id: "counter-id-1" } as Counter)
+    vi.mocked(getCounterByName).mockResolvedValueOnce({
+      id: "counter-id-1",
+    } as CounterWithRelations)
 
     await updateUserOnLogin("token")
 

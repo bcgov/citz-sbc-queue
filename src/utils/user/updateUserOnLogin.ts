@@ -1,7 +1,7 @@
 "use server"
 
 import type { Role } from "@/generated/prisma/enums"
-import { getCounterByName } from "@/lib/prisma/counter/read"
+import { getCounterByName } from "@/lib/prisma/counter/getCounterByName"
 import { getCSRByUsername } from "@/lib/prisma/legacy/csr/getCSRByUsername"
 import { getLocationByLegacyOfficeId } from "@/lib/prisma/location/getLocationByLegacyOfficeId"
 import { getStaffUserBySub } from "@/lib/prisma/staff_user/getStaffUserBySub"
