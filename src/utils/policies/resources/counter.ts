@@ -10,7 +10,7 @@ export const CounterPolicy: Policy = (user_context, data) => {
   // SDM and Administrator can create and edit counters
   if (role === "SDM" || role === "Administrator") {
     actions.add("create")
-    actions.add("edit")
+    if (data?.name !== "Counter") actions.add("edit") // Allow editing of any counter except the default "Counter"
   }
 
   // Only Administrators can delete counters, except the default "Counter" which is protected from deletion
