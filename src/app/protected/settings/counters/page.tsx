@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache"
 import { headers } from "next/headers"
 import { CounterTable } from "@/components/settings/counters/CounterTable"
+import { deleteCounter } from "@/lib/prisma/counter/deleteCounter"
 import { getAllCounters } from "@/lib/prisma/counter/getAllCounters"
 import { insertCounter } from "@/lib/prisma/counter/insertCounter"
 import { updateCounter } from "@/lib/prisma/counter/updateCounter"
@@ -37,6 +38,7 @@ export default async function Page() {
         staffUsers={staffUsers}
         updateCounter={updateCounter}
         insertCounter={insertCounter}
+        deleteCounter={deleteCounter}
         revalidateTable={revalidateTable}
       />
     </div>

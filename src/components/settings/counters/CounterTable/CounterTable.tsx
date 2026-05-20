@@ -5,6 +5,7 @@ import { useCounterTable } from "@/hooks/settings/counters/useCounterTable"
 import type { CounterWithRelations } from "@/lib/prisma/counter/types"
 import type { LocationWithRelations } from "@/lib/prisma/location/types"
 import type { StaffUserWithRelations } from "@/lib/prisma/staff_user/types"
+import { ConfirmDeleteCounterModal } from "../ConfirmDeleteCounterModal"
 import { CreateCounterModal } from "../CreateCounterModal"
 import { EditCounterModal } from "../EditCounterModal"
 import { columns } from "./columns"
@@ -19,6 +20,7 @@ export type CounterTableProps = {
     prevCounter: Partial<CounterWithRelations>
   ) => Promise<CounterWithRelations | null>
   insertCounter: (counter: Partial<CounterWithRelations>) => Promise<CounterWithRelations | null>
+  deleteCounter: (id: string) => Promise<boolean>
   revalidateTable: () => Promise<void>
 }
 
@@ -29,12 +31,14 @@ export const CounterTable = ({
   staffUsers,
   updateCounter,
   insertCounter,
+  deleteCounter,
   revalidateTable,
 }: CounterTableProps) => {
   const {
     selectedCounter,
     canCreate,
     canEditSelectedCounter,
+    canDeleteSelectedCounter,
     countersToShow,
     handleRowClick,
     editCounterModalOpen,
@@ -42,6 +46,9 @@ export const CounterTable = ({
     createCounterModalOpen,
     openCreateCounterModal,
     closeCreateCounterModal,
+    deleteCounterModalOpen,
+    openDeleteCounterModal,
+    closeDeleteCounterModal,
   } = useCounterTable({
     currentUser,
     counters,
@@ -79,8 +86,10 @@ export const CounterTable = ({
         locations={locations}
         staffUsers={staffUsers}
         canEdit={canEditSelectedCounter}
+        canDelete={canDeleteSelectedCounter}
         updateCounter={updateCounter}
         revalidateTable={revalidateTable}
+        openConfirmDeleteCounterModal={openDeleteCounterModal}
       />
       <CreateCounterModal
         open={createCounterModalOpen}
@@ -88,6 +97,13 @@ export const CounterTable = ({
         locations={locations}
         staffUsers={staffUsers}
         insertCounter={insertCounter}
+        revalidateTable={revalidateTable}
+      />
+      <ConfirmDeleteCounterModal
+        open={deleteCounterModalOpen}
+        onClose={closeDeleteCounterModal}
+        counter={selectedCounter}
+        deleteCounter={deleteCounter}
         revalidateTable={revalidateTable}
       />
     </>
