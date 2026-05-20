@@ -21,11 +21,13 @@ type EditCounterModalProps = {
   locations: LocationWithRelations[]
   staffUsers: StaffUserWithRelations[]
   canEdit: boolean
+  canDelete: boolean
   updateCounter: (
     counter: Partial<CounterWithRelations>,
     prevCounter: Partial<CounterWithRelations>
   ) => Promise<CounterWithRelations | null>
   revalidateTable: () => Promise<void>
+  openConfirmDeleteCounterModal: () => void
 }
 
 export const EditCounterModal = ({
@@ -35,18 +37,30 @@ export const EditCounterModal = ({
   locations,
   staffUsers,
   canEdit,
+  canDelete,
   updateCounter,
   revalidateTable,
+  openConfirmDeleteCounterModal,
 }: EditCounterModalProps) => {
-  const { isSaving, error, formData, setFormData, isReadonly, isSaveDisabled, handleSave } =
-    useEditCounterModal({
-      open,
-      onClose,
-      counter,
-      canEdit,
-      updateCounter,
-      revalidateTable,
-    })
+  const {
+    isSaving,
+    error,
+    formData,
+    setFormData,
+    isReadonly,
+    isSaveDisabled,
+    handleSave,
+    handleOpenDelete,
+  } = useEditCounterModal({
+    open,
+    onClose,
+    counter,
+    canEdit,
+    canDelete,
+    updateCounter,
+    revalidateTable,
+    openConfirmDeleteCounterModal,
+  })
 
   if (!counter || !formData) return null
 
@@ -88,6 +102,11 @@ export const EditCounterModal = ({
         <button type="button" className="tertiary" onClick={onClose}>
           Cancel
         </button>
+        {canDelete && (
+          <button type="button" className="secondary danger" onClick={handleOpenDelete}>
+            Delete
+          </button>
+        )}
         <button type="button" className="primary" onClick={handleSave} disabled={isSaveDisabled}>
           {isSaving ? "Saving..." : "Save Changes"}
         </button>

@@ -8,11 +8,13 @@ type UseEditCounterModalProps = {
   onClose: () => void
   counter: CounterWithRelations | null
   canEdit: boolean
+  canDelete: boolean
   updateCounter: (
     counter: Partial<CounterWithRelations>,
     prevCounter: Partial<CounterWithRelations>
   ) => Promise<CounterWithRelations | null>
   revalidateTable: () => Promise<void>
+  openConfirmDeleteCounterModal: () => void
 }
 
 const EditCounterSchema = z.object({
@@ -38,8 +40,10 @@ export const useEditCounterModal = ({
   onClose,
   counter,
   canEdit,
+  canDelete,
   updateCounter,
   revalidateTable,
+  openConfirmDeleteCounterModal,
 }: UseEditCounterModalProps) => {
   const router = useRouter()
   const [isSaving, setIsSaving] = useState(false)
@@ -92,6 +96,11 @@ export const useEditCounterModal = ({
 
   const isSaveDisabled = isReadonly || isSaving || !isFormValid || !hasMadeChanges
 
+  const handleOpenDelete = () => {
+    openConfirmDeleteCounterModal()
+    onClose()
+  }
+
   return {
     isSaving,
     error,
@@ -99,6 +108,8 @@ export const useEditCounterModal = ({
     setFormData,
     isReadonly,
     isSaveDisabled,
+    canDelete,
     handleSave,
+    handleOpenDelete,
   }
 }
