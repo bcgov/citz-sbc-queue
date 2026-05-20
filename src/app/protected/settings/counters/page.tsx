@@ -2,6 +2,10 @@ import { revalidatePath } from "next/cache"
 import { headers } from "next/headers"
 import { CounterTable } from "@/components/settings/counters/CounterTable"
 import { getAllCounters } from "@/lib/prisma/counter/getAllCounters"
+import { insertCounter } from "@/lib/prisma/counter/insertCounter"
+import { updateCounter } from "@/lib/prisma/counter/updateCounter"
+import { getAllLocations } from "@/lib/prisma/location/getAllLocations"
+import { getAllStaffUsers } from "@/lib/prisma/staff_user/getAllStaffUsers"
 import { getStaffUserBySub } from "@/lib/prisma/staff_user/getStaffUserBySub"
 import { getAuthContext } from "@/utils/auth/getAuthContext"
 
@@ -15,6 +19,8 @@ export default async function Page() {
 
   const currentUser = await getStaffUserBySub(user?.sub ?? "")
   const counters = await getAllCounters()
+  const locations = await getAllLocations()
+  const staffUsers = await getAllStaffUsers()
 
   const revalidateTable = async () => {
     "use server"
@@ -27,6 +33,10 @@ export default async function Page() {
       <CounterTable
         currentUser={currentUser}
         counters={counters}
+        locations={locations}
+        staffUsers={staffUsers}
+        updateCounter={updateCounter}
+        insertCounter={insertCounter}
         revalidateTable={revalidateTable}
       />
     </div>
