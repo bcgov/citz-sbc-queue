@@ -65,6 +65,12 @@ export const useLocationForm = ({
     [staffUsers]
   )
 
+  // IDs of counters named "Counter" that are currently assigned to this location
+  const lockedCounterIds = useMemo(
+    () => (location.counters ?? []).filter((c) => c.name === "Counter").map((c) => c.id),
+    [location.counters]
+  )
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: <>
   useEffect(() => {
     // when the location changes (new location loaded) reset initial code and state
@@ -153,11 +159,13 @@ export const useLocationForm = ({
   }
 
   const handleCountersChange = (selected: string[]) => {
+    // Ensure locked counters (named "Counter") are never removed
+    const withLocked = Array.from(new Set([...lockedCounterIds, ...selected]))
     setFormData((s) =>
       s
         ? {
             ...s,
-            counters: selected.map((id) => counters.find((c) => c.id === id) as Counter),
+            counters: withLocked.map((id) => counters.find((c) => c.id === id) as Counter),
           }
         : s
     )
@@ -181,6 +189,7 @@ export const useLocationForm = ({
     selectedStaffUserIds,
     serviceOptions,
     counterOptions,
+    lockedCounterIds,
     staffUserOptions,
     handleCodeChange,
     handleNameChange,

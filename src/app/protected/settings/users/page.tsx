@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache"
 import { headers } from "next/headers"
 import { StaffUserTable } from "@/components/settings/users/StaffUserTable"
+import { getAllCounters } from "@/lib/prisma/counter/getAllCounters"
 import { getAllLocations } from "@/lib/prisma/location/getAllLocations"
 import { getAllStaffUsers } from "@/lib/prisma/staff_user/getAllStaffUsers"
 import { getStaffUserBySub } from "@/lib/prisma/staff_user/getStaffUserBySub"
@@ -23,6 +24,7 @@ export default async function Page() {
   const currentUser = await getStaffUserBySub(user?.sub ?? "")
   const users = await getAllStaffUsers()
   const locations = await getAllLocations()
+  const counters = await getAllCounters()
 
   return (
     <div className="space-y-sm">
@@ -31,6 +33,7 @@ export default async function Page() {
         currentUser={currentUser}
         users={users}
         locations={locations}
+        counters={counters}
         updateStaffUser={updateStaffUser}
         revalidateTable={revalidateTable}
       />

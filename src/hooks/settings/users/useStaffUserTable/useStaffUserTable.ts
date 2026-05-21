@@ -1,15 +1,16 @@
 import { useEffect, useMemo, useState } from "react"
-import type { Location, Role, StaffUser } from "@/generated/prisma/client"
+import type { Role } from "@/generated/prisma/client"
 import { useAuth } from "@/hooks/useAuth"
 import { useDialog } from "@/hooks/useDialog"
+import type { LocationWithRelations } from "@/lib/prisma/location/types"
 import type { StaffUserWithRelations } from "@/lib/prisma/staff_user/types"
 import { resolvePolicy } from "@/utils/policies/resolvePolicy"
 import type { UserContext } from "@/utils/policies/types"
 
 type UseStaffUserTableProps = {
   currentUser: StaffUserWithRelations | null
-  users: StaffUser[]
-  locations: Location[]
+  users: StaffUserWithRelations[]
+  locations: LocationWithRelations[]
   revalidateTable: () => Promise<void>
 }
 
@@ -46,7 +47,7 @@ export const useStaffUserTable = ({ currentUser, users }: UseStaffUserTableProps
     [idir_user_guid, role, currentUser?.locationCode]
   )
 
-  const [selectedUser, setSelectedUser] = useState<StaffUser | null>(null)
+  const [selectedUser, setSelectedUser] = useState<StaffUserWithRelations | null>(null)
   const [canEditSelectedUser, setCanEditSelectedUser] = useState<boolean>(false)
   const [canArchiveSelectedUser, setCanArchiveSelectedUser] = useState<boolean>(false)
   const [canEditLocationSelectedUser, setCanEditLocationSelectedUser] = useState<boolean>(false)
@@ -75,12 +76,12 @@ export const useStaffUserTable = ({ currentUser, users }: UseStaffUserTableProps
     }
   }, [selectedUser, userContext])
 
-  const handleRowClick = (user: StaffUser) => {
+  const handleRowClick = (user: StaffUserWithRelations) => {
     setSelectedUser(user)
     openEditUserModal()
   }
 
-  const usersToShow = users.filter((user) => {
+  const usersToShow = users.filter((user: StaffUserWithRelations) => {
     if (!showArchived && user.deletedAt !== null) return false
     const actions = resolvePolicy("staff_user", userContext, user)
     return actions.includes("view")

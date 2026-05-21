@@ -50,6 +50,7 @@ export const LocationForm = ({
     selectedStaffUserIds,
     serviceOptions,
     counterOptions,
+    lockedCounterIds,
     staffUserOptions,
     handleCodeChange,
     handleNameChange,
@@ -171,6 +172,7 @@ export const LocationForm = ({
           onChange={handleCountersChange}
           placeholder="Select counters"
           disabled={isReadonly}
+          locked={lockedCounterIds}
         />
       </div>
 

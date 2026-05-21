@@ -1,11 +1,11 @@
 import type { Dispatch, SetStateAction } from "react"
 import { CheckboxInput } from "@/components/common/checkbox"
-import type { StaffUser } from "@/generated/prisma/client"
+import type { StaffUserWithRelations } from "@/lib/prisma/staff_user/types"
 import { Section } from "./Section"
 
 type PermissionsSectionProps = {
-  user: StaffUser
-  setFormData: Dispatch<SetStateAction<StaffUser | null>>
+  user: StaffUserWithRelations
+  setFormData: Dispatch<SetStateAction<StaffUserWithRelations | null>>
   disabled?: boolean
 }
 

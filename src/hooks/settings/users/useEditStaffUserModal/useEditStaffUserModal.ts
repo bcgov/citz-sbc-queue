@@ -1,18 +1,19 @@
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import type { Role, StaffUser } from "@/generated/prisma/client"
+import type { Role } from "@/generated/prisma/client"
+import type { StaffUserWithRelations } from "@/lib/prisma/staff_user/types"
 
 type UseEditStaffUserModalProps = {
   open: boolean
   onClose: () => void
-  user: StaffUser | null
+  user: StaffUserWithRelations | null
   canEdit: boolean
   canArchive: boolean
   updateStaffUser: (
-    user: Partial<StaffUser>,
-    prevUser: Partial<StaffUser>,
+    user: Partial<StaffUserWithRelations>,
+    prevUser: Partial<StaffUserWithRelations>,
     availableRoles: Role[]
-  ) => Promise<StaffUser | null>
+  ) => Promise<StaffUserWithRelations | null>
   availableRoles: Role[]
   revalidateTable: () => Promise<void>
   openConfirmArchiveUserModal: () => void
@@ -46,8 +47,8 @@ export const useEditStaffUserModal = ({
   const router = useRouter()
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [formData, setFormData] = useState<StaffUser | null>(null)
-  const [previousUser, setPreviousUser] = useState<StaffUser | null>(null)
+  const [formData, setFormData] = useState<StaffUserWithRelations | null>(null)
+  const [previousUser, setPreviousUser] = useState<StaffUserWithRelations | null>(null)
 
   useEffect(() => {
     if (open && user) {
