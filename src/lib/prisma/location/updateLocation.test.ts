@@ -3,8 +3,16 @@ import { prisma } from "@/utils/db/prisma"
 import type { LocationWithRelations } from "./types"
 import { updateLocation } from "./updateLocation"
 
+const mockDefaultCounter = { id: "default-counter-id", name: "Counter" }
+
 vi.mock("@/utils/db/prisma", () => ({
   prisma: {
+    counter: {
+      findUniqueOrThrow: vi.fn(),
+    },
+    staffUser: {
+      updateMany: vi.fn(),
+    },
     location: {
       update: vi.fn(),
     },
@@ -67,6 +75,7 @@ describe("updateLocation", () => {
     isPesticideDesignate: false,
     isFinanceDesignate: false,
     isIta2Designate: false,
+    isDeveloper: false,
   }
 
   const mockLocationWithRelations: LocationWithRelations = {
@@ -78,6 +87,8 @@ describe("updateLocation", () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(prisma.counter.findUniqueOrThrow).mockResolvedValue(mockDefaultCounter as never)
+    vi.mocked(prisma.staffUser.updateMany).mockResolvedValue({ count: 0 })
   })
 
   it("returns null when neither code nor prevLocation.code is provided", async () => {
@@ -247,6 +258,11 @@ describe("updateLocation", () => {
         updatedAt: expect.any(Date),
       }),
       include: { services: true, counters: true, staffUsers: true },
+    })
+    expect(prisma.counter.findUniqueOrThrow).toHaveBeenCalledWith({ where: { name: "Counter" } })
+    expect(prisma.staffUser.updateMany).toHaveBeenCalledWith({
+      where: { guid: { in: ["user-guid-2"] } },
+      data: { counterId: "default-counter-id" },
     })
   })
 
