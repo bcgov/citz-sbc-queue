@@ -18,6 +18,9 @@ type UseLocationFormProps = {
 export const TIMEZONE_OPTIONS = [
   { value: "America/Vancouver", label: "Pacific Time (America/Vancouver)" },
   { value: "America/Edmonton", label: "Mountain Time (America/Edmonton)" },
+  { value: "America/Dawson_Creek", label: "Mountain Time (America/Dawson_Creek)" },
+  { value: "America/Fort_Nelson", label: "Mountain Time (America/Fort_Nelson)" },
+  { value: "America/Creston", label: "Mountain Time (America/Creston)" },
 ]
 
 /**
