@@ -16,6 +16,7 @@ type MultiSelectProps = {
   onChange: (selected: string[]) => void
   placeholder?: string
   disabled?: boolean
+  locked?: string[]
 }
 
 export const MultiSelect = ({
@@ -26,6 +27,7 @@ export const MultiSelect = ({
   onChange,
   placeholder = "Search...",
   disabled = false,
+  locked = [],
 }: MultiSelectProps) => {
   const [query, setQuery] = useState("")
   const [focusedWithin, setFocusedWithin] = useState(false)
@@ -47,14 +49,14 @@ export const MultiSelect = ({
   const isSelected = (key: string) => selected.includes(key)
 
   const toggle = (key: string) => {
-    if (disabled) return
+    if (disabled || locked.includes(key)) return
     if (isSelected(key)) onChange(selected.filter((s) => s !== key))
     else onChange([...selected, key])
   }
 
   const remove = (e: React.MouseEvent, key: string) => {
     e.stopPropagation()
-    if (disabled) return
+    if (disabled || locked.includes(key)) return
     onChange(selected.filter((s) => s !== key))
   }
 
@@ -251,7 +253,7 @@ export const MultiSelect = ({
                 >
                   {o.label}
                 </span>
-                {!disabled && (
+                {!disabled && !locked.includes(o.key) && (
                   <button
                     type="button"
                     aria-label={`Remove ${o.label}`}

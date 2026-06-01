@@ -58,5 +58,25 @@ export const updateLocation = async (
     include: { services: true, counters: true, staffUsers: true },
   })
 
+  // Reset counter to default for users whose location membership changed
+  if (staffUsers) {
+    const defaultCounter = await prisma.counter.findUniqueOrThrow({ where: { name: "Counter" } })
+
+    const prevGuids = new Set((prevLocation.staffUsers ?? []).map((u) => u.guid))
+    const newGuids = new Set(staffUsers.map((u) => u.guid))
+
+    const changedGuids = [
+      ...Array.from(prevGuids).filter((g) => !newGuids.has(g)), // removed
+      ...Array.from(newGuids).filter((g) => !prevGuids.has(g)), // added
+    ]
+
+    if (changedGuids.length > 0) {
+      await prisma.staffUser.updateMany({
+        where: { guid: { in: changedGuids } },
+        data: { counterId: defaultCounter.id },
+      })
+    }
+  }
+
   return newLocation
 }

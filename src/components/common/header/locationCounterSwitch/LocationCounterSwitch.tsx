@@ -118,6 +118,8 @@ export const LocationCounterSwitch = ({
   const handleLocationChange = (locationCode: string) => {
     const loc = locations?.find((l) => l?.code === locationCode) || null
     setSelectedLocation(loc)
+    const defaultCounter = loc?.counters?.find((c) => c?.name === "Counter") || null
+    setSelectedCounter(defaultCounter)
   }
 
   const handleCounterChange = (counterId: string) => {

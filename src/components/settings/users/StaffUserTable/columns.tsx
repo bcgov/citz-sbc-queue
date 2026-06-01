@@ -1,7 +1,7 @@
 import type { ColumnConfig } from "@/components/common/datatable"
-import type { StaffUser } from "@/generated/prisma/client"
+import type { StaffUserWithRelations } from "@/lib/prisma/staff_user/types"
 
-export const columns: ColumnConfig<StaffUser>[] = [
+export const columns: ColumnConfig<StaffUserWithRelations>[] = [
   {
     key: "displayName",
     label: "Name",

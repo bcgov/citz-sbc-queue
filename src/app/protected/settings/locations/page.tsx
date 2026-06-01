@@ -1,7 +1,7 @@
 import { revalidatePath } from "next/cache"
 import { headers } from "next/headers"
 import { LocationTable } from "@/components/settings/locations/LocationTable"
-import type { Counter } from "@/generated/prisma/client"
+import { getAllCounters } from "@/lib/prisma/counter/getAllCounters"
 import { doesLocationCodeExist } from "@/lib/prisma/location/doesLocationCodeExist"
 import { getAllLocations } from "@/lib/prisma/location/getAllLocations"
 import { insertLocation } from "@/lib/prisma/location/insertLocation"
@@ -22,7 +22,7 @@ export default async function Page() {
   const currentUser = await getStaffUserBySub(user?.sub ?? "")
   const locations = await getAllLocations()
   const services = await getAllServices()
-  const counters = [] as Counter[]
+  const counters = await getAllCounters()
   const staffUsers = await getAllStaffUsers()
 
   const revalidateTable = async () => {

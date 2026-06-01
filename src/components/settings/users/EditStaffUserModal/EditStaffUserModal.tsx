@@ -8,8 +8,11 @@ import {
   DialogTitle,
   Modal,
 } from "@/components/common/dialog"
-import type { Location, Role, StaffUser } from "@/generated/prisma/client"
+import type { Role } from "@/generated/prisma/client"
 import { useEditStaffUserModal } from "@/hooks/settings/users/useEditStaffUserModal"
+import type { CounterWithRelations } from "@/lib/prisma/counter/types"
+import type { LocationWithRelations } from "@/lib/prisma/location/types"
+import type { StaffUserWithRelations } from "@/lib/prisma/staff_user/types"
 import { PermissionsSection } from "./sections/PermissionsSection"
 import { RoleAndAssignmentSection } from "./sections/RoleAndAssignmentSection"
 import { UserInformationSection } from "./sections/UserInformationSection"
@@ -17,17 +20,18 @@ import { UserInformationSection } from "./sections/UserInformationSection"
 type EditStaffUserModalProps = {
   open: boolean
   onClose: () => void
-  user: StaffUser | null
+  user: StaffUserWithRelations | null
   canEdit: boolean
   canArchive: boolean
   canEditLocation: boolean
   availableRoles: Role[]
-  locations: Location[]
+  locations: LocationWithRelations[]
+  counters: CounterWithRelations[]
   updateStaffUser: (
-    user: Partial<StaffUser>,
-    prevUser: Partial<StaffUser>,
+    user: Partial<StaffUserWithRelations>,
+    prevUser: Partial<StaffUserWithRelations>,
     availableRoles: Role[]
-  ) => Promise<StaffUser | null>
+  ) => Promise<StaffUserWithRelations | null>
   revalidateTable: () => Promise<void>
   openConfirmArchiveUserModal: () => void
 }
@@ -40,6 +44,7 @@ export const EditStaffUserModal = ({
   canArchive,
   canEditLocation,
   locations,
+  counters,
   availableRoles,
   updateStaffUser,
   revalidateTable,
@@ -105,6 +110,7 @@ export const EditStaffUserModal = ({
             <RoleAndAssignmentSection
               user={formData}
               locations={locations}
+              counters={counters}
               setFormData={setFormData}
               availableRoles={availableRoles}
               canEditLocation={canEditLocation}

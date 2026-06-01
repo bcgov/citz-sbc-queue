@@ -18,15 +18,18 @@ export const insertLocation = async (
 
   const { services, counters, staffUsers, ...rest } = location
 
+  // Always link the default "Counter" counter to the new location
+  const defaultCounter = await prisma.counter.findUniqueOrThrow({ where: { name: "Counter" } })
+
+  const counterIds = new Set([defaultCounter.id, ...(counters ?? []).map((c) => c.id)])
+
   // map services to Prisma connect shape when provided
   const data: Prisma.LocationCreateInput = {
     ...(rest as Prisma.LocationCreateInput),
     ...(services && services.length > 0
       ? { services: { connect: services.map((s) => ({ code: s.code })) } }
       : {}),
-    ...(counters && counters.length > 0
-      ? { counters: { connect: counters.map((c) => ({ id: c.id })) } }
-      : {}),
+    counters: { connect: Array.from(counterIds).map((id) => ({ id })) },
     ...(staffUsers && staffUsers.length > 0
       ? { staffUsers: { connect: staffUsers.map((u) => ({ guid: u.guid })) } }
       : {}),

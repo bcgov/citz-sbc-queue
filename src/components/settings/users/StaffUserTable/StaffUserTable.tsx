@@ -2,8 +2,10 @@
 
 import { DataTable } from "@/components/common/datatable"
 import { Switch } from "@/components/common/switch"
-import type { Location, Role, StaffUser } from "@/generated/prisma/client"
+import type { Role } from "@/generated/prisma/client"
 import { useStaffUserTable } from "@/hooks/settings/users/useStaffUserTable"
+import type { CounterWithRelations } from "@/lib/prisma/counter/types"
+import type { LocationWithRelations } from "@/lib/prisma/location/types"
 import type { StaffUserWithRelations } from "@/lib/prisma/staff_user/types"
 import { ConfirmArchiveUserModal } from "../ConfirmArchiveUserModal"
 import { EditStaffUserModal } from "../EditStaffUserModal"
@@ -11,13 +13,14 @@ import { columns } from "./columns"
 
 export type UserTableProps = {
   currentUser: StaffUserWithRelations | null
-  users: StaffUser[]
-  locations: Location[]
+  users: StaffUserWithRelations[]
+  locations: LocationWithRelations[]
+  counters: CounterWithRelations[]
   updateStaffUser: (
-    user: Partial<StaffUser>,
-    prevUser: Partial<StaffUser>,
+    user: Partial<StaffUserWithRelations>,
+    prevUser: Partial<StaffUserWithRelations>,
     availableRoles?: Role[]
-  ) => Promise<StaffUser | null>
+  ) => Promise<StaffUserWithRelations | null>
   revalidateTable: () => Promise<void>
 }
 
@@ -25,6 +28,7 @@ export const StaffUserTable = ({
   currentUser,
   users,
   locations,
+  counters,
   updateStaffUser,
   revalidateTable,
 }: UserTableProps) => {
@@ -75,6 +79,7 @@ export const StaffUserTable = ({
         canEditLocation={canEditLocationSelectedUser}
         availableRoles={availableRolesForSelectedUser}
         locations={locations}
+        counters={counters}
         updateStaffUser={updateStaffUser}
         revalidateTable={revalidateTable}
         openConfirmArchiveUserModal={openConfirmArchiveUserModal}
