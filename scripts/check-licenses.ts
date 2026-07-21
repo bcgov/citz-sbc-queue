@@ -237,7 +237,9 @@ async function checkLicenses(): Promise<LicenseResults> {
 }
 
 // Run the check if this module is executed directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+import { fileURLToPath } from "node:url"
+
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   checkLicenses().catch(console.error)
 }
 
